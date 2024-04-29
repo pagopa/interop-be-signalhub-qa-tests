@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/pagopa/interop-be-signalhub-qa-tests#readme",
   "devDependencies": {
+    "@cucumber/cucumber": "^10.6.0",
     "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
