@@ -2,12 +2,15 @@
   "name": "interop-be-signalhub-qa-tests",
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
-  "main": "index.js",
   "scripts": {
     "cucumber:bun": "bun --bun run cucumber-js -p base",
     "cucumber:node": "cucumber-js -p base -p node",
     "test": "pnpm cucumber:node -p all",
-    "bun:test": "pnpm cucumber:bun -p all"
+    "bun:test": "pnpm cucumber:bun -p all",
+    "check-steps": "pnpm test -- -p validate",
+    "bun:check-steps": "pnpm bun:test -p validate",
+    "check-steps:usage": "pnpm check-steps --format usage",
+    "bun:check-steps:usage": "pnpm bun:check-steps --format usage"    
   },
   "repository": {
     "type": "git",
