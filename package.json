@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
   "scripts": {
+    "generate-model:pull": "node ./scripts/pull-signals/generate-api-models.mjs",
+    "generate-model:push": "node ./scripts/push-signals/generate-api-models.mjs",
     "cucumber:bun": "bun --bun run cucumber-js -p base",
     "cucumber:node": "cucumber-js -p base -p node",
     "test": "pnpm cucumber:node -p all",
