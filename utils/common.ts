@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
-import dotenv from "dotenv";
-dotenv.config();
+import "../configs/env";
 
 export type VoucherPayload = {
   client_id: string;
