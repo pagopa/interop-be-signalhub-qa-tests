@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
-import "../configs/env";
 import { AxiosResponse } from "axios";
-import { SignalRequest } from "../api/push";
+import { SignalRequest } from "../api/push-signals.models";
+import "../configs/env";
 
 export type VoucherPayload = {
   client_id: string;
