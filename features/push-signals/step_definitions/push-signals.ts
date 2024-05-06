@@ -2,10 +2,10 @@ import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
+  createSignal,
   getAuthorizationHeader,
   getVoucher,
 } from "../../../utils/common";
-import { SignalRequest } from "../../../api/push";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 
 Given(
@@ -19,17 +19,9 @@ Given(
 When(
   "l'utente deposita {int} segnal(e)(i)",
   async function (_howManySignals: number) {
-    // Write code here that turns the phrase above into concrete actions
-    const signal: SignalRequest = {
-      objectId: "on3ueZN9YC1Ew8c6RAuYC",
-      signalType: "CREATE",
-      eserviceId: "16d64180-e352-442e-8a91-3b2ae77ca1df",
-      objectType: "FX65ZU937QLm6iPwIzlt4",
-      signalId: 1,
-    };
-
+    const signalRequest = createSignal();
     const response = await pushSignalApiClient.pushSignal.pushSignal(
-      signal,
+      signalRequest,
       getAuthorizationHeader(this.voucher)
     );
 

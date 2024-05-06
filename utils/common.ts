@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
 import "../configs/env";
 import { AxiosResponse } from "axios";
+import { Signal } from "../api/push-signals.models";
+import { SignalRequest } from "../api/push";
 
 export type VoucherPayload = {
   client_id: string;
@@ -134,4 +136,17 @@ export function assertValidResponse<T>(response: AxiosResponse<T>) {
       )}`
     );
   }
+}
+
+export function createSignal(
+  partialSignal: Partial<SignalRequest> = {}
+): SignalRequest {
+  return {
+    objectId: "on3ueZN9YC1Ew8c6RAuYC",
+    signalType: "CREATE",
+    eserviceId: "16d64180-e352-442e-8a91-3b2ae77ca1df",
+    objectType: "FX65ZU937QLm6iPwIzlt4",
+    signalId: 1,
+    ...partialSignal,
+  };
 }
