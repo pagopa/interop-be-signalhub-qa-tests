@@ -122,6 +122,10 @@ function buildJWTHeader(): JWTHeader {
   };
 }
 
+export function getAuthorizationHeader(token: string) {
+  return { headers: { Authorization: "Bearer " + token } } as const;
+}
+
 export function assertValidResponse<T>(response: AxiosResponse<T>) {
   if (response.status >= 400) {
     throw Error(

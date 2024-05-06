@@ -17,6 +17,8 @@ export const Env = z.object({
   ASSERTION_TYPE: z.string(),
   SESSION_DURATION_IN_SECONDS: z.coerce.number(),
   API_BASE_PATH: z.string(),
+  PUSH_SERVICE_PORT: z.string(),
+  PULL_SERVICE_PORT: z.string(),
 });
 
 const parsedEnv = Env.safeParse(process.env);

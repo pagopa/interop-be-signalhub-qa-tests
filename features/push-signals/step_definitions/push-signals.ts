@@ -1,11 +1,12 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
-import { assertValidResponse, getVoucher } from "../../../utils/common";
 import {
-  Configuration,
-  GatewayApiFactory,
-  SignalRequest,
-} from "../../../api/push";
+  assertValidResponse,
+  getAuthorizationHeader,
+  getVoucher,
+} from "../../../utils/common";
+import { SignalRequest } from "../../../api/push";
+import { pushSignalApiClient } from "../../../api/push-signals.client";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l’accesso all'e-service deposito segnali",
@@ -26,19 +27,12 @@ When(
       objectType: "FX65ZU937QLm6iPwIzlt4",
       signalId: 1,
     };
-    const conf: Configuration = {
-      basePath: process.env.API_BASE_PATH,
-      isJsonMime: () => true,
-      baseOptions: {
-        headers: {
-          Authorization: `Bearer ${this.voucher}`,
-        },
-        timeout: 60000,
-      },
-    };
-    const apiClient = GatewayApiFactory(conf);
 
-    const response = await apiClient.pushSignal(signal);
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signal,
+      getAuthorizationHeader(this.voucher)
+    );
+
     assertValidResponse(response);
     console.log(response.data);
 
