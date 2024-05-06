@@ -26,7 +26,6 @@ When(
     );
 
     assertValidResponse(response);
-    console.log(response.data);
 
     const { signalId } = response.data;
     this.signalId = signalId;
