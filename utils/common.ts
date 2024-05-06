@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
 import "../configs/env";
+import { AxiosResponse } from "axios";
 
 export type VoucherPayload = {
   client_id: string;
@@ -119,4 +120,14 @@ function buildJWTHeader(): JWTHeader {
     typ: "JWT",
     kid: process.env.KEY_ID ?? "",
   };
+}
+
+export function assertValidResponse<T>(response: AxiosResponse<T>) {
+  if (response.status >= 400) {
+    throw Error(
+      `Something went wrong: ${JSON.stringify(
+        response.data ?? response.statusText
+      )}`
+    );
+  }
 }

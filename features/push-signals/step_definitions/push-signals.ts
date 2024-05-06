@@ -1,6 +1,6 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
-import { getVoucher } from "../../../utils/common";
+import { assertValidResponse, getVoucher } from "../../../utils/common";
 import {
   Configuration,
   GatewayApiFactory,
@@ -37,16 +37,14 @@ When(
       },
     };
     const apiClient = GatewayApiFactory(conf);
-    try {
-      const response = await apiClient.pushSignal(signal);
-      console.log(response.data);
-      const { signalId } = response.data;
-      this.signalId = signalId;
-      this.status = response.status;
-    } catch (e: unknown) {
-      // Deal with the fact the chain failed
-      // console.log("DUMP", e.response.data);
-    }
+
+    const response = await apiClient.pushSignal(signal);
+    assertValidResponse(response);
+    console.log(response.data);
+
+    const { signalId } = response.data;
+    this.signalId = signalId;
+    this.status = response.status;
   }
 );
 
