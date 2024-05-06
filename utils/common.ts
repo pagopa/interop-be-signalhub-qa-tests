@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
-import dotenv from "dotenv";
-dotenv.config();
+import { AxiosResponse } from "axios";
+import { SignalRequest } from "../api/push-signals.models";
+import "../configs/env";
 
 export type VoucherPayload = {
   client_id: string;
@@ -119,5 +120,32 @@ function buildJWTHeader(): JWTHeader {
     alg: "RS256",
     typ: "JWT",
     kid: process.env.KEY_ID ?? "",
+  };
+}
+
+export function getAuthorizationHeader(token: string) {
+  return { headers: { Authorization: "Bearer " + token } } as const;
+}
+
+export function assertValidResponse<T>(response: AxiosResponse<T>) {
+  if (response.status >= 400) {
+    throw Error(
+      `Something went wrong: ${JSON.stringify(
+        response.data ?? response.statusText
+      )}`
+    );
+  }
+}
+
+export function createSignal(
+  partialSignal: Partial<SignalRequest> = {}
+): SignalRequest {
+  return {
+    objectId: "on3ueZN9YC1Ew8c6RAuYC",
+    signalType: "CREATE",
+    eserviceId: "16d64180-e352-442e-8a91-3b2ae77ca1df",
+    objectType: "FX65ZU937QLm6iPwIzlt4",
+    signalId: 1,
+    ...partialSignal,
   };
 }
