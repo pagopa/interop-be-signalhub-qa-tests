@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { TypeOf, z } from "zod";
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 export const Env = z.object({
   CUCUMBER_OPTS_PARALLEL: z.coerce.number(),
