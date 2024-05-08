@@ -6,8 +6,8 @@ Goal of this project is create a suites of Acceptance test for signal-hub's serv
 
 To get started, you need:
 
-- Node
-- Pnpm
+- node
+- pnpm
 
 Optional you can use [Bun](https://bun.sh/) to run test.
 
@@ -17,8 +17,21 @@ Before running tests suites you have to install dependecies with
 
 You can run suites with [Bun](https://bun.sh/) with following command:
 
-`pnpm run bun:test`
+`pnpm bun:test`
 
 or with node with:
 
-`pnpm run test`
+`pnpm test`
+
+Run only tagged test:
+
+`pnpm test:tags "@some_useful_tag"`
+
+
+### Environment and enviroment variables
+
+`export NODE_ENV=development` will load env variables from `file .env.development`
+
+`export NODE_ENV=uat` will load env variables from `file .env.uat`
+
+Default value is `development`.
