@@ -29,13 +29,18 @@ Feature: Deposito segnali
     Then l'e-service deposito segnali restituisce status code 403
 
   @push_signals5
-  Scenario Outline: Un utente la cui propria organizzazione sia erogatrice di due e-service deposita un segnale per ciascun e-service. Il signalId di entrambi i segnali è identico. Entrambe le richieste vanno a buon fine. NB. E' possibile inviare un segnale la cui coppia (signalId,eServiceId) sia univoca.
+  Scenario Outline: Un utente la cui propria organizzazione sia erogatrice di due e-service, che ha una richiesta di fruizione verso l'e-service deposito segnali, deposita un segnale per ciascun e-service. Entrambe le richieste vanno a buon fine. NB. Un'unica organizzazione che eroga più e-service può depositare segnali per tutti i propri e-service con la stessa richiesta di fruizione verso l'e-service deposito segnali.
     Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
-    Given L'utente deposita un segnale per il primo e-service
-    When l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo
+    Given l'utente deposita un segnale per il primo e-service
+    When l'utente deposita un segnale per il secondo e-service
     Then l'e-service deposito segnali restituisce status code 200 e prende in carico la richiesta
 
-
+  @push_signals6
+  Scenario Outline: Un utente la cui propria organizzazione sia erogatrice di due e-service, che ha una richiesta di fruizione verso l'e-service deposito segnali, deposita un segnale per ciascun e-service. Il signalId di entrambi i segnali è identico. Entrambe le richieste vanno a buon fine. NB. NB. E' possibile inviare un segnale la cui coppia (signalId,eServiceId) sia univoca.
+    Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
+    Given l'utente deposita un segnale per il primo e-service
+    When l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo
+    Then l'e-service deposito segnali restituisce status code 200 e prende in carico la richiesta
   # @push_signalsX
   # Scenario Outline: Un utente abilitato all'e-service deposito segnali deposita due segnali. La richieste vanno entrambe a buon fine.
   #   Given Un utente, come produttore di segnali, ottiene un voucher valido per l’accesso all'e-service deposito segnali

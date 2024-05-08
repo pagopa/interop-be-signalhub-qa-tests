@@ -1,6 +1,7 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
+  assertValidResponse,
   createSignal,
   getAuthorizationHeader,
   getVoucher,
@@ -27,6 +28,63 @@ Given(
       purposeId: process.env.FAKE_PURPOSE_ID,
     });
     this.voucher = voucher;
+  }
+);
+
+Given("l'utente deposita un segnale per il primo e-service", async function () {
+  const signalRequest = createSignal({ signalId: 1 });
+
+  const response = await pushSignalApiClient.pushSignal.pushSignal(
+    signalRequest,
+    getAuthorizationHeader(this.voucher)
+  );
+  assertValidResponse(response);
+
+  this.requestSignalId = signalRequest.signalId;
+});
+
+When(
+  "l'utente deposita un segnale per il secondo e-service",
+  async function () {
+    const eserviceId = "3a023c23b-7662-4971-994e-0eb9adabc728";
+    const nextSignalId = (this.requestSignalId as number) + 1;
+    const signalRequest = createSignal({
+      signalId: nextSignalId,
+      eserviceId,
+    });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+    assertValidResponse(response);
+
+    const { signalId } = response.data;
+    this.requestSignalId = signalRequest.signalId;
+    this.responseSignalId = signalId;
+    this.status = response.status;
+  }
+);
+
+When(
+  "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
+  async function () {
+    const eserviceId = "3a023c23b-7662-4971-994e-0eb9adabc728";
+    const signalRequest = createSignal({
+      signalId: this.requestSignalId,
+      eserviceId,
+    });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+    assertValidResponse(response);
+
+    const { signalId } = response.data;
+    this.requestSignalId = signalRequest.signalId;
+    this.responseSignalId = signalId;
+    this.status = response.status;
   }
 );
 
