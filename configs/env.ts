@@ -19,6 +19,7 @@ export const Env = z.object({
   API_BASE_PATH: z.string(),
   PUSH_SERVICE_PORT: z.string(),
   PULL_SERVICE_PORT: z.string(),
+  FAKE_PURPOSE_ID: z.string(),
 });
 
 const parsedEnv = Env.safeParse(process.env);

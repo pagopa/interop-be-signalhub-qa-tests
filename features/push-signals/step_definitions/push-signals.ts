@@ -1,7 +1,6 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  assertValidResponse,
   createSignal,
   getAuthorizationHeader,
   getVoucher,
@@ -14,9 +13,19 @@ import {
 } from "../../../api/push-signals.models";
 
 Given(
-  "Un utente, come produttore di segnali, ottiene un voucher valido per l’accesso all'e-service deposito segnali",
+  "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
     const voucher = await getVoucher();
+    this.voucher = voucher;
+  }
+);
+
+Given(
+  "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
+  async function () {
+    const voucher = await getVoucher({
+      purposeId: process.env.FAKE_PURPOSE_ID,
+    });
     this.voucher = voucher;
   }
 );
@@ -75,5 +84,12 @@ Then(
   function () {
     assert.strictEqual(this.responseSignalId, this.requestSignalId);
     assert.strictEqual(this.status, 200);
+  }
+);
+
+Then(
+  "l'e-service deposito segnali restituisce status code {int}",
+  function (httpStatusCode: number) {
+    assert.strictEqual(this.status, httpStatusCode);
   }
 );

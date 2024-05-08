@@ -70,10 +70,12 @@ export async function generateClientAssertion(
     .sign(privateKey);
 }
 
-export const getVoucher = async (): Promise<string> => {
+export const getVoucher = async (
+  partialJWTPayload: Partial<JWTPayload> = {}
+): Promise<string> => {
   try {
     const jwtHeader: JWTHeader = buildJWTHeader();
-    const jwtPayload: JWTPayload = buildJWTPayload();
+    const jwtPayload: JWTPayload = buildJWTPayload(partialJWTPayload);
     const privateKeyPem = process.env.SH_PUSH_PRIVATE_KEY ?? "";
     const clientAssertion = await generateClientAssertion(
       jwtHeader,
@@ -93,10 +95,10 @@ export const getVoucher = async (): Promise<string> => {
 
   function buildVoucherPayload(clientAssertion: string): VoucherPayload {
     return {
-      client_id: process.env.CLIENT_ID ?? "",
-      grant_type: process.env.GRANT_TYPE ?? "",
+      client_id: process.env.CLIENT_ID,
+      grant_type: process.env.GRANT_TYPE,
       client_assertion: clientAssertion,
-      client_assertion_type: process.env.ASSERTION_TYPE ?? "",
+      client_assertion_type: process.env.ASSERTION_TYPE,
     };
   }
 };
@@ -104,23 +106,27 @@ export const getVoucher = async (): Promise<string> => {
 function getIssuedAtTime(): number {
   return Math.round(new Date().getTime() / 1000);
 }
-function buildJWTPayload(): JWTPayload {
+function buildJWTPayload(
+  partialJWTPayload: Partial<JWTPayload> = {}
+): JWTPayload {
   return {
-    iss: process.env.ISSUER ?? "",
-    sub: process.env.SUBJECT ?? "",
-    aud: process.env.AUDIENCE ?? "",
+    iss: process.env.ISSUER,
+    sub: process.env.SUBJECT,
+    aud: process.env.AUDIENCE,
     jti: uuidv4(),
-    purposeId: process.env.PURPOSE_ID ?? "",
+    purposeId: process.env.PURPOSE_ID,
     iat: getIssuedAtTime(),
     exp: getIssuedAtTime() + Number(process.env.SESSION_DURATION_IN_SECONDS),
+    ...partialJWTPayload,
   };
 }
 
-function buildJWTHeader(): JWTHeader {
+function buildJWTHeader(partialJWTHeader: Partial<JWTHeader> = {}): JWTHeader {
   return {
     alg: "RS256",
     typ: "JWT",
-    kid: process.env.KEY_ID ?? "",
+    kid: process.env.KEY_ID,
+    ...partialJWTHeader,
   };
 }
 
