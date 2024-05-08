@@ -1,13 +1,17 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
+  assertValidResponse,
   createSignal,
   getAuthorizationHeader,
   getVoucher,
 } from "../../../utils/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
-import { AxiosResponse } from "axios";
-import { Signal, SignalRequest } from "../../../api/push-signals.models";
+import {
+  Problem,
+  SignalRequest,
+  SignalType,
+} from "../../../api/push-signals.models";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l’accesso all'e-service deposito segnali",
@@ -17,34 +21,59 @@ Given(
   }
 );
 
+When("l'utente deposita un segnale", async function () {
+  const signalRequest = createSignal({ signalId: 1 });
+
+  const response = await pushSignalApiClient.pushSignal.pushSignal(
+    signalRequest,
+    getAuthorizationHeader(this.voucher)
+  );
+
+  const { signalId } = response.data;
+  this.requestSignalId = signalRequest.signalId;
+  this.responseSignalId = signalId;
+  this.status = response.status;
+});
+
 When(
-  "l'utente deposita {int} segnal(e)(i)",
-  async function (_howManySignals: number) {
-    const signalRequest = createSignal();
+  "l'utente deposita un segnale di una tipologia non prevista",
+  async function () {
+    const signalRequest = createSignal({
+      signalId: 1,
+      signalType: "TEST" as SignalType,
+    });
 
-    let response: AxiosResponse<Signal>;
-    for (let i = 0; i <= _howManySignals; i++) {
-      response = await pushSignalApiClient.pushSignal.pushSignal(
-        signalRequest,
-        getAuthorizationHeader(this.voucher)
-      );
-    }
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
 
-    console.log("response:", response!);
-    const { signalId } = response!.data;
-    this.signalId = signalId;
-    this.status = response!.status;
+    const { errors } = response.data as Problem;
+    this.errors = errors;
+    this.status = response.status;
   }
 );
+
+When("l'utente deposita un segnale vuoto", async function () {
+  const response = await pushSignalApiClient.pushSignal.pushSignal(
+    {} as SignalRequest,
+    getAuthorizationHeader(this.voucher)
+  );
+
+  const { errors } = response.data as Problem;
+  this.errors = errors;
+  this.status = response.status;
+});
+
+Then("la richiesta non va a buon fine", function () {
+  assert.strictEqual(this.status, 400);
+  assert.ok(this.errors.length > 0);
+});
 
 Then(
-  "l'e-service deposito segnali riceve la richiesta e la prende in carico correttamente",
+  "l'e-service deposito segnali restituisce status code 200 e prende in carico la richiesta",
   function () {
-    // Write code here that turns the phrase above into concrete actions
-    assert.strictEqual(this.signalId, 1);
+    assert.strictEqual(this.responseSignalId, this.requestSignalId);
+    assert.strictEqual(this.status, 200);
   }
 );
-Then("restituisce status code {int}", function (_statusCode: number) {
-  // Write code here that turns the phrase above into concrete actions
-  assert.strictEqual(this.status, _statusCode);
-});
