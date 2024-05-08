@@ -35,3 +35,12 @@ Run only tagged test:
 `export NODE_ENV=uat` will load env variables from `file .env.uat`
 
 Default value is `development`.
+
+
+### Pre-commit hooks
+
+See [Husky](https://typicode.github.io/husky/how-to.html).
+
+To avoid pre-commit hooks:
+
+`git commit -m "..." -n # Skips Git hooks`

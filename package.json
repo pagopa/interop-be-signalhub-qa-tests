@@ -16,7 +16,7 @@
     "bun:check-steps": "pnpm bun:test -p validate",
     "check-steps:usage": "pnpm check-steps --format usage",
     "bun:check-steps:usage": "pnpm bun:check-steps --format usage",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",
