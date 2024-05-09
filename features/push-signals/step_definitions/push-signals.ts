@@ -5,6 +5,7 @@ import {
   createSignal,
   getAuthorizationHeader,
   getVoucher,
+  sleep,
 } from "../../../utils/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import {
@@ -41,6 +42,10 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
   assertValidResponse(response);
 
   this.requestSignalId = signalRequest.signalId;
+});
+
+Given("il segnale viene depositato", async function () {
+  await sleep(5000);
 });
 
 When(
@@ -84,6 +89,24 @@ When(
     const { signalId } = response.data;
     this.requestSignalId = signalRequest.signalId;
     this.responseSignalId = signalId;
+    this.status = response.status;
+  }
+);
+
+When(
+  "l'utente deposita un segnale con lo stesso signalId del primo",
+  async function () {
+    const signalRequest = createSignal({
+      signalId: this.requestSignalId,
+    });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+
+    const { errors } = response.data as Problem;
+    this.errors = errors;
     this.status = response.status;
   }
 );

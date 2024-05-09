@@ -163,3 +163,9 @@ export function getRandomSignalId() {
     10
   );
 }
+
+export async function sleep(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+}

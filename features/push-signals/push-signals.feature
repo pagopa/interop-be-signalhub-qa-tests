@@ -61,5 +61,6 @@ Feature: Deposito segnali
   Scenario Outline: Un utente abilitato all'e-service deposito segnali deposita due segnali con lo stesso signalId. La seconda richiesta non va a buon fine: viene rifiutata perché signalId duplicato. NB. Viene introdotto un timeout per consentire al sistema la prima scrittura, dato che avviene con un collaborazione tra processi asincroni.
     Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente deposita un segnale
+    Given il segnale viene depositato
     When l'utente deposita un segnale con lo stesso signalId del primo
     Then la richiesta non va a buon fine con status code 400
