@@ -1,16 +1,20 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
 import { AxiosResponse } from "axios";
-import { SignalRequest } from "../api/push-signals.models";
+import { SignalRequest, SignalType } from "../api/push-signals.models";
 import "../configs/env";
 
 export const WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS = 5000;
-export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
-  "16d64180-e352-442e-8a91-3b2ae77ca1df";
+export const ESERVICEID_PROVIDED_BY_ORGANIZATION =
+  "31b4e4e6-855d-42fa-9705-28bc7f8545ff";
 export const ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION =
   "3a023c23b-7662-4971-994e-0eb9adabc728";
 export const ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED =
   "4a127c23c-7662-4974-994e-0eb9adabc999";
+export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
+  "16d64180-e352-442e-8a91-3b2ae77ca1df";
+
+const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
 export type VoucherPayload = {
   client_id: string;
@@ -157,8 +161,8 @@ export function createSignal(
 ): SignalRequest {
   return {
     objectId: "on3ueZN9YC1Ew8c6RAuYC",
-    signalType: "CREATE",
-    eserviceId: "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+    signalType: SIGNAL_TYPE_DEFAULT,
+    eserviceId: ESERVICEID_PROVIDED_BY_ORGANIZATION,
     objectType: "FX65ZU937QLm6iPwIzlt4",
     signalId: getRandomSignalId(),
     ...partialSignal,

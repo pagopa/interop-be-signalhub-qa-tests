@@ -51,23 +51,18 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
 When(
   "l'utente deposita un segnale per il secondo e-service",
   async function () {
-    const eserviceId = "3a023c23b-7662-4971-994e-0eb9adabc728";
+    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION;
     const nextSignalId = (this.requestSignalId as number) + 1;
     const signalRequest = createSignal({
       signalId: nextSignalId,
       eserviceId,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-    assertValidResponse(response);
-
-    const { signalId } = response.data;
     this.requestSignalId = signalRequest.signalId;
-    this.responseSignalId = signalId;
-    this.status = response.status;
   }
 );
 
@@ -80,16 +75,11 @@ When(
       eserviceId,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-    assertValidResponse(response);
-
-    const { signalId } = response.data;
     this.requestSignalId = signalRequest.signalId;
-    this.responseSignalId = signalId;
-    this.status = response.status;
   }
 );
 
@@ -102,29 +92,21 @@ When(
       signalId: this.requestSignalId,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-
-    const { errors } = response.data as Problem;
-    this.errors = errors;
-    this.status = response.status;
   }
 );
 
 When("l'utente deposita un segnale", async function () {
   const signalRequest = createSignal();
 
-  const response = await pushSignalApiClient.pushSignal.pushSignal(
+  this.response = await pushSignalApiClient.pushSignal.pushSignal(
     signalRequest,
     getAuthorizationHeader(this.voucher)
   );
-
-  const { signalId } = response.data;
   this.requestSignalId = signalRequest.signalId;
-  this.responseSignalId = signalId;
-  this.status = response.status;
 });
 
 When(
@@ -133,14 +115,10 @@ When(
     const eserviceId = "this-eservice-does-not-exist";
     const signalRequest = createSignal({ eserviceId });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-
-    const { errors } = response.data as Problem;
-    this.errors = errors;
-    this.status = response.status;
   }
 );
 
@@ -150,14 +128,10 @@ When(
     const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED;
     const signalRequest = createSignal({ eserviceId });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-
-    const { errors } = response.data as Problem;
-    this.errors = errors;
-    this.status = response.status;
   }
 );
 
@@ -168,14 +142,10 @@ When(
       signalType: "TEST" as SignalType,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-
-    const { errors } = response.data as Problem;
-    this.errors = errors;
-    this.status = response.status;
   }
 );
 
@@ -186,50 +156,20 @@ When(
       signalType,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
-    const { signalId } = response.data;
     this.requestSignalId = signalRequest.signalId;
-    this.responseSignalId = signalId;
-    this.status = response.status;
   }
 );
 
 When("l'utente deposita un segnale vuoto", async function () {
-  const response = await pushSignalApiClient.pushSignal.pushSignal(
+  this.response = await pushSignalApiClient.pushSignal.pushSignal(
     {} as SignalRequest,
     getAuthorizationHeader(this.voucher)
   );
-
-  const { errors } = response.data as Problem;
-  this.errors = errors;
-  this.status = response.status;
 });
-
-Then(
-  "la richiesta non va a buon fine con status code {int}",
-  function (statusCode: number) {
-    assert.strictEqual(this.status, statusCode);
-    assert.ok(this.errors.length > 0);
-  }
-);
-
-Then(
-  "l'e-service deposito segnali restituisce status code 200 e prende in carico la richiesta",
-  function () {
-    assert.strictEqual(this.responseSignalId, this.requestSignalId);
-    assert.strictEqual(this.status, 200);
-  }
-);
-
-Then(
-  "l'e-service deposito segnali restituisce status code {int}",
-  function (httpStatusCode: number) {
-    assert.strictEqual(this.status, httpStatusCode);
-  }
-);
 
 When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
@@ -239,13 +179,27 @@ When(
       eserviceId,
     });
 
-    const response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+  }
+);
 
-    const { errors } = response.data as Problem;
-    this.errors = errors;
-    this.status = response.status;
+Then(
+  "la richiesta va in errore con status code {int}",
+  function (statusCode: number) {
+    const { errors } = this.response.data as Problem;
+    assert.strictEqual(this.response.status, statusCode);
+    assert.ok(errors.length > 0);
+  }
+);
+
+Then(
+  "la richiesta va a buon fine con status code 200 e il segnale viene preso in carico",
+  function () {
+    const { signalId } = this.response.data;
+    assert.strictEqual(signalId, this.requestSignalId);
+    assert.strictEqual(this.response.status, 200);
   }
 );
