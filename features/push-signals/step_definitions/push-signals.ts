@@ -1,6 +1,8 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
+  ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION,
+  WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS,
   assertValidResponse,
   createSignal,
   getAuthorizationHeader,
@@ -42,10 +44,6 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
   assertValidResponse(response);
 
   this.requestSignalId = signalRequest.signalId;
-});
-
-Given("il segnale viene depositato", async function () {
-  await sleep(5000);
 });
 
 When(
@@ -96,6 +94,8 @@ When(
 When(
   "l'utente deposita un segnale con lo stesso signalId del primo",
   async function () {
+    await sleep(WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
+
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
     });
@@ -198,7 +198,7 @@ Then(
 When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
   async function () {
-    const eserviceId = "16d64180-e352-442e-8a91-3b2ae77ca1df"; // e-service id presente in tabella postgres
+    const eserviceId = ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION; // e-service id presente in tabella postgres
     const signalRequest = createSignal({
       eserviceId,
     });

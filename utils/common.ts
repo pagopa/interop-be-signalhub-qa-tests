@@ -4,6 +4,10 @@ import { AxiosResponse } from "axios";
 import { SignalRequest } from "../api/push-signals.models";
 import "../configs/env";
 
+export const WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS = 5000;
+export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
+  "16d64180-e352-442e-8a91-3b2ae77ca1df";
+
 export type VoucherPayload = {
   client_id: string;
   grant_type: string;
