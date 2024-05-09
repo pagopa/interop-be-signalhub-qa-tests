@@ -7,6 +7,7 @@ import {
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS,
   assertValidResponse,
   createSignal,
+  createSignalConsumers,
   getAuthorizationHeader,
   getVoucher,
   sleep,
@@ -108,6 +109,20 @@ When("l'utente deposita un segnale", async function () {
   );
   this.requestSignalId = signalRequest.signalId;
 });
+
+When(
+  "l'utente deposita un segnale specifico per un consumer",
+  async function () {
+    const signalRequest = createSignalConsumers();
+    this.response =
+      await pushSignalApiClient.pushSignalByConsumers.pushSignalList(
+        signalRequest,
+        getAuthorizationHeader(this.voucher)
+      );
+    this.requestSignalId = signalRequest.signalId;
+    console.log(this.response.data);
+  }
+);
 
 When(
   "l'utente deposita un segnale per un e-service che non esiste",

@@ -1,7 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
 import { AxiosResponse } from "axios";
-import { SignalRequest, SignalType } from "../api/push-signals.models";
+import {
+  SignalConsumerRequest,
+  SignalRequest,
+  SignalType,
+} from "../api/push-signals.models";
 import "../configs/env";
 
 export const WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS = 5000;
@@ -15,6 +19,8 @@ export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
   "16d64180-e352-442e-8a91-3b2ae77ca1df";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
+const OBJECT_TYPE_DEFAULT = "FX65ZU937QLm6iPwIzlt4";
+const OBJECT_ID_DEFAULT = "on3ueZN9YC1Ew8c6RAuYC";
 
 export type VoucherPayload = {
   client_id: string;
@@ -160,12 +166,27 @@ export function createSignal(
   partialSignal: Partial<SignalRequest> = {}
 ): SignalRequest {
   return {
-    objectId: "on3ueZN9YC1Ew8c6RAuYC",
+    objectId: OBJECT_ID_DEFAULT,
     signalType: SIGNAL_TYPE_DEFAULT,
     eserviceId: ESERVICEID_PROVIDED_BY_ORGANIZATION,
-    objectType: "FX65ZU937QLm6iPwIzlt4",
+    objectType: OBJECT_TYPE_DEFAULT,
     signalId: getRandomSignalId(),
     ...partialSignal,
+  };
+}
+
+export function createSignalConsumers(): SignalConsumerRequest {
+  return {
+    signalByConsumers: [
+      {
+        consumerId: "84871fd4-2fd7-46ab-9d22-f6b452f4b3c5",
+        objectId: OBJECT_ID_DEFAULT,
+      },
+    ],
+    signalType: SIGNAL_TYPE_DEFAULT,
+    eserviceId: ESERVICEID_PROVIDED_BY_ORGANIZATION,
+    objectType: OBJECT_TYPE_DEFAULT,
+    signalId: getRandomSignalId(),
   };
 }
 
