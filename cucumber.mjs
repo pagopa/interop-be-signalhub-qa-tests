@@ -11,6 +11,7 @@ export const format = {
 export const base = {
   ...parallel,
   ...format,
+  worldParameters: { signalIdCounter: 0 },
 };
 
 export const validate = {

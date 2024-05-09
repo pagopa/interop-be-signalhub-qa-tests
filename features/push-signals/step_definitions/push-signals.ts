@@ -32,7 +32,7 @@ Given(
 );
 
 Given("l'utente deposita un segnale per il primo e-service", async function () {
-  const signalRequest = createSignal({ signalId: 1 });
+  const signalRequest = createSignal();
 
   const response = await pushSignalApiClient.pushSignal.pushSignal(
     signalRequest,
@@ -89,7 +89,7 @@ When(
 );
 
 When("l'utente deposita un segnale", async function () {
-  const signalRequest = createSignal({ signalId: 1 });
+  const signalRequest = createSignal();
 
   const response = await pushSignalApiClient.pushSignal.pushSignal(
     signalRequest,
@@ -106,7 +106,6 @@ When(
   "l'utente deposita un segnale di una tipologia non prevista",
   async function () {
     const signalRequest = createSignal({
-      signalId: 1,
       signalType: "TEST" as SignalType,
     });
 

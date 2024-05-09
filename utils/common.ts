@@ -152,7 +152,14 @@ export function createSignal(
     signalType: "CREATE",
     eserviceId: "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
     objectType: "FX65ZU937QLm6iPwIzlt4",
-    signalId: 1,
+    signalId: getRandomSignalId(),
     ...partialSignal,
   };
+}
+
+export function getRandomSignalId() {
+  return parseInt(
+    Number(Math.random() * Number.MAX_SAFE_INTEGER).toFixed(0),
+    10
+  );
 }
