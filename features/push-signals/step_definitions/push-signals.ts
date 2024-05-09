@@ -2,6 +2,8 @@ import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION,
+  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION,
+  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED,
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS,
   assertValidResponse,
   createSignal,
@@ -72,7 +74,7 @@ When(
 When(
   "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
   async function () {
-    const eserviceId = "3a023c23b-7662-4971-994e-0eb9adabc728";
+    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION;
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
       eserviceId,
@@ -124,6 +126,40 @@ When("l'utente deposita un segnale", async function () {
   this.responseSignalId = signalId;
   this.status = response.status;
 });
+
+When(
+  "l'utente deposita un segnale per un e-service che non esiste",
+  async function () {
+    const eserviceId = "this-eservice-does-not-exist";
+    const signalRequest = createSignal({ eserviceId });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+
+    const { errors } = response.data as Problem;
+    this.errors = errors;
+    this.status = response.status;
+  }
+);
+
+When(
+  "l'utente deposita un segnale per un e-service che non è stato pubblicato",
+  async function () {
+    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED;
+    const signalRequest = createSignal({ eserviceId });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+
+    const { errors } = response.data as Problem;
+    this.errors = errors;
+    this.status = response.status;
+  }
+);
 
 When(
   "l'utente deposita un segnale di una tipologia non prevista",
