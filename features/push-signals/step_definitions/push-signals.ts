@@ -120,6 +120,24 @@ When(
   }
 );
 
+When(
+  "l'utente deposita un segnale con tipologia {string}",
+  async function (signalType: SignalType) {
+    const signalRequest = createSignal({
+      signalType,
+    });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+    const { signalId } = response.data;
+    this.requestSignalId = signalRequest.signalId;
+    this.responseSignalId = signalId;
+    this.status = response.status;
+  }
+);
+
 When("l'utente deposita un segnale vuoto", async function () {
   const response = await pushSignalApiClient.pushSignal.pushSignal(
     {} as SignalRequest,
@@ -131,10 +149,13 @@ When("l'utente deposita un segnale vuoto", async function () {
   this.status = response.status;
 });
 
-Then("la richiesta non va a buon fine", function () {
-  assert.strictEqual(this.status, 400);
-  assert.ok(this.errors.length > 0);
-});
+Then(
+  "la richiesta non va a buon fine con status code {int}",
+  function (statusCode: number) {
+    assert.strictEqual(this.status, statusCode);
+    assert.ok(this.errors.length > 0);
+  }
+);
 
 Then(
   "l'e-service deposito segnali restituisce status code 200 e prende in carico la richiesta",
@@ -148,5 +169,24 @@ Then(
   "l'e-service deposito segnali restituisce status code {int}",
   function (httpStatusCode: number) {
     assert.strictEqual(this.status, httpStatusCode);
+  }
+);
+
+When(
+  "l'utente deposita un segnale per un e-service di cui non è erogatore",
+  async function () {
+    const eserviceId = "16d64180-e352-442e-8a91-3b2ae77ca1df"; // e-service id presente in tabella postgres
+    const signalRequest = createSignal({
+      eserviceId,
+    });
+
+    const response = await pushSignalApiClient.pushSignal.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+
+    const { errors } = response.data as Problem;
+    this.errors = errors;
+    this.status = response.status;
   }
 );
