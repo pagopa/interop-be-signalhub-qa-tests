@@ -7,6 +7,7 @@ import {
   SignalType,
 } from "../api/push-signals.models";
 import "../configs/env";
+import { GetRequestParams } from "../api/pull-signals.models";
 
 export const WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS = 5000;
 export const ESERVICEID_PROVIDED_BY_ORGANIZATION =
@@ -72,6 +73,11 @@ export type JWTPayload = {
   exp: number;
 };
 
+enum VoucherType {
+  PRODUCER,
+  CONSUMER,
+}
+
 export async function generateClientAssertion(
   jwtHeaderOptions: JWTHeader,
   jwtPayloadOptions: JWTPayload,
@@ -88,20 +94,46 @@ export async function generateClientAssertion(
     .sign(privateKey);
 }
 
-export const getVoucher = async (
+const getPrivateKeyFromUserType = (userType: VoucherType) => {
+  switch (userType) {
+    case VoucherType.PRODUCER:
+      return process.env.SH_PUSH_PRIVATE_KEY ?? "";
+    case VoucherType.CONSUMER:
+      return process.env.SH_PULL_PRIVATE_KEY ?? "";
+    default:
+      return "";
+  }
+};
+export const getVoucherForProducer = async (
+  partialJWTPayload: Partial<JWTPayload> = {}
+) =>
+  await getVoucher(VoucherType.PRODUCER, {
+    ...partialJWTPayload,
+  });
+
+export const getVoucherForConsumer = async (
+  partialJWTPayload: Partial<JWTPayload> = {}
+) =>
+  await getVoucher(VoucherType.CONSUMER, {
+    purposeId: "InsertPurposeID",
+    ...partialJWTPayload,
+  });
+
+const getVoucher = async (
+  voucherType: VoucherType,
   partialJWTPayload: Partial<JWTPayload> = {}
 ): Promise<string> => {
   try {
     const jwtHeader: JWTHeader = buildJWTHeader();
     const jwtPayload: JWTPayload = buildJWTPayload(partialJWTPayload);
-    const privateKeyPem = process.env.SH_PUSH_PRIVATE_KEY ?? "";
+    const privateKeyPem = getPrivateKeyFromUserType(voucherType);
     const clientAssertion = await generateClientAssertion(
       jwtHeader,
       jwtPayload,
       privateKeyPem
     );
+
     const voucherPayload: VoucherPayload = buildVoucherPayload(clientAssertion);
-    // console.log("voucherPayload", voucherPayload, process.env.URL_AUTH_TOKEN);
     return await obtainVoucher(
       voucherPayload,
       process.env.URL_AUTH_TOKEN ?? ""
@@ -172,6 +204,16 @@ export function createSignal(
     objectType: OBJECT_TYPE_DEFAULT,
     signalId: getRandomSignalId(),
     ...partialSignal,
+  };
+}
+
+export function createPullSignalRequest(
+  partialPullSignalRequest: Partial<GetRequestParams> = {}
+): GetRequestParams {
+  return {
+    eserviceId: ESERVICEID_PROVIDED_BY_ORGANIZATION, // This has to be Eservice which puts signal on SQS
+    signalId: 0, // To Be defined
+    ...partialPullSignalRequest,
   };
 }
 
