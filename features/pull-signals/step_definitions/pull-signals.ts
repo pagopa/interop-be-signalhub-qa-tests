@@ -6,13 +6,13 @@ import {
   createPullSignalRequest,
   createSignal,
   getAuthorizationHeader,
-  getRandomSignalId,
   getVoucherForConsumer,
   getVoucherForProducer,
   sleep,
 } from "../../../utils/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
+import { PaginationSignal } from "../../../api/pull-signals.models";
 
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
@@ -78,9 +78,8 @@ Given(
       signalId: startSignalId,
     });
     let signalId = startSignalId;
-    for (let i = 1; i <= signalLength; i++) {
+    for (let i = startSignalId; i <= signalLength; i++) {
       signalId = i;
-      console.log("Request with signalId:", signalId);
       this.response = await pushSignalApiClient.pushSignal.pushSignal(
         {
           ...signalRequest,
@@ -103,5 +102,45 @@ Then(
 
     assert.strictEqual(data.length, numberOfSignalList);
     assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
+Then(
+  "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e lastSignalId = {int}",
+  function (
+    statusCode: number,
+    numberOfSignalList: number,
+    lastSignalId: number
+  ) {
+    const data: PaginationSignal = this.response.data;
+
+    assert.strictEqual(data.signals?.length, numberOfSignalList);
+    assert.strictEqual(data.lastSignalId, lastSignalId);
+    assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
+Then(
+  "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e nessun lastSignalId",
+  function (statusCode: number, numberOfSignalList: number) {
+    const data: PaginationSignal = this.response.data;
+
+    assert.strictEqual(data.signals?.length, numberOfSignalList);
+    assert.strictEqual(data.lastSignalId, null);
+    assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
+When(
+  "l'utente consumatore recupera un segnale inserendo un signalId uguale a {int}",
+  async function (startSignalId: number) {
+    const pullSignalRequest = createPullSignalRequest({
+      signalId: startSignalId,
+    });
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
   }
 );

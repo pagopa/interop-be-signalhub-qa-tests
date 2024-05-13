@@ -13,28 +13,26 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher scaduto. L’utente consumatore recupera un segnale. La richiesta non va a buon fine.
     Given un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali
     When l'utente consumatore recupera un segnale
-    Then la richiesta va in errore con status code 401
+    Then la richiesta va in errore con status code 403
 
   @pull_signals3
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore non ha una richiesta di fruizione per un e-service sottoscritto all' e-service deposito segnali. L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: Nonostante il consumatore abbia una richiesta di fruizione verso l’e-service di lettura segnali, non ha una richiesta di fruizione per l’e-service per cui si richiede il segnale.
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     When l'utente consumatore recupera un segnale per un e-service con cui non ha una richiesta di fruizione
     Then la richiesta va in errore con status code 403
-
-  @pull_signals4 @todo
-  Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione in uno stato diverso da ACTIVE per un e-service sottoscritto all'e-service deposito segnali.  L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: Nonostante il consumatore abbia una richiesta di fruizione verso l’e-service di lettura segnali, ha una richiesta di fruizione non attiva verso l’e-service per cui si richiede il segnale.
-    Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
-    When l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato "<statoRichiestaFruizione>"
-    Then la richiesta va in errore con status code 401
-
-    Examples:
-      | statoRichiestaFruizione      |
-      | DRAFT                        |
-      | ARCHIVED                     |
-      | PENDING                      |
-      | SUSPENDED                    |
-      | REJECTED                     |
-      | MISSING_CERTIFIED_ATTRIBUTES |
+  # @pull_signals4 @todo
+  # Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione in uno stato diverso da ACTIVE per un e-service sottoscritto all'e-service deposito segnali.  L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: Nonostante il consumatore abbia una richiesta di fruizione verso l’e-service di lettura segnali, ha una richiesta di fruizione non attiva verso l’e-service per cui si richiede il segnale.
+  #   Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
+  #   When l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato "<statoRichiestaFruizione>"
+  #   Then la richiesta va in errore con status code 401
+  #   Examples:
+  #     | statoRichiestaFruizione      |
+  #     | DRAFT                        |
+  #     | ARCHIVED                     |
+  #     | PENDING                      |
+  #     | SUSPENDED                    |
+  #     | REJECTED                     |
+  #     | MISSING_CERTIFIED_ATTRIBUTES |
 
   @pull_signals5
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all'e-service deposito segnali. L’utente produttore deposita un segnale. L’utente consumatore recupera quel segnale. La richiesta va a buon fine.
@@ -66,15 +64,15 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 15 segnali
     When l'utente consumatore recupera un segnale
-    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 10 segnali
+    Then la richiesta va a buon fine con status code 206 e restituisce una lista di 10 segnali e lastSignalId = 10
 
   @pull_signals9
-  Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all'e-service deposito segnali. L’utente produttore deposita 3 segnali. L’utente consumatore recupera la lista di segnali mettendo un signalId superiore a 3. La richiesta va a buon fine e restituisce un lista di 0 segnali e lastSignalId = 3.
+  Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all'e-service deposito segnali. L’utente produttore deposita 3 segnali. L’utente consumatore recupera la lista di segnali mettendo un signalId superiore a 3. La richiesta va a buon fine e restituisce un lista di 0 segnali e lastSignalId = 10.
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 3 segnali
-    When l'utente consumatore recupera un segnale inserendo un signalId superiore a 3.
-    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 10 segnali e lastSignalId = 10
+    When l'utente consumatore recupera un segnale inserendo un signalId uguale a 3
+    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali e nessun lastSignalId
 
   @pull_signals10
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all'e-service deposito segnali. L’utente produttore deposita 5 segnali. L’utente consumatore recupera la lista di segnali con un lastSignalId = 3.  La richiesta va a buon fine e restituisce un lista di 2 segnali con lastSignalId = 5
@@ -82,4 +80,4 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 5 segnali
     When l'utente consumatore recupera un segnale inserendo un signalId uguale a 3
-    Then la richiesta va a buon fine e restituisce una lista di 2 segnali e lastSignalId = 5
+    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 2 segnali e lastSignalId = 5

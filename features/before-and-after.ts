@@ -1,3 +1,4 @@
+import pg from "pg";
 import {
   After,
   AfterAll,
@@ -9,17 +10,27 @@ import {
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
 setDefaultTimeout(10 * 1000);
 
-BeforeAll(function () {
-  // console.log("BEFORE ALL");
+const { Client } = pg;
+
+const client = new Client({
+  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
-Before(function () {
-  // console.log("BEFORE");
+
+BeforeAll(async function () {
+  await client.connect();
+});
+Before(async function () {
+  await client.query("truncate signal;");
 });
 
 After(function () {
   // console.log("AFTER");
 });
 
-AfterAll(function () {
-  // console.log("AFTER ALL");
+AfterAll(async function () {
+  await client.end();
 });
