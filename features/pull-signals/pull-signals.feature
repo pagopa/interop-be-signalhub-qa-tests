@@ -39,6 +39,7 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 1 segnale
+    Given il sistema deposita il segnale
     When l'utente consumatore recupera un segnale
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
@@ -47,6 +48,7 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 5 segnali
+    Given il sistema deposita il segnale
     When l'utente consumatore recupera i segnali
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 5 segnali
 
@@ -63,6 +65,7 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 15 segnali
+    Given il sistema deposita i segnali
     When l'utente consumatore recupera un segnale
     Then la richiesta va a buon fine con status code 206 e restituisce una lista di 10 segnali e lastSignalId = 10
 
@@ -71,6 +74,7 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 3 segnali
+    Given il sistema deposita i segnali
     When l'utente consumatore recupera un segnale inserendo un signalId uguale a 3
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali e nessun lastSignalId
 
@@ -79,5 +83,6 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 5 segnali
+    Given il sistema deposita i segnali
     When l'utente consumatore recupera un segnale inserendo un signalId uguale a 3
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 2 segnali e lastSignalId = 5

@@ -9,6 +9,7 @@ import {
   createSignal,
   createSignalConsumers,
   getAuthorizationHeader,
+  getRandomSignalId,
   getVoucherForProducer,
   sleep,
 } from "../../../utils/common";
@@ -170,6 +171,7 @@ When(
   async function (signalType: SignalType) {
     const signalRequest = createSignal({
       signalType,
+      signalId: getRandomSignalId(),
     });
 
     this.response = await pushSignalApiClient.pushSignal.pushSignal(
