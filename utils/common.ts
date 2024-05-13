@@ -19,6 +19,8 @@ export const ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED =
 export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
   "16d64180-e352-442e-8a91-3b2ae77ca1df";
 
+export const PURPOSEID_ACCESS_PULL = "71788998-b925-443b-bc1d-ba55f41246a2";
+
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 const OBJECT_TYPE_DEFAULT = "FX65ZU937QLm6iPwIzlt4";
 const OBJECT_ID_DEFAULT = "on3ueZN9YC1Ew8c6RAuYC";
@@ -114,26 +116,40 @@ export const getVoucherForProducer = async (
 export const getVoucherForConsumer = async (
   partialJWTPayload: Partial<JWTPayload> = {}
 ) =>
-  await getVoucher(VoucherType.CONSUMER, {
-    purposeId: "InsertPurposeID",
-    ...partialJWTPayload,
-  });
+  await getVoucher(
+    VoucherType.CONSUMER,
+    {
+      purposeId: PURPOSEID_ACCESS_PULL,
+      iss: "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
+      sub: "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
+      ...partialJWTPayload,
+    },
+    {
+      kid: "98zN5THvZrfDaKUHsMJSeX5TpTC1ywQVMpNcSTLaCH8",
+    }
+  );
 
 const getVoucher = async (
   voucherType: VoucherType,
-  partialJWTPayload: Partial<JWTPayload> = {}
+  partialJWTPayload: Partial<JWTPayload> = {},
+  partialJWTHeader: Partial<JWTHeader> = {}
 ): Promise<string> => {
   try {
-    const jwtHeader: JWTHeader = buildJWTHeader();
+    const jwtHeader: JWTHeader = buildJWTHeader(partialJWTHeader);
     const jwtPayload: JWTPayload = buildJWTPayload(partialJWTPayload);
+
     const privateKeyPem = getPrivateKeyFromUserType(voucherType);
+
     const clientAssertion = await generateClientAssertion(
       jwtHeader,
       jwtPayload,
       privateKeyPem
     );
 
-    const voucherPayload: VoucherPayload = buildVoucherPayload(clientAssertion);
+    const voucherPayload: VoucherPayload = buildVoucherPayload(
+      voucherType,
+      clientAssertion
+    );
     return await obtainVoucher(
       voucherPayload,
       process.env.URL_AUTH_TOKEN ?? ""
@@ -143,9 +159,15 @@ const getVoucher = async (
     throw new Error("no voucher");
   }
 
-  function buildVoucherPayload(clientAssertion: string): VoucherPayload {
+  function buildVoucherPayload(
+    voucherType: VoucherType,
+    clientAssertion: string
+  ): VoucherPayload {
     return {
-      client_id: process.env.CLIENT_ID,
+      client_id:
+        voucherType === VoucherType.PRODUCER
+          ? process.env.CLIENT_ID
+          : "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
       grant_type: process.env.GRANT_TYPE,
       client_assertion: clientAssertion,
       client_assertion_type: process.env.ASSERTION_TYPE,
@@ -153,7 +175,7 @@ const getVoucher = async (
   }
 };
 
-function getIssuedAtTime(): number {
+export function getIssuedAtTime(): number {
   return Math.round(new Date().getTime() / 1000);
 }
 function buildJWTPayload(

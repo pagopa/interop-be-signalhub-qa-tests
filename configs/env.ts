@@ -12,6 +12,7 @@ export const Env = z.object({
   AUDIENCE: z.string(),
   PURPOSE_ID: z.string(),
   SH_PUSH_PRIVATE_KEY: z.string(),
+  SH_PULL_PRIVATE_KEY: z.string(),
   URL_AUTH_TOKEN: z.string(),
   CLIENT_ID: z.string(),
   GRANT_TYPE: z.string(),
@@ -21,6 +22,7 @@ export const Env = z.object({
   PUSH_SERVICE_PORT: z.string(),
   PULL_SERVICE_PORT: z.string(),
   FAKE_PURPOSE_ID: z.string(),
+  EXPIRED_TOKEN: z.string(),
 });
 
 const parsedEnv = Env.safeParse(process.env);
