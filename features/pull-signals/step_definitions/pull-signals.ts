@@ -6,12 +6,12 @@ import {
   createPullSignalRequest,
   createSignal,
   getAuthorizationHeader,
-  getVoucherBy,
   sleep,
-} from "../../../utils/common";
+} from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { PaginationSignal } from "../../../api/pull-signals.models";
+import { getVoucherBy } from "../../../lib/voucher";
 
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",

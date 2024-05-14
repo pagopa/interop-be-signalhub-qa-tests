@@ -10,15 +10,15 @@ import {
   createSignalConsumers,
   getAuthorizationHeader,
   getRandomSignalId,
-  getVoucherBy,
   sleep,
-} from "../../../utils/common";
+} from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import {
   Problem,
   SignalRequest,
   SignalType,
 } from "../../../api/push-signals.models";
+import { getVoucherBy } from "../../../lib/voucher";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
