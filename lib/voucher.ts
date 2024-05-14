@@ -1,24 +1,6 @@
-import "../configs/env";
-import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
-
-interface VoucherEnv {
-  ALG: string;
-  TYP: string;
-  KEY_ID: string;
-  SUBJECT: string;
-  ISSUER: string;
-  AUDIENCE: string;
-  PURPOSE_ID: string;
-  PRIVATE_KEY: string;
-  CLIENT_ID: string;
-  GRANT_TYPE: string;
-  ASSERTION_TYPE: string;
-  SESSION_DURATION_IN_SECONDS: number;
-}
-
-export type VoucherType = "PRODUCER" | "CONSUMER";
+import { VoucherEnv, VoucherTypologies, voucherList } from "./voucher.env";
 
 type VoucherPayload = {
   client_id: string;
@@ -42,33 +24,15 @@ export type JWTPayload = {
   exp: number;
 };
 
-function factoryVoucher(voucherType: VoucherType): VoucherEnv {
-  const factories: Record<VoucherType, () => VoucherEnv> = {
-    PRODUCER: () => buildEnv(voucherType),
-    CONSUMER: () => buildEnv(voucherType),
-  };
-  return factories[voucherType]();
-}
-
-function buildEnv(voucherType: VoucherType): VoucherEnv {
-  const voucherEnv = {};
-  const path = `.env.voucher.${voucherType.toLowerCase()}`;
-  dotenv.config({
-    path,
-    processEnv: voucherEnv,
-    override: true,
-  });
-  return voucherEnv as VoucherEnv;
-}
-
 export const getVoucherBy = async (
-  voucherType: VoucherType,
+  voucherType: VoucherTypologies,
   partialVoucherEnv: Partial<VoucherEnv> = {}
 ) => {
   const voucherEnv = {
-    ...factoryVoucher(voucherType),
+    ...voucherList[voucherType],
     ...partialVoucherEnv,
   };
+  // console.log("getVoucherBy", voucherType, voucherEnv.KEY_ID);
   return await getVoucher(voucherEnv);
 };
 
@@ -150,14 +114,15 @@ async function obtainVoucher(
     },
     body: formData,
   });
-
-  if (response.status === 200) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = await response.json();
-    // console.log("dump voucher", data);
-    return data.access_token;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any = await response.json();
+  if (response.status >= 400) {
+    throw Error(
+      `Something went wrong: ${JSON.stringify(data ?? response.statusText)}`
+    );
   }
-  return "";
+  // console.log("dump voucher", data);
+  return data.access_token;
 }
 async function generateClientAssertion(
   jwtHeaderOptions: JWTHeader,
