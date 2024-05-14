@@ -6,6 +6,11 @@ import {
   BeforeAll,
   setDefaultTimeout,
 } from "@cucumber/cucumber";
+import {
+  setupConsumerEserviceTable,
+  setupEserviceAgreementTable as setupEserviceTable,
+} from "../db";
+import { nodeEnv } from "../configs/env";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
 setDefaultTimeout(10 * 1000);
@@ -22,6 +27,12 @@ const client = new Client({
 
 BeforeAll(async function () {
   await client.connect();
+  if (nodeEnv === "development") {
+    console.info("Set up Database table: E_SERVICE");
+    await setupEserviceTable(client);
+    console.info("Set up Database table: E_SERVICE_CONSUMER");
+    await setupConsumerEserviceTable(client);
+  }
 });
 Before(async function () {
   await client.query("truncate signal;");
@@ -32,5 +43,11 @@ After(function () {
 });
 
 AfterAll(async function () {
+  if (nodeEnv === "DEVELOPMENT") {
+    console.info("Clean database tables");
+    await client.query("truncate consumer_eservice");
+    await client.query("truncate eservice;");
+  }
+
   await client.end();
 });
