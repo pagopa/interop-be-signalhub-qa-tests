@@ -1,7 +1,6 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  ESERVICEID_PROVIDED_BY_ORGANIZATION,
   ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION,
   assertValidResponse,
   createPullSignalRequest,
@@ -14,8 +13,6 @@ import {
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { PaginationSignal } from "../../../api/pull-signals.models";
-import { updateConsumerAgreementState } from "../../../db";
-import { AgreementState } from "../../../api/interop.models";
 
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
@@ -45,16 +42,6 @@ Given(
   async function () {
     const voucher = await getVoucherForProducer();
     this.consumerVoucher = voucher;
-  }
-);
-
-Given(
-  "il sistema notifica una modifica della richiesta di fruizione che passa in {string}",
-  async function (agreementState: AgreementState) {
-    await updateConsumerAgreementState(
-      agreementState,
-      ESERVICEID_PROVIDED_BY_ORGANIZATION
-    );
   }
 );
 

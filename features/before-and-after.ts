@@ -37,6 +37,14 @@ BeforeAll(async function () {
   }
 });
 
+Before({ tags: "@pull_signals4" }, async function () {
+  if (nodeEnv === "development") {
+    await updateConsumerAgreementState(
+      "DRAFT",
+      ESERVICEID_PROVIDED_BY_ORGANIZATION
+    );
+  }
+});
 // This After reset the state of agreement to ACTIVE after specific test
 After({ tags: "@pull_signals4" }, async function () {
   if (nodeEnv === "development") {

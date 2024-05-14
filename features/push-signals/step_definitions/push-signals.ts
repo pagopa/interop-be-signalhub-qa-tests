@@ -9,7 +9,6 @@ import {
   createSignal,
   createSignalConsumers,
   getAuthorizationHeader,
-  getRandomSignalId,
   getVoucherForProducer,
   sleep,
 } from "../../../utils/common";
@@ -122,7 +121,6 @@ When(
         getAuthorizationHeader(this.voucher)
       );
     this.requestSignalId = signalRequest.signalId;
-    console.log(this.response.data);
   }
 );
 
@@ -171,13 +169,13 @@ When(
   async function (signalType: SignalType) {
     const signalRequest = createSignal({
       signalType,
-      signalId: getRandomSignalId(),
     });
 
     this.response = await pushSignalApiClient.pushSignal.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );

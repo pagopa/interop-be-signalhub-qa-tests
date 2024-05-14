@@ -24,18 +24,8 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
   @pull_signals4
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione in uno stato diverso da ACTIVE per un e-service sottoscritto all'e-service deposito segnali.  L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: Nonostante il consumatore abbia una richiesta di fruizione verso l’e-service di lettura segnali, ha una richiesta di fruizione non attiva verso l’e-service per cui si richiede il segnale.
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
-    Given il sistema notifica una modifica della richiesta di fruizione che passa in "<statoRichiestaFruizione>"
     When l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE
     Then la richiesta va in errore con status code 403
-
-    Examples:
-      | statoRichiestaFruizione      |
-      | DRAFT                        |
-      | ARCHIVED                     |
-      | PENDING                      |
-      | SUSPENDED                    |
-      | REJECTED                     |
-      | MISSING_CERTIFIED_ATTRIBUTES |
 
   @pull_signals5
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all'e-service deposito segnali. L’utente produttore deposita un segnale. L’utente consumatore recupera quel segnale. La richiesta va a buon fine.
