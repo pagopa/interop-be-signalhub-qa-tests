@@ -1,12 +1,12 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION,
-  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED,
-  actors,
   assertValidResponse,
   createSignal,
   createSignalConsumers,
+  eserviceIdNotPublished,
+  eserviceIdPublishedByAnotherOrganization,
+  eserviceIdSecondPushSignals,
   getAuthorizationHeader,
   getRandomSignalId,
   sleep,
@@ -52,7 +52,7 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
 When(
   "l'utente deposita un segnale per il secondo e-service",
   async function () {
-    const eserviceId = actors.signalProducer.eservices.domicili_digitali.id;
+    const eserviceId = eserviceIdSecondPushSignals;
     const nextSignalId = (this.requestSignalId as number) + 1;
     const signalRequest = createSignal({
       signalId: nextSignalId,
@@ -70,7 +70,7 @@ When(
 When(
   "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
   async function () {
-    const eserviceId = actors.signalProducer.eservices.domicili_digitali.id;
+    const eserviceId = eserviceIdSecondPushSignals;
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
       eserviceId,
@@ -121,7 +121,6 @@ When(
         getAuthorizationHeader(this.voucher)
       );
     this.requestSignalId = signalRequest.signalId;
-    console.log(this.response.data);
   }
 );
 
@@ -141,7 +140,7 @@ When(
 When(
   "l'utente deposita un segnale per un e-service che non è stato pubblicato",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED;
+    const eserviceId = eserviceIdNotPublished;
     const signalRequest = createSignal({ eserviceId });
 
     this.response = await pushSignalApiClient.pushSignal.pushSignal(
@@ -177,6 +176,7 @@ When(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );
@@ -191,7 +191,7 @@ When("l'utente deposita un segnale vuoto", async function () {
 When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION; // e-service id presente in tabella postgres
+    const eserviceId = eserviceIdPublishedByAnotherOrganization; // e-service id presente in tabella postgres
     const signalRequest = createSignal({
       eserviceId,
     });

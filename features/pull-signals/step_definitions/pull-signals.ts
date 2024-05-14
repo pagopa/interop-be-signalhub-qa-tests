@@ -1,10 +1,10 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  actors,
   assertValidResponse,
   createPullSignalRequest,
   createSignal,
+  eserviceIdNotAgreementWithConsumer,
   getAuthorizationHeader,
   sleep,
 } from "../../../lib/common";
@@ -61,8 +61,7 @@ When(
   "l'utente consumatore recupera un segnale per un e-service con cui non ha una richiesta di fruizione",
   async function () {
     const pullSignalRequest = createPullSignalRequest({
-      eserviceId:
-        actors.signalProducer.eservices.domicili_digitali_secondario.id,
+      eserviceId: eserviceIdNotAgreementWithConsumer,
     });
 
     this.response = await pullSignalApiClient.pullSignal.getRequest(
@@ -125,6 +124,18 @@ Then(
     assert.strictEqual(data.signals?.length, numberOfSignalList);
     assert.strictEqual(data.lastSignalId, null);
     assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
+When(
+  "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
+  async function () {
+    const pullSignalRequest = createPullSignalRequest();
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
   }
 );
 

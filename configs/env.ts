@@ -1,13 +1,12 @@
 import dotenv from "dotenv";
 import { TypeOf, z } from "zod";
 
-const nodeEnv = process.env.NODE_ENV || "development";
+export const nodeEnv = process.env.NODE_ENV || "development";
 dotenv.config({ path: `.env.${nodeEnv}` });
 
 export const Env = z.object({
   CUCUMBER_OPTS_PARALLEL: z.coerce.number(),
   URL_AUTH_TOKEN: z.string(),
-  SESSION_DURATION_IN_SECONDS: z.coerce.number(),
   API_BASE_PATH: z.string(),
   PUSH_SERVICE_PORT: z.string(),
   PULL_SERVICE_PORT: z.string(),

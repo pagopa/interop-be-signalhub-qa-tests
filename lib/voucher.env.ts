@@ -1,5 +1,6 @@
 import { z } from "zod";
 import dotenv from "dotenv";
+import { nodeEnv } from "../configs/env";
 
 const Env = z.object({
   ALG: z.string(),
@@ -28,7 +29,7 @@ export const voucherList: Record<VoucherTypologies, VoucherEnv> = {
 
 function buildEnv(voucherType: VoucherTypologies): VoucherEnv {
   const voucherConfigData = {};
-  const path = `.env.voucher.${voucherType.toLowerCase()}`;
+  const path = `.env.${nodeEnv}.voucher.${voucherType.toLowerCase()}`;
   dotenv.config({
     path,
     processEnv: voucherConfigData,
