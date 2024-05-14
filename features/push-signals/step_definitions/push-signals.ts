@@ -122,7 +122,6 @@ When(
         getAuthorizationHeader(this.voucher)
       );
     this.requestSignalId = signalRequest.signalId;
-    console.log(this.response.data);
   }
 );
 
@@ -178,6 +177,7 @@ When(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );

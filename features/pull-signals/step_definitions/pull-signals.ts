@@ -128,6 +128,18 @@ Then(
 );
 
 When(
+  "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
+  async function () {
+    const pullSignalRequest = createPullSignalRequest();
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
+  }
+);
+
+When(
   "l'utente consumatore recupera un segnale inserendo un signalId uguale a {int}",
   async function (startSignalId: number) {
     const pullSignalRequest = createPullSignalRequest({
