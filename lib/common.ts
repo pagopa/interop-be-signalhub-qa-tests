@@ -25,7 +25,7 @@ function getActors() {
   );
   // console.log(`Catalog Values: ${JSON.stringify(catalogInteropData)}`);
   const signalProducer = catalogInteropData.SIGNAL_PRODUCERS[0];
-  console.log(`signalProducer: ${JSON.stringify(signalProducer)}`);
+  // console.log(`signalProducer: ${JSON.stringify(signalProducer)}`);
   const signalConsumer = catalogInteropData.SIGNAL_CONSUMERS[0];
   return {
     signalProducer,
