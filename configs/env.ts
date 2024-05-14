@@ -19,6 +19,8 @@ export const Env = z.object({
   DB_PORT: z.coerce.number(),
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
+  CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
+  WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
 });
 
 const parsedEnv = Env.safeParse(process.env);

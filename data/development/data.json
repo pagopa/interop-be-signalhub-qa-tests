@@ -1,28 +1,67 @@
 {
-    "PRODUCER": {
+  "SIGNAL_PROVIDER": {
+    "organization": {
+      "id": "69e2865e-65ab-4e48-a638-2037a9ee2ee7",
+      "name": "PagoPA"
+    },
+    "eservices": {
+      "push": {
+        "id": "9bce1bb3-b779-4813-aafe-b1c93bc65a83",
+        "descriptor": "",
+        "state": "PUBLISHED"
+      },
+      "pull": {
+        "id": "9d1ea147-7750-4aec-98f1-9daeab07f294",
+        "descriptor": "",
+        "state": "PUBLISHED"
+      }
+    }
+  },
+  "SIGNAL_PRODUCERS": [
+    {
       "organization": {
         "id": "0e9e2dab-2e93-4f24-ba59-38d9f11198ca",
         "name": "AGID"
       },
-      "e-service": {
+      "eservices": {
         "domicili_digitali": {
           "id": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
           "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
           "state": "PUBLISHED"
+        },
+        "domicili_digitali_secondario": {
+          "id": "3a023c23b-7662-4971-994e-0eb9adabc728",
+          "descriptor": "74d2cfb3-6bff-48ee-9724-14fd0857e59c",
+          "state": "PUBLISHED"
+        },
+        "purposes": {
+          "id": "881ba6a2-c31b-4613-939f-c9122d555fd7",
+          "e-service": "push"
         }
       }
-    },
-    "CONSUMER": {
+    }
+  ],
+  "SIGNAL_CONSUMERS": [
+    {
       "organization": {
-        "id": "79a24cd-8edc-441e-ae8d-e87c3aea0059",
+        "id": "e79a24cd-8edc-441e-ae8d-e87c3aea0059",
         "name": "Comune di Milano"
       }
-    },
-    "PROVIDER": {
+    }
+  ],
+  "ESERVICE_PRODUCERS": [
+    {
       "organization": {
-        "id": "XXXX",
-        "name": "PagoPa"
+        "id": "0e9e2dab-2e93-4f24-ba59-38d9f11198ca",
+        "name": "INPS"
+      },
+      "eservices": {
+        "cassetto_fiscale": {
+          "id": "some-id",
+          "descriptor": "some-descriptor",
+          "state": "PUBLISHED"
+        }
       }
     }
-  }
-  
+  ]
+}
