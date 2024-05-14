@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { TypeOf, z } from "zod";
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+const nodeEnv = process.env.NODE_ENV || "development";
+dotenv.config({ path: `.env.${nodeEnv}` });
 
 export const Env = z.object({
   CUCUMBER_OPTS_PARALLEL: z.coerce.number(),
@@ -19,6 +20,7 @@ export const Env = z.object({
   API_BASE_PATH: z.string(),
   PUSH_SERVICE_PORT: z.string(),
   PULL_SERVICE_PORT: z.string(),
+  FAKE_PURPOSE_ID: z.string(),
 });
 
 const parsedEnv = Env.safeParse(process.env);

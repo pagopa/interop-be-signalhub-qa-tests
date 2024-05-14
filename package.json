@@ -5,16 +5,18 @@
   "scripts": {
     "generate-model:pull": "node ./scripts/pull-signals/generate-api-models.mjs",
     "generate-model:push": "node ./scripts/push-signals/generate-api-models.mjs",
-    "cucumber:bun:dev": "export NODE_ENV=dev && bun --bun run cucumber-js -p base",
-    "cucumber:bun:uat": "export NODE_ENV=uat && bun --bun run cucumber-js -p base",
-    "cucumber:node:dev": "export NODE_ENV=dev && cucumber-js -p base -p node",
-    "cucumber:node:uat": "export NODE_ENV=uat && cucumber-js -p base -p node",
-    "test": "pnpm cucumber:node:dev -p all",
+    "cucumber:bun": "bun --bun run cucumber-js -p base",
+    "cucumber:node": "cucumber-js -p base -p node",
+    "test": "pnpm cucumber:node -p all",
     "bun:test": "pnpm cucumber:bun -p all",
+    "test:tags": "pnpm test -- --tags",
+    "bun:test:tags": "pnpm bun:test --tags",
+    "lint": "tsc --noEmit && gherkin-lint . && eslint .",
     "check-steps": "pnpm test -- -p validate",
     "bun:check-steps": "pnpm bun:test -p validate",
     "check-steps:usage": "pnpm check-steps --format usage",
-    "bun:check-steps:usage": "pnpm bun:check-steps --format usage"
+    "bun:check-steps:usage": "pnpm bun:check-steps --format usage",
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,8 @@
     "@pagopa/eslint-config": "^3.0.0",
     "@types/node": "^20.12.7",
     "@types/uuid": "^9.0.8",
+    "gherkin-lint": "^4.2.4",
+    "husky": "^9.0.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },

@@ -11,6 +11,7 @@ export const format = {
 export const base = {
   ...parallel,
   ...format,
+  worldParameters: { signalIdCounter: 0 },
 };
 
 export const validate = {
@@ -23,7 +24,7 @@ export const node = {
 
 export const all = {
   paths: ["features/**/*.feature"],
-  require: ["./features/**/step_definitions/**/*.ts"],
+  require: ["./features/**/step_definitions/**/*.ts", "./features/*.ts"],
 };
 
 // TODO: Add different profile based on Push-service and pull-service
