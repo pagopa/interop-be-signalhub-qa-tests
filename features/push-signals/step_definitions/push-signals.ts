@@ -10,7 +10,7 @@ import {
   createSignalConsumers,
   getAuthorizationHeader,
   getRandomSignalId,
-  getVoucherForProducer,
+  getVoucherBy,
   sleep,
 } from "../../../utils/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
@@ -23,7 +23,7 @@ import {
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
-    const voucher = await getVoucherForProducer();
+    const voucher = await getVoucherBy("PRODUCER");
     this.voucher = voucher;
   }
 );
@@ -31,8 +31,8 @@ Given(
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
   async function () {
-    const voucher = await getVoucherForProducer({
-      purposeId: process.env.FAKE_PURPOSE_ID,
+    const voucher = await getVoucherBy("PRODUCER", {
+      PURPOSE_ID: process.env.FAKE_PURPOSE_ID,
     });
     this.voucher = voucher;
   }
