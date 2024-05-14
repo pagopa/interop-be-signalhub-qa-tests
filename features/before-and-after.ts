@@ -12,7 +12,7 @@ import {
   updateConsumerAgreementState,
 } from "../db";
 import { nodeEnv } from "../configs/env";
-import { ESERVICEID_PROVIDED_BY_ORGANIZATION } from "../utils/common";
+import { ESERVICEID_PROVIDED_BY_ORGANIZATION } from "../lib/common";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
 setDefaultTimeout(10 * 1000);

@@ -9,20 +9,21 @@ import {
   createSignal,
   createSignalConsumers,
   getAuthorizationHeader,
-  getVoucherForProducer,
+  getRandomSignalId,
   sleep,
-} from "../../../utils/common";
+} from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import {
   Problem,
   SignalRequest,
   SignalType,
 } from "../../../api/push-signals.models";
+import { getVoucherBy } from "../../../lib/voucher";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
-    const voucher = await getVoucherForProducer();
+    const voucher = await getVoucherBy("PRODUCER");
     this.voucher = voucher;
   }
 );
@@ -30,8 +31,8 @@ Given(
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
   async function () {
-    const voucher = await getVoucherForProducer({
-      purposeId: process.env.FAKE_PURPOSE_ID,
+    const voucher = await getVoucherBy("PRODUCER", {
+      PURPOSE_ID: process.env.FAKE_PURPOSE_ID,
     });
     this.voucher = voucher;
   }
@@ -169,6 +170,7 @@ When(
   async function (signalType: SignalType) {
     const signalRequest = createSignal({
       signalType,
+      signalId: getRandomSignalId(),
     });
 
     this.response = await pushSignalApiClient.pushSignal.pushSignal(
