@@ -7,6 +7,7 @@ import {
   SignalType,
 } from "../api/push-signals.models";
 import "../configs/env";
+import { GetRequestParams } from "../api/pull-signals.models";
 
 export const WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS = 5000;
 export const ESERVICEID_PROVIDED_BY_ORGANIZATION =
@@ -17,6 +18,8 @@ export const ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED =
   "4a127c23c-7662-4974-994e-0eb9adabc999";
 export const ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION =
   "16d64180-e352-442e-8a91-3b2ae77ca1df";
+
+export const PURPOSEID_ACCESS_PULL = "71788998-b925-443b-bc1d-ba55f41246a2";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 const OBJECT_TYPE_DEFAULT = "FX65ZU937QLm6iPwIzlt4";
@@ -72,6 +75,11 @@ export type JWTPayload = {
   exp: number;
 };
 
+enum VoucherType {
+  PRODUCER,
+  CONSUMER,
+}
+
 export async function generateClientAssertion(
   jwtHeaderOptions: JWTHeader,
   jwtPayloadOptions: JWTPayload,
@@ -88,20 +96,60 @@ export async function generateClientAssertion(
     .sign(privateKey);
 }
 
-export const getVoucher = async (
+const getPrivateKeyFromUserType = (userType: VoucherType) => {
+  switch (userType) {
+    case VoucherType.PRODUCER:
+      return process.env.SH_PUSH_PRIVATE_KEY ?? "";
+    case VoucherType.CONSUMER:
+      return process.env.SH_PULL_PRIVATE_KEY ?? "";
+    default:
+      return "";
+  }
+};
+export const getVoucherForProducer = async (
   partialJWTPayload: Partial<JWTPayload> = {}
+) =>
+  await getVoucher(VoucherType.PRODUCER, {
+    ...partialJWTPayload,
+  });
+
+export const getVoucherForConsumer = async (
+  partialJWTPayload: Partial<JWTPayload> = {}
+) =>
+  await getVoucher(
+    VoucherType.CONSUMER,
+    {
+      purposeId: PURPOSEID_ACCESS_PULL,
+      iss: "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
+      sub: "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
+      ...partialJWTPayload,
+    },
+    {
+      kid: "98zN5THvZrfDaKUHsMJSeX5TpTC1ywQVMpNcSTLaCH8",
+    }
+  );
+
+const getVoucher = async (
+  voucherType: VoucherType,
+  partialJWTPayload: Partial<JWTPayload> = {},
+  partialJWTHeader: Partial<JWTHeader> = {}
 ): Promise<string> => {
   try {
-    const jwtHeader: JWTHeader = buildJWTHeader();
+    const jwtHeader: JWTHeader = buildJWTHeader(partialJWTHeader);
     const jwtPayload: JWTPayload = buildJWTPayload(partialJWTPayload);
-    const privateKeyPem = process.env.SH_PUSH_PRIVATE_KEY ?? "";
+
+    const privateKeyPem = getPrivateKeyFromUserType(voucherType);
+
     const clientAssertion = await generateClientAssertion(
       jwtHeader,
       jwtPayload,
       privateKeyPem
     );
-    const voucherPayload: VoucherPayload = buildVoucherPayload(clientAssertion);
-    // console.log("voucherPayload", voucherPayload, process.env.URL_AUTH_TOKEN);
+
+    const voucherPayload: VoucherPayload = buildVoucherPayload(
+      voucherType,
+      clientAssertion
+    );
     return await obtainVoucher(
       voucherPayload,
       process.env.URL_AUTH_TOKEN ?? ""
@@ -111,9 +159,15 @@ export const getVoucher = async (
     throw new Error("no voucher");
   }
 
-  function buildVoucherPayload(clientAssertion: string): VoucherPayload {
+  function buildVoucherPayload(
+    voucherType: VoucherType,
+    clientAssertion: string
+  ): VoucherPayload {
     return {
-      client_id: process.env.CLIENT_ID,
+      client_id:
+        voucherType === VoucherType.PRODUCER
+          ? process.env.CLIENT_ID
+          : "7841bd09-f3a2-42bf-a9c1-a9e4b8c85fc2",
       grant_type: process.env.GRANT_TYPE,
       client_assertion: clientAssertion,
       client_assertion_type: process.env.ASSERTION_TYPE,
@@ -121,7 +175,7 @@ export const getVoucher = async (
   }
 };
 
-function getIssuedAtTime(): number {
+export function getIssuedAtTime(): number {
   return Math.round(new Date().getTime() / 1000);
 }
 function buildJWTPayload(
@@ -172,6 +226,16 @@ export function createSignal(
     objectType: OBJECT_TYPE_DEFAULT,
     signalId: getRandomSignalId(),
     ...partialSignal,
+  };
+}
+
+export function createPullSignalRequest(
+  partialPullSignalRequest: Partial<GetRequestParams> = {}
+): GetRequestParams {
+  return {
+    eserviceId: ESERVICEID_PROVIDED_BY_ORGANIZATION, // This has to be Eservice which puts signal on SQS
+    signalId: 0, // To Be defined
+    ...partialPullSignalRequest,
   };
 }
 

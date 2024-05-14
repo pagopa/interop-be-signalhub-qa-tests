@@ -9,7 +9,7 @@ import {
   createSignal,
   createSignalConsumers,
   getAuthorizationHeader,
-  getVoucher,
+  getVoucherForProducer,
   sleep,
 } from "../../../utils/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
@@ -22,7 +22,7 @@ import {
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
-    const voucher = await getVoucher();
+    const voucher = await getVoucherForProducer();
     this.voucher = voucher;
   }
 );
@@ -30,7 +30,7 @@ Given(
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
   async function () {
-    const voucher = await getVoucher({
+    const voucher = await getVoucherForProducer({
       purposeId: process.env.FAKE_PURPOSE_ID,
     });
     this.voucher = voucher;
@@ -107,6 +107,7 @@ When("l'utente deposita un segnale", async function () {
     signalRequest,
     getAuthorizationHeader(this.voucher)
   );
+
   this.requestSignalId = signalRequest.signalId;
 });
 
@@ -120,7 +121,6 @@ When(
         getAuthorizationHeader(this.voucher)
       );
     this.requestSignalId = signalRequest.signalId;
-    console.log(this.response.data);
   }
 );
 
@@ -175,6 +175,7 @@ When(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );
