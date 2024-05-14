@@ -1,4 +1,5 @@
-import { Client } from "pg";
+import { AgreementState } from "../api/interop.models";
+import { client } from "../features/before-and-after";
 
 type TupleOfStrings<N extends number> = [string, ...string[]] & { length: N };
 
@@ -40,7 +41,7 @@ const eserviceConsumerRowValues: EserviceConsumerTable = [
   ],
 ];
 
-export async function setupEserviceAgreementTable(client: Client) {
+export async function setupEserviceAgreementTable() {
   for (const row of eserviceProducerRowValues) {
     const query = {
       text: "INSERT INTO eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5)",
@@ -50,7 +51,7 @@ export async function setupEserviceAgreementTable(client: Client) {
   }
 }
 
-export async function setupConsumerEserviceTable(client: Client) {
+export async function setupConsumerEserviceTable() {
   for (const row of eserviceConsumerRowValues) {
     const query = {
       text: "INSERT INTO consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6)",
@@ -58,4 +59,15 @@ export async function setupConsumerEserviceTable(client: Client) {
     };
     await client.query(query);
   }
+}
+
+export async function updateConsumerAgreementState(
+  agreementState: AgreementState,
+  eserviceId: string
+) {
+  const query = {
+    text: "UPDATE consumer_eservice SET state=$1 where eservice_id=$2",
+    values: [agreementState, eserviceId],
+  };
+  await client.query(query);
 }
