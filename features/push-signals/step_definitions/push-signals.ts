@@ -31,7 +31,7 @@ Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
   async function () {
     const voucher = await getVoucherBy("PRODUCER", {
-      PURPOSE_ID: process.env.FAKE_PURPOSE_ID,
+      PURPOSE_ID: process.env.FAKE_PURPOSE_ID, // TODO: da dove arriva?
     });
     this.voucher = voucher;
   }
