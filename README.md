@@ -9,33 +9,34 @@ To get started, you need:
 - node
 - pnpm
 
-Optional you can use [Bun](https://bun.sh/) to run test.
+Before running tests suites you have to install dependecies with `pnpm install`
 
-Before running tests suites you have to install dependecies with
+To run test all test suites write on terminal:
 
-`pnpm install`
+`pnpm run test`
 
-You can run suites with [Bun](https://bun.sh/) with following command:
-
-`pnpm bun:test`
-
-or with node with:
-
-`pnpm test`
-
-Run only tagged test:
-
-`pnpm test:tags "@some_useful_tag"`
-
+or if you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`
 
 ### Environment and enviroment variables
 
-`export NODE_ENV=development` will load env variables from `file .env.development`
+If you don't set NODE_ENV , it will be `development` by default.
+For each enviroment you have to set:
+
+- .env[YOUR_ENVIRONMENT]
+- .env[YOUR_ENVIRONMENT].voucher.consumer
+- .env[YOUR_ENVIRONMENT].voucher.producer
+
+For examples if you have only `development` your files will be
+
+- .env.development
+- .env.development.voucher.consumer
+- .env.development.voucher.producer
+
+To configure take a leaf from `.env.example` , `.env.example.voucher.consumer` , `.env.example.voucher.consumer` available on the repo.
 
 `export NODE_ENV=uat` will load env variables from `file .env.uat`
 
 Default value is `development`.
-
 
 ### Pre-commit hooks
 

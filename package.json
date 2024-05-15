@@ -5,17 +5,12 @@
   "scripts": {
     "generate-model:pull": "node ./scripts/pull-signals/generate-api-models.mjs",
     "generate-model:push": "node ./scripts/push-signals/generate-api-models.mjs",
-    "cucumber:bun": "bun --bun run cucumber-js -p base",
     "cucumber:node": "cucumber-js -p base -p node",
     "test": "pnpm cucumber:node -p all",
-    "bun:test": "pnpm cucumber:bun -p all",
     "test:tags": "pnpm test -- --tags",
-    "bun:test:tags": "pnpm bun:test --tags",
     "lint": "tsc --noEmit && gherkin-lint . && eslint .",
     "check-steps": "pnpm test -- -p validate",
-    "bun:check-steps": "pnpm bun:test -p validate",
     "check-steps:usage": "pnpm check-steps --format usage",
-    "bun:check-steps:usage": "pnpm bun:check-steps --format usage",
     "prepare": "husky || true"
   },
   "repository": {
