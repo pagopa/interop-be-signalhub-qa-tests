@@ -16,7 +16,6 @@ function getActors() {
       fs.readFileSync(process.env.CATALOG_INTEROP_DATA_PREPARATION_FILE)
     ).toString()
   );
-  // console.log(`Catalog Values: ${JSON.stringify(catalogInteropData)}`);
   const signalProducer = catalogInteropData.PRODUCERS[0].organization;
   const eserviceProducer = catalogInteropData.PRODUCERS[1].organization;
   const signalConsumer = catalogInteropData.CONSUMERS[0].organization;

@@ -32,7 +32,6 @@ export const getVoucherBy = async (
     ...voucherList[voucherType],
     ...partialVoucherEnv,
   };
-  // console.log("getVoucherBy", voucherType, voucherEnv.KEY_ID);
   return await getVoucher(voucherEnv);
 };
 
@@ -103,7 +102,6 @@ async function obtainVoucher(
 ): Promise<string> {
   const formData = new URLSearchParams();
   for (const [key, value] of Object.entries(voucherPayloadOptions)) {
-    // console.log(`Key: ${key}, Value: ${value}`);
     formData.append(`${key}`, value);
   }
   const response = await fetch(urlAuthentication, {
@@ -121,7 +119,6 @@ async function obtainVoucher(
       `Something went wrong: ${JSON.stringify(data ?? response.statusText)}`
     );
   }
-  // console.log("dump voucher", data);
   return data.access_token;
 }
 async function generateClientAssertion(
@@ -134,7 +131,6 @@ async function generateClientAssertion(
   const privateKey = await importPKCS8(privateKeyPemEncoded, alg);
 
   // Create a JWT client assertion signed with the private key
-  // console.log('client assertion', assertion);
   return await new SignJWT(jwtPayloadOptions)
     .setProtectedHeader(jwtHeaderOptions)
     .sign(privateKey);
