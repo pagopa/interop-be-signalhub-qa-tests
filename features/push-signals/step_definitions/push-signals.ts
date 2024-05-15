@@ -1,15 +1,15 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION,
-  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION,
-  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED,
-  WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS,
   assertValidResponse,
   createSignal,
   createSignalConsumers,
+  eserviceIdNotPublished,
+  eserviceIdPublishedByAnotherOrganization,
+  eserviceIdSecondPushSignals,
   getAuthorizationHeader,
   getRandomSignalId,
+  purposeIdDifferentFromEservicePushSignals,
   sleep,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
@@ -29,10 +29,10 @@ Given(
 );
 
 Given(
-  "Un utente, come produttore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
+  "Un utente, come produttore di segnali, ma come fruitore di un altro e-service, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
   async function () {
     const voucher = await getVoucherBy("PRODUCER", {
-      PURPOSE_ID: process.env.FAKE_PURPOSE_ID,
+      PURPOSE_ID: purposeIdDifferentFromEservicePushSignals,
     });
     this.voucher = voucher;
   }
@@ -53,7 +53,7 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
 When(
   "l'utente deposita un segnale per il secondo e-service",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION;
+    const eserviceId = eserviceIdSecondPushSignals;
     const nextSignalId = (this.requestSignalId as number) + 1;
     const signalRequest = createSignal({
       signalId: nextSignalId,
@@ -71,7 +71,7 @@ When(
 When(
   "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION;
+    const eserviceId = eserviceIdSecondPushSignals;
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
       eserviceId,
@@ -88,7 +88,7 @@ When(
 When(
   "l'utente deposita un segnale con lo stesso signalId del primo",
   async function () {
-    await sleep(WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
+    await sleep(process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
 
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
@@ -141,7 +141,7 @@ When(
 When(
   "l'utente deposita un segnale per un e-service che non è stato pubblicato",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION_NOT_PUBLISHED;
+    const eserviceId = eserviceIdNotPublished;
     const signalRequest = createSignal({ eserviceId });
 
     this.response = await pushSignalApiClient.pushSignal.pushSignal(
@@ -192,7 +192,7 @@ When("l'utente deposita un segnale vuoto", async function () {
 When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
   async function () {
-    const eserviceId = ESERVICEID_PROVIDED_BY_ANOTHER_ORGANIZATION; // e-service id presente in tabella postgres
+    const eserviceId = eserviceIdPublishedByAnotherOrganization; // e-service id presente in tabella postgres
     const signalRequest = createSignal({
       eserviceId,
     });

@@ -54,7 +54,6 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
   @pull_signals8
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all' e-service deposito segnali. L’utente produttore deposita 20 segnali. L’utente consumatore recupera la lista di segnali. La richiesta va a buon fine e restituisce un lista di 10 segnali con lastSignalId = 10.
  NB. Il limite per pagina per il recupero dei segnali è impostato a 10.
-
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 15 segnali

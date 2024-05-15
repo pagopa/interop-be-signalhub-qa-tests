@@ -1,10 +1,10 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION,
   assertValidResponse,
   createPullSignalRequest,
   createSignal,
+  eserviceIdNotAgreementWithConsumer,
   getAuthorizationHeader,
   sleep,
 } from "../../../lib/common";
@@ -61,7 +61,7 @@ When(
   "l'utente consumatore recupera un segnale per un e-service con cui non ha una richiesta di fruizione",
   async function () {
     const pullSignalRequest = createPullSignalRequest({
-      eserviceId: ESERVICEID_PROVIDED_BY_SAME_ORGANIZATION,
+      eserviceId: eserviceIdNotAgreementWithConsumer,
     });
 
     this.response = await pullSignalApiClient.pullSignal.getRequest(
