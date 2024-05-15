@@ -51,7 +51,15 @@
             "eservice": "6b14c622-dad2-44ea-82bc-2dd4010364d5",
             "purpose": "b693eb6e-73dd-4b58-a42a-3e064a6a4cab",
             "state": "ACTIVE"
-          }
+          },
+          {
+            "name": "E-service test (fake-push), versione 1",
+            "id": "f973900d-bde2-4522-aaab-59783368a3ac",
+            "eservice": "c030e0d3-3f5a-43c1-b8a4-5dcfc435807c",
+            "purpose": "9b1d9a84-497e-400b-b962-557426f1f5e0",
+            "state": "ACTIVE",
+            "skip_insert": true
+          }          
         ]
       }
     },

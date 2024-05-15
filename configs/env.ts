@@ -10,7 +10,6 @@ export const Env = z.object({
   API_BASE_PATH: z.string(),
   PUSH_SERVICE_PORT: z.string(),
   PULL_SERVICE_PORT: z.string(),
-  FAKE_PURPOSE_ID: z.string(),
   EXPIRED_TOKEN: z.string(),
   // Db string connections
   DB_NAME: z.string(),

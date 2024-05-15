@@ -26,6 +26,8 @@ function getActors() {
   const eserviceIdNotPublished = signalProducer.eservices[2].id;
   const eserviceIdPublishedByAnotherOrganization =
     eserviceProducer.eservices[0].id;
+  const purposeIdDifferentFromEservicePushSignals =
+    signalProducer.agreements[1].purpose;
   return {
     signalProducer,
     signalConsumer,
@@ -35,6 +37,7 @@ function getActors() {
     eserviceIdNotAgreementWithConsumer,
     eserviceIdNotPublished,
     eserviceIdPublishedByAnotherOrganization,
+    purposeIdDifferentFromEservicePushSignals,
   };
 }
 
@@ -47,6 +50,7 @@ export const {
   eserviceIdNotAgreementWithConsumer,
   eserviceIdNotPublished,
   eserviceIdPublishedByAnotherOrganization,
+  purposeIdDifferentFromEservicePushSignals,
 } = getActors();
 
 export function getAuthorizationHeader(token: string) {
@@ -90,7 +94,7 @@ export function createSignalConsumers(): SignalConsumerRequest {
   return {
     signalByConsumers: [
       {
-        consumerId: "84871fd4-2fd7-46ab-9d22-f6b452f4b3c5",
+        consumerId: signalConsumer.id,
         objectId: crypto.randomUUID(),
       },
     ],
