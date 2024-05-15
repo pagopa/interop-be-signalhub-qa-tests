@@ -15,7 +15,7 @@ import { nodeEnv } from "../configs/env";
 import { eserviceIdPushSignals } from "../lib/common";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
-setDefaultTimeout(10 * 1000);
+setDefaultTimeout(process.env.CUCUMBER_SET_DEFAULT_TIMEOUT_MS);
 
 const { Client } = pg;
 
@@ -32,8 +32,11 @@ export const client = new Client({
 BeforeAll(async function () {
   await client.connect();
   console.info(`\n*** BEGIN SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***`);
-  if (nodeEnv === "development") {
-    console.info("Start database connection");
+  console.info("Start database connection");
+  if (
+    nodeEnv === "development" &&
+    process.env.EXECUTE_TRUNCATE_FOR_TEST_QA === "true"
+  ) {
     console.info("Clean database tables: eservice, consumer_eservice");
     await client.query("truncate consumer_eservice;");
     await client.query("truncate eservice;");
