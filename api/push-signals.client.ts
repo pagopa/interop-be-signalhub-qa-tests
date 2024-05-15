@@ -1,7 +1,7 @@
 import { Api } from "./push-signals.models";
 
 export const pushSignalApiClient = new Api({
-  baseURL: `${process.env.API_BASE_PATH}:${process.env.PUSH_SERVICE_PORT}`,
+  baseURL: process.env.API_BASE_URL_PUSH,
 
   headers: {
     "X-correlation-Id": "push-signal_test",

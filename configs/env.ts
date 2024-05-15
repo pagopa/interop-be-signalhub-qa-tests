@@ -6,10 +6,10 @@ dotenv.config({ path: `.env.${nodeEnv}` });
 
 export const Env = z.object({
   CUCUMBER_OPTS_PARALLEL: z.coerce.number(),
+  CUCUMBER_SET_DEFAULT_TIMEOUT_MS: z.coerce.number(),
   URL_AUTH_TOKEN: z.string(),
-  API_BASE_PATH: z.string(),
-  PUSH_SERVICE_PORT: z.string(),
-  PULL_SERVICE_PORT: z.string(),
+  API_BASE_URL_PUSH: z.string(),
+  API_BASE_URL_PULL: z.string(),
   EXPIRED_TOKEN: z.string(),
   // Db string connections
   DB_NAME: z.string(),
@@ -19,6 +19,7 @@ export const Env = z.object({
   DB_PASSWORD: z.string(),
   CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
+  EXECUTE_TRUNCATE_FOR_TEST_QA: z.string().default("false"),
 });
 
 const parsedEnv = Env.safeParse(process.env);
