@@ -31,14 +31,15 @@ export const client = new Client({
 
 BeforeAll(async function () {
   await client.connect();
+  console.info(`\n*** BEGIN SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***`);
   if (nodeEnv === "development") {
     console.info("Start database connection");
-    console.info("Clean database tables");
+    console.info("Clean database tables: eservice, consumer_eservice");
     await client.query("truncate consumer_eservice;");
     await client.query("truncate eservice;");
-    console.info("Set up Database table: ESERVICE");
+    console.info("Set up Database table: eservice");
     await setupEserviceTable();
-    console.info("Set up Database table: ESERVICE_CONSUMER");
+    console.info("Set up Database table: consumer_eservice");
     await setupConsumerEserviceTable();
   }
 });
@@ -66,4 +67,5 @@ AfterAll(async function () {
     // await client.query("truncate eservice;");
   }
   await client.end();
+  console.info(`*** END SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***\n`);
 });

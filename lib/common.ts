@@ -17,9 +17,9 @@ function getActors() {
     ).toString()
   );
   // console.log(`Catalog Values: ${JSON.stringify(catalogInteropData)}`);
-  const signalProducer = catalogInteropData.PRODUCERS[0];
-  const eserviceProducer = catalogInteropData.PRODUCERS[1];
-  const signalConsumer = catalogInteropData.CONSUMERS[0];
+  const signalProducer = catalogInteropData.PRODUCERS[0].organization;
+  const eserviceProducer = catalogInteropData.PRODUCERS[1].organization;
+  const signalConsumer = catalogInteropData.CONSUMERS[0].organization;
   const eserviceIdPushSignals = signalProducer.eservices[0].id;
   const eserviceIdSecondPushSignals = signalProducer.eservices[1].id;
   const eserviceIdNotAgreementWithConsumer = signalProducer.eservices[1].id;

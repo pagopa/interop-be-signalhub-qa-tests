@@ -2,100 +2,100 @@
   "PROVIDER": {
     "organization": {
       "id": "4871fd4-2fd7-46ab-9d22-f6b452f4b3c5",
-      "name": "PagoPA"
-    },
-    "eservices": [
-      {
-        "name": "push",
-        "id": "6b14c622-dad2-44ea-82bc-2dd4010364d5",
-        "descriptor": "f9853fdd-65b6-4c5a-b833-65b7060a7e82",
-        "state": "PUBLISHED"
-      },
-      {
-        "name": "pull",
-        "id": "a2b84a6e-34cf-44ca-85a4-de21fd232668",
-        "descriptor": "467ffb58-fea6-473e-a81d-167603d6ea0f",
-        "state": "PUBLISHED"
-      }
-    ]
+      "name": "PagoPA",
+      "eservices": [
+        {
+          "name": "push",
+          "id": "6b14c622-dad2-44ea-82bc-2dd4010364d5",
+          "descriptor": "f9853fdd-65b6-4c5a-b833-65b7060a7e82",
+          "state": "PUBLISHED"
+        },
+        {
+          "name": "pull",
+          "id": "a2b84a6e-34cf-44ca-85a4-de21fd232668",
+          "descriptor": "467ffb58-fea6-473e-a81d-167603d6ea0f",
+          "state": "PUBLISHED"
+        }
+      ]
+    }
   },
   "PRODUCERS": [
     {
       "organization": {
         "id": "4871fd4-2fd7-46ab-9d22-f6b452f4b3c5",
-        "name": "PagoPA"
-      },
-      "eservices": [
-        {
-          "name": "consultazione dati domicilio",
-          "id": "16d64180-e352-442e-8a91-3b2ae77ca1df",
-          "descriptor": "ac086f1f-9e34-4059-bb53-a7d676094520",
-          "state": "PUBLISHED"
-        },
-        {
-          "name": "PubblicazioneSignal1411",
-          "id": "e8c087eb-627b-4488-a9b7-65b70fd1301b",
-          "descriptor": "35bf8b20-dc58-43b0-9d40-85b92ccba176",
-          "state": "PUBLISHED"
-        },
-        {
-          "name": "e-service non pubblicato Test SDG ",
-          "id": "22c6ee86-965f-442e-8634-194c24371f1f",
-          "descriptor": "02c96d72-164f-48d3-b756-15ca5e032acd",
-          "state": "SUSPENDED"
-        }
-      ],
-      "agreements": [
-        {
-          "name": "push",
-          "id": "ac0d3a7b-909a-44d9-bf77-d18f556d5f5d",
-          "eservice": "6b14c622-dad2-44ea-82bc-2dd4010364d5",
-          "purpose": "b693eb6e-73dd-4b58-a42a-3e064a6a4cab",
-          "state": "ACTIVE"
-        }
-      ]
+        "name": "PagoPA",
+        "eservices": [
+          {
+            "name": "consultazione dati domicilio",
+            "id": "16d64180-e352-442e-8a91-3b2ae77ca1df",
+            "descriptor": "ac086f1f-9e34-4059-bb53-a7d676094520",
+            "state": "PUBLISHED"
+          },
+          {
+            "name": "PubblicazioneSignal1411",
+            "id": "e8c087eb-627b-4488-a9b7-65b70fd1301b",
+            "descriptor": "35bf8b20-dc58-43b0-9d40-85b92ccba176",
+            "state": "PUBLISHED"
+          },
+          {
+            "name": "e-service non pubblicato Test SDG ",
+            "id": "22c6ee86-965f-442e-8634-194c24371f1f",
+            "descriptor": "02c96d72-164f-48d3-b756-15ca5e032acd",
+            "state": "SUSPENDED"
+          }
+        ],
+        "agreements": [
+          {
+            "name": "push",
+            "id": "ac0d3a7b-909a-44d9-bf77-d18f556d5f5d",
+            "eservice": "6b14c622-dad2-44ea-82bc-2dd4010364d5",
+            "purpose": "b693eb6e-73dd-4b58-a42a-3e064a6a4cab",
+            "state": "ACTIVE"
+          }
+        ]
+      }
     },
     {
       "organization": {
         "id": "60587db0-dac5-437a-b41a-2bce922c59ca",
-        "name": "Istituto Nazionale Previdenza Sociale - INPS"
-      },
-      "eservices": [
-        {
-          "name": "Comunicazioni Obbligatorie",
-          "id": "7860c781-f869-4b4b-bda8-a731c4f40fd7",
-          "descriptor": "d2d5ac0e-de68-4838-97a8-3c5dbf2ac9db",
-          "state": "PUBLISHED"
-        }
-      ],
-      "agreements": []
+        "name": "Istituto Nazionale Previdenza Sociale - INPS",
+        "eservices": [
+          {
+            "name": "Comunicazioni Obbligatorie",
+            "id": "7860c781-f869-4b4b-bda8-a731c4f40fd7",
+            "descriptor": "d2d5ac0e-de68-4838-97a8-3c5dbf2ac9db",
+            "state": "PUBLISHED"
+          }
+        ],
+        "agreements": []
+      }
     }
   ],
   "CONSUMERS": [
     {
       "organization": {
         "id": "4871fd4-2fd7-46ab-9d22-f6b452f4b3c5",
-        "name": "PagoPA"
-      },
-      "eservices": [],
-      "agreements": [
-        {
-          "name": "consultazione dati domicilio",
-          "id": "b97f422e-d7c9-4293-ad8a-7b11dbfc7f9c",
-          "eservice": "16d64180-e352-442e-8a91-3b2ae77ca1df",
-          "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
-          "purpose": "5afec148-cbfa-47a9-852d-e105b8a54538",
-          "state": "ACTIVE"
-        },
-        {
-          "name": "pull",
-          "id": "3ac5e3b3-f671-42d6-b074-659dd474dd4c",
-          "eservice": "a2b84a6e-34cf-44ca-85a4-de21fd232668",
-          "descriptor": "467ffb58-fea6-473e-a81d-167603d6ea0f",          
-          "purpose": "927bc6ce-6595-4858-922b-8820e7380f6a",
-          "state": "ACTIVE"
-        }
-      ]
+        "name": "PagoPA",
+        "eservices": [],
+        "agreements": [
+          {
+            "name": "consultazione dati domicilio",
+            "id": "b97f422e-d7c9-4293-ad8a-7b11dbfc7f9c",
+            "eservice": "16d64180-e352-442e-8a91-3b2ae77ca1df",
+            "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
+            "purpose": "5afec148-cbfa-47a9-852d-e105b8a54538",
+            "state": "ACTIVE"
+          },
+          {
+            "name": "pull",
+            "id": "3ac5e3b3-f671-42d6-b074-659dd474dd4c",
+            "eservice": "a2b84a6e-34cf-44ca-85a4-de21fd232668",
+            "descriptor": "467ffb58-fea6-473e-a81d-167603d6ea0f",
+            "purpose": "927bc6ce-6595-4858-922b-8820e7380f6a",
+            "state": "ACTIVE"
+          }
+        ]
+      }
     }
   ]
 }
