@@ -1,12 +1,27 @@
+import pg from "pg";
 import { AgreementState } from "../api/interop.models";
-import { client } from "../features/before-and-after";
 import {
   signalProducer,
   signalConsumer,
   eserviceProducer,
 } from "../lib/common";
 
-export async function setupEserviceAgreementTable() {
+const { Client } = pg;
+
+export const client = new Client({
+  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
+
+export const connect = async () => await client.connect();
+export const disconnect = async () => await client.end();
+export async function truncateEserviceTable() {
+  await client.query("truncate eservice;");
+}
+export async function setupEserviceTable() {
   const allProducers = [signalProducer, eserviceProducer];
   let count = 0;
   for (const producer of allProducers) {
@@ -23,7 +38,13 @@ export async function setupEserviceAgreementTable() {
     }
   }
 }
+export async function truncateConsumerEserviceTable() {
+  await client.query("truncate consumer_eservice;");
+}
 
+export async function truncateSignalTable() {
+  await client.query("truncate signal;");
+}
 export async function setupConsumerEserviceTable() {
   const { id, agreements } = signalConsumer;
   let count = 0;
