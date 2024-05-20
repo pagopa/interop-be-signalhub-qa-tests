@@ -13,7 +13,9 @@ Install dependecies with `pnpm install`.
 
 ## Execute test suite
 
-### Environment
+To execute test suite you have to do some steps.
+
+### Environment
 
 Choose an [enviroment](#enviroment): writing coherent environment files (`.env.some_environment_you_want_run_in`, ...) and set env variable:
 
@@ -23,7 +25,7 @@ Eventually check environment whith: `pnpm run show:env`.
 
 If you are in a local environment, run all services needed to simulate all the collaborators (queque system, database, caching, ...).
 
-### Data preparation
+### Data preparation
 
 Execute data preparation if your environment need this (**BE CAREFUL!** data preparation truncate some tables!):
 
