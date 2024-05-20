@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
-import { VoucherEnv, VoucherTypologies, voucherList } from "./voucher.env";
+import { z } from "zod";
+import { VoucherEnv, VoucherTypologies, getVoucherDataBy } from "./voucher.env";
 
 type VoucherPayload = {
   client_id: string;
@@ -24,12 +25,43 @@ export type JWTPayload = {
   exp: number;
 };
 
+const SessionVouchers = z.record(VoucherTypologies, z.string());
+type SessionVouchers = z.infer<typeof SessionVouchers>;
+
+let cachedVouchers: SessionVouchers | undefined;
+
 export const getVoucherBy = async (
   voucherType: VoucherTypologies,
   partialVoucherEnv: Partial<VoucherEnv> = {}
+): Promise<string> => {
+  if (Object.keys(partialVoucherEnv).length !== 0) {
+    return await buildSpecialVoucher(voucherType, partialVoucherEnv);
+  }
+  if (!cachedVouchers) {
+    await buildCachedVouchers();
+  }
+  const voucher = cachedVouchers![voucherType];
+
+  if (!voucher) {
+    throw new Error(`Voucher not found for voucherType: ${voucherType}`);
+  }
+  return voucher;
+};
+
+const buildCachedVouchers = async () => {
+  const vouchers = {} as SessionVouchers;
+  for (const vType of VoucherTypologies.options) {
+    vouchers[vType] = await getVoucher(getVoucherDataBy(vType));
+  }
+  cachedVouchers = SessionVouchers.parse(vouchers);
+};
+
+const buildSpecialVoucher = async (
+  voucherType: VoucherTypologies,
+  partialVoucherEnv: Partial<VoucherEnv>
 ) => {
   const voucherEnv = {
-    ...voucherList[voucherType],
+    ...getVoucherDataBy(voucherType),
     ...partialVoucherEnv,
   };
   return await getVoucher(voucherEnv);

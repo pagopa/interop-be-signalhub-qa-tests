@@ -16,18 +16,12 @@ const Env = z.object({
   ASSERTION_TYPE: z.string(),
   SESSION_DURATION_IN_SECONDS: z.coerce.number(),
 });
-
 export type VoucherEnv = z.infer<typeof Env>;
 
-const voucherTypologies = ["PRODUCER", "CONSUMER"] as const;
-export type VoucherTypologies = (typeof voucherTypologies)[number];
+export const VoucherTypologies = z.enum(["PRODUCER", "CONSUMER"]);
+export type VoucherTypologies = z.infer<typeof VoucherTypologies>;
 
-export const voucherList: Record<VoucherTypologies, VoucherEnv> = {
-  PRODUCER: buildEnv("PRODUCER"),
-  CONSUMER: buildEnv("CONSUMER"),
-};
-
-function buildEnv(voucherType: VoucherTypologies): VoucherEnv {
+export function getVoucherDataBy(voucherType: VoucherTypologies): VoucherEnv {
   const voucherConfigData = {};
   const path = `.env.${nodeEnv}.voucher.${voucherType.toLowerCase()}`;
   dotenv.config({
