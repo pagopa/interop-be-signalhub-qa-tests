@@ -13,7 +13,7 @@ Before running tests suites you have to install dependecies with `pnpm install`
 
 To run test all test suites write on terminal:
 
-`pnpm run test`
+`pnpm test`
 
 or if you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`
 

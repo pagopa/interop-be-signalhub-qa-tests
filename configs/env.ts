@@ -11,7 +11,6 @@ export const Env = z.object({
   API_BASE_URL_PUSH: z.string(),
   API_BASE_URL_PULL: z.string(),
   EXPIRED_TOKEN: z.string(),
-  // Db string connections
   DB_NAME: z.string(),
   DB_HOST: z.string(),
   DB_PORT: z.coerce.number(),
