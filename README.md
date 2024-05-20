@@ -39,7 +39,7 @@ Run whole tests suite:
 
 Run all push tests:
 
-`pnpm test:push"`
+`pnpm test:push`
 
 Run all pull tests:
 
