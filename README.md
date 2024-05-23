@@ -9,15 +9,46 @@ To get started, you need:
 - node
 - pnpm
 
-Before running tests suites you have to install dependecies with `pnpm install`
+Install dependecies with `pnpm install`.
 
-To run test all test suites write on terminal:
+## Execute test suite
 
-`pnpm run test`
+To execute test suite you have to do some steps.
 
-or if you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`
+### Environment
 
-### Environment and enviroment variables
+Choose an [enviroment](#enviroment): writing coherent environment files (`.env.some_environment_you_want_run_in`, ...) and set env variable:
+
+`export NODE_ENV=some_environment_you_want_run_in` (ex: `development`, `qa`, ...).
+
+Eventually check environment whith: `pnpm run show:env`.
+
+If you are in a local environment, run all services needed to simulate all the collaborators (queque system, database, caching, ...).
+
+### Data preparation
+
+Execute data preparation if your environment need this (**BE CAREFUL!** data preparation truncate some tables!):
+
+`pnpm run data-preparation`
+
+### Test suite
+
+Run whole tests suite:
+
+`pnpm test`
+
+Run all push tests:
+
+`pnpm test:push`
+
+Run all pull tests:
+
+`pnpm test:pull`
+
+If you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`
+
+
+## <a name="enviroment"></a>Environment and enviroment variables
 
 If you don't set NODE_ENV , it will be `development` by default.
 For each enviroment you have to set:
@@ -36,9 +67,8 @@ To configure take a leaf from `.env.example` , `.env.example.voucher.consumer` ,
 
 `export NODE_ENV=uat` will load env variables from `file .env.uat`
 
-Default value is `development`.
 
-### Pre-commit hooks
+## Pre-commit hooks
 
 See [Husky](https://typicode.github.io/husky/how-to.html).
 

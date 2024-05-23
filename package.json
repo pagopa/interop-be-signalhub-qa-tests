@@ -3,15 +3,19 @@
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
   "scripts": {
-    "generate-model:pull": "node ./scripts/pull-signals/generate-api-models.mjs",
-    "generate-model:push": "node ./scripts/push-signals/generate-api-models.mjs",
+    "generate-model:pull": "ts-node ./scripts/generate-pull-api-models.ts",
+    "generate-model:push": "ts-node ./scripts/generate-push-api-models.ts",
+    "data-preparation": "ts-node ./scripts/data-preparation.ts",
     "cucumber:node": "cucumber-js -p base -p node",
     "test": "pnpm cucumber:node -p all",
     "test:tags": "pnpm test -- --tags",
+    "test:push": "pnpm test -- --tags '@push_signals'",
+    "test:pull": "pnpm test -- --tags '@pull_signals'",
     "lint": "tsc --noEmit && gherkin-lint . && eslint .",
     "check-steps": "pnpm test -- -p validate",
     "check-steps:usage": "pnpm check-steps --format usage",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "show:env": "echo $NODE_ENV"
   },
   "repository": {
     "type": "git",
