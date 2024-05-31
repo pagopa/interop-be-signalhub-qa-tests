@@ -1,6 +1,7 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
+  assertHttpErrorStatusCode,
   assertValidResponse,
   createSignal,
   createSignalConsumers,
@@ -208,7 +209,8 @@ Then(
   "la richiesta va in errore con status code {int}",
   function (statusCode: number) {
     const { errors } = this.response.data as Problem;
-    assert.strictEqual(this.response.status, statusCode);
+    // assert.strictEqual(this.response.status, statusCode);
+    assertHttpErrorStatusCode(this.response.status, statusCode);
     assert.ok(errors.length > 0);
   }
 );
