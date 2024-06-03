@@ -12,11 +12,12 @@ import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { PaginationSignal } from "../../../api/pull-signals.models";
 import { getVoucherBy } from "../../../lib/voucher";
+import { VoucherTypologies } from "../../../lib/voucher.env";
 
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
-    const voucher = await getVoucherBy("PRODUCER");
+    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER);
     this.producerVoucher = voucher;
   }
 );
@@ -24,7 +25,7 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali",
   async function () {
-    const voucher = await getVoucherBy("CONSUMER");
+    const voucher = await getVoucherBy(VoucherTypologies.Enum.CONSUMER);
     this.consumerVoucher = voucher;
   }
 );
@@ -32,7 +33,7 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di lettura segnali",
   async function () {
-    const voucher = await getVoucherBy("PRODUCER");
+    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER);
     this.consumerVoucher = voucher;
   }
 );
