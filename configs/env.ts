@@ -18,7 +18,7 @@ export const Env = z.object({
   DB_PASSWORD: z.string(),
   CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
-  EXECUTE_TRUNCATE_FOR_TEST_QA: z.string().default("false"),
+  LEVEL_VERIFY_ERROR_HTTP_CODE: z.enum(["strict", "loose"]).default("strict"),
 });
 
 const parsedEnv = Env.safeParse(process.env);
