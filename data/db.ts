@@ -19,7 +19,7 @@ export const client = new Client({
 export const connect = async () => await client.connect();
 export const disconnect = async () => await client.end();
 export async function truncateEserviceTable() {
-  await client.query("truncate eservice;");
+  await client.query("truncate dev_interop.eservice;");
 }
 export async function setupEserviceTable() {
   const allProducers = [signalProducer, eserviceProducer];
@@ -31,7 +31,7 @@ export async function setupEserviceTable() {
       (e: any) => !("skip_insert" in e)
     )) {
       const query = {
-        text: "INSERT INTO eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5)",
+        text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5)",
         values: [eservice.id, id, eservice.descriptor, ++count, eservice.state],
       };
       await client.query(query);
@@ -39,11 +39,11 @@ export async function setupEserviceTable() {
   }
 }
 export async function truncateConsumerEserviceTable() {
-  await client.query("truncate consumer_eservice;");
+  await client.query("truncate dev_interop.consumer_eservice;");
 }
 
 export async function truncateSignalTable() {
-  await client.query("truncate signal;");
+  await client.query("truncate dev_signalhub.signal;");
 }
 export async function setupConsumerEserviceTable() {
   const { id, agreements } = signalConsumer;
@@ -53,7 +53,7 @@ export async function setupConsumerEserviceTable() {
     (e: any) => !("skip_insert" in e)
   )) {
     const query = {
-      text: "INSERT INTO consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6)",
+      text: "INSERT INTO dev_interop.consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6)",
       values: [
         agreement.id,
         agreement.eservice,
@@ -72,7 +72,7 @@ export async function updateConsumerAgreementState(
   eserviceId: string
 ) {
   const query = {
-    text: "UPDATE consumer_eservice SET state=$1 where eservice_id=$2",
+    text: "UPDATE dev_interop.consumer_eservice SET state=$1 where eservice_id=$2",
     values: [agreementState, eserviceId],
   };
   await client.query(query);
