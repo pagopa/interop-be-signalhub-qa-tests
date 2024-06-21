@@ -24,13 +24,13 @@ BeforeAll(async function () {
 });
 
 Before({ tags: "@pull_signals4" }, async function () {
-  if (nodeEnv === "development") {
+  if (nodeEnv === "development" || nodeEnv === "local") {
     await updateConsumerAgreementState("DRAFT", eserviceIdPushSignals);
   }
 });
 // This After reset the state of agreement to ACTIVE after specific test
 After({ tags: "@pull_signals4" }, async function () {
-  if (nodeEnv === "development") {
+  if (nodeEnv === "development" || nodeEnv === "local") {
     await updateConsumerAgreementState("ACTIVE", eserviceIdPushSignals);
   }
 });

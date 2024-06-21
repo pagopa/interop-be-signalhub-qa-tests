@@ -50,6 +50,7 @@ When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
   const signalId = (this.lastSignalId || 1) - 1;
   const pullSignalRequest = createPullSignalRequest({
     signalId,
+    size: 100,
   });
 
   this.response = await pullSignalApiClient.pullSignal.getRequest(
