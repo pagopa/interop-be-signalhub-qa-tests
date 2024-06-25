@@ -14,12 +14,16 @@ export const client = new Client({
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  ssl:
+    process.env.DB_USE_SSL === "true"
+      ? { rejectUnauthorized: false }
+      : undefined,
 });
 
 export const connect = async () => await client.connect();
 export const disconnect = async () => await client.end();
 export async function truncateEserviceTable() {
-  await client.query("truncate dev_interop.eservice;");
+  await client.query("delete from dev_interop.eservice;");
 }
 export async function setupEserviceTable() {
   const allProducers = [signalProducer, eserviceProducer];
@@ -39,11 +43,11 @@ export async function setupEserviceTable() {
   }
 }
 export async function truncateConsumerEserviceTable() {
-  await client.query("truncate dev_interop.consumer_eservice;");
+  await client.query("delete from dev_interop.consumer_eservice;");
 }
 
 export async function truncateSignalTable() {
-  await client.query("truncate dev_signalhub.signal;");
+  await client.query("delete from dev_signalhub.signal;");
 }
 export async function setupConsumerEserviceTable() {
   const { id, agreements } = signalConsumer;
