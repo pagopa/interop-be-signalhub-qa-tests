@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import { VoucherEnv, VoucherTypologies, getVoucherDataBy } from "./voucher.env";
+import { KMSGenVoucher, kmsGenVoucher } from "./kmsGenVoucher";
 
 type VoucherPayload = {
   client_id: string;
@@ -51,7 +52,8 @@ export const getVoucherBy = async (
 const buildCachedVouchers = async () => {
   const vouchers = {} as SessionVouchers;
   for (const vType of VoucherTypologies.options) {
-    vouchers[vType] = await getVoucher(getVoucherDataBy(vType));
+    // vouchers[vType] = await getVoucher(getVoucherDataBy(vType));
+    vouchers[vType] = await getVoucherSelfSigned(getVoucherDataBy(vType));
   }
   cachedVouchers = SessionVouchers.parse(vouchers);
 };
@@ -64,9 +66,11 @@ const buildSpecialVoucher = async (
     ...getVoucherDataBy(voucherType),
     ...partialVoucherEnv,
   };
-  return await getVoucher(voucherEnv);
+  // return await getVoucher(voucherEnv);
+  return await getVoucherSelfSigned(voucherEnv);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getVoucher = async (voucherEnv: VoucherEnv): Promise<string> => {
   try {
     const jwtHeader: JWTHeader = buildJWTHeader(voucherEnv);
@@ -97,6 +101,18 @@ const getVoucher = async (voucherEnv: VoucherEnv): Promise<string> => {
       client_assertion: clientAssertion,
       client_assertion_type: voucherEnv.ASSERTION_TYPE,
     };
+  }
+};
+
+const getVoucherSelfSigned = async (
+  voucherEnv: VoucherEnv
+): Promise<string> => {
+  try {
+    const KMSGenVoucher: KMSGenVoucher = kmsGenVoucher(voucherEnv);
+    return await KMSGenVoucher.buildVoucher();
+  } catch (err) {
+    console.log(err);
+    throw new Error("no voucher");
   }
 };
 
@@ -168,8 +184,9 @@ async function generateClientAssertion(
     .sign(privateKey);
 }
 
-function getPrivateKey(voucherEnv: VoucherEnv) {
-  return voucherEnv.PRIVATE_KEY;
+function getPrivateKey(_voucherEnv: VoucherEnv) {
+  // return voucherEnv.PRIVATE_KEY;
+  return "";
 }
 
 export function getIssuedAtTime(): number {
