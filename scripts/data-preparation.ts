@@ -1,7 +1,7 @@
 import { nodeEnv } from "../configs/env";
 import {
-  connect,
-  disconnect,
+  connectInterop,
+  disconnectInterop,
   setupConsumerEserviceTable,
   setupEserviceTable,
   truncateConsumerEserviceTable,
@@ -10,7 +10,7 @@ import {
 
 (async () => {
   console.info(`\n*** SIGNALHUB DATA PREPARATION IN ENV [${nodeEnv}] ***\n`);
-  await connect();
+  await connectInterop();
   console.info("Set up database table ESERVICE: truncate and insert");
   await truncateEserviceTable();
   await setupEserviceTable();
@@ -23,5 +23,5 @@ import {
   })
   .finally(async () => {
     console.info("End database connection");
-    await disconnect();
+    await disconnectInterop();
   });
