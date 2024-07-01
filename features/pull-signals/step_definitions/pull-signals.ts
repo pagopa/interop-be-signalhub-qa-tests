@@ -80,19 +80,28 @@ Given(
     const signalRequest = createSignal({
       signalId: startSignalId,
     });
-    let signalId = startSignalId;
-    for (let i = startSignalId; i <= signalLength; i++) {
-      signalId = i;
-      this.response = await pushSignalApiClient.pushSignal.pushSignal(
-        {
-          ...signalRequest,
-          signalId,
-        },
-        getAuthorizationHeader(this.producerVoucher)
-      );
+    const from = 1;
+    const to = signalLength;
+    const limit = 10;
+    const signalIds = [...Array(to).keys()].map((_, i) => from + i);
+    for (let start = 0; start < signalIds.length; start += limit) {
+      const end =
+        start + limit > signalIds.length ? signalIds.length : start + limit;
+      await Promise.all(
+        signalIds.slice(start, end).map(async (signalId) => {
+          const response = await pushSignalApiClient.pushSignal.pushSignal(
+            {
+              ...signalRequest,
+              signalId,
+            },
+            getAuthorizationHeader(this.producerVoucher)
+          );
 
-      assertValidResponse(this.response);
+          assertValidResponse(response);
+        })
+      );
     }
+
     this.lastSignalId = startSignalId;
   }
 );
