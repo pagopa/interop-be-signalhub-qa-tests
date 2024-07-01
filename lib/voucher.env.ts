@@ -10,10 +10,10 @@ const Env = z.object({
   ISSUER: z.string(),
   AUDIENCE: z.string(),
   PURPOSE_ID: z.string(),
-  PRIVATE_KEY: z.string(),
   CLIENT_ID: z.string(),
   GRANT_TYPE: z.string(),
   ASSERTION_TYPE: z.string(),
+  KMS_KEY_ID: z.string(),
   SESSION_DURATION_IN_SECONDS: z.coerce.number(),
 });
 

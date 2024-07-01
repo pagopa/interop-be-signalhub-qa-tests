@@ -8,22 +8,36 @@ import {
 
 const { Client } = pg;
 
-export const client = new Client({
+export const clientSchemaInterop = new Client({
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  user: process.env.DB_USER_BATCH_UPDATE,
+  password: process.env.DB_PASSWORD_BATCH_UPDATE,
   ssl:
     process.env.DB_USE_SSL === "true"
       ? { rejectUnauthorized: false }
       : undefined,
 });
 
-export const connect = async () => await client.connect();
-export const disconnect = async () => await client.end();
+export const clientSchemaSignal = new Client({
+  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER_BATCH_CLEANUP,
+  password: process.env.DB_PASSWORD_BATCH_CLEANUP,
+  ssl:
+    process.env.DB_USE_SSL === "true"
+      ? { rejectUnauthorized: false }
+      : undefined,
+});
+
+export const connectInterop = async () => await clientSchemaInterop.connect();
+export const disconnectInterop = async () => await clientSchemaInterop.end();
+export const connectSignal = async () => await clientSchemaSignal.connect();
+export const disconnectSignal = async () => await clientSchemaSignal.end();
 export async function truncateEserviceTable() {
-  await client.query("delete from dev_interop.eservice;");
+  await clientSchemaInterop.query("delete from dev_interop.eservice;");
 }
 export async function setupEserviceTable() {
   const allProducers = [signalProducer, eserviceProducer];
@@ -38,16 +52,16 @@ export async function setupEserviceTable() {
         text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5)",
         values: [eservice.id, id, eservice.descriptor, ++count, eservice.state],
       };
-      await client.query(query);
+      await clientSchemaInterop.query(query);
     }
   }
 }
 export async function truncateConsumerEserviceTable() {
-  await client.query("delete from dev_interop.consumer_eservice;");
+  await clientSchemaInterop.query("delete from dev_interop.consumer_eservice;");
 }
 
 export async function truncateSignalTable() {
-  await client.query("delete from dev_signalhub.signal;");
+  await clientSchemaSignal.query("delete from dev_signalhub.signal;");
 }
 export async function setupConsumerEserviceTable() {
   const { id, agreements } = signalConsumer;
@@ -67,7 +81,7 @@ export async function setupConsumerEserviceTable() {
         agreement.state,
       ],
     };
-    await client.query(query);
+    await clientSchemaInterop.query(query);
   }
 }
 
@@ -79,5 +93,5 @@ export async function updateConsumerAgreementState(
     text: "UPDATE dev_interop.consumer_eservice SET state=$1 where eservice_id=$2",
     values: [agreementState, eserviceId],
   };
-  await client.query(query);
+  await clientSchemaInterop.query(query);
 }
