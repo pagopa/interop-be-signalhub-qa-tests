@@ -47,7 +47,7 @@ Given(
 
 When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
   // If SignalId is not present in previous given start by signalId = 1
-  const signalId = (this.lastSignalId || 1) - 1;
+  const signalId = (this.startSignalId || 1) - 1;
   const pullSignalRequest = createPullSignalRequest({
     signalId,
     size: 100,
@@ -80,38 +80,32 @@ Given(
     const signalRequest = createSignal({
       signalId: startSignalId,
     });
-    const from = 1;
-    const to = signalLength;
-    const limit = 10;
-    const signalIds = [...Array(to).keys()].map((_, i) => from + i);
-    for (let start = 0; start < signalIds.length; start += limit) {
-      const end =
-        start + limit > signalIds.length ? signalIds.length : start + limit;
-      await Promise.all(
-        signalIds.slice(start, end).map(async (signalId) => {
-          const response = await pushSignalApiClient.pushSignal.pushSignal(
-            {
-              ...signalRequest,
-              signalId,
-            },
-            getAuthorizationHeader(this.producerVoucher)
-          );
 
-          assertValidResponse(response);
-        })
+    const allSignalIdsToPush = Array(signalLength)
+      .fill(0)
+      .map((_, index) => index + startSignalId);
+    const pushASignal = async (signalId: number) => {
+      const response = await pushSignalApiClient.pushSignal.pushSignal(
+        {
+          ...signalRequest,
+          signalId,
+        },
+        getAuthorizationHeader(this.producerVoucher)
       );
-    }
+      assertValidResponse(response);
+    };
+    await Promise.all(allSignalIdsToPush.map(pushASignal));
 
-    this.lastSignalId = startSignalId;
+    this.startSignalId = startSignalId;
   }
 );
 
 Then(
   "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i)",
   function (statusCode: number, numberOfSignalList: number) {
-    const data = this.response.data.signals;
+    const data: PaginationSignal = this.response.data;
 
-    assert.strictEqual(data.length, numberOfSignalList);
+    assert.strictEqual(data.signals?.length, numberOfSignalList);
     assert.strictEqual(this.response.status, statusCode);
   }
 );
