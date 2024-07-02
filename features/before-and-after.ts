@@ -6,10 +6,12 @@ import {
   setDefaultTimeout,
 } from "@cucumber/cucumber";
 import {
-  connect,
-  disconnect,
+  connectInterop,
+  disconnectInterop,
   truncateSignalTable,
   updateConsumerAgreementState,
+  connectSignal,
+  disconnectSignal,
 } from "../data/db";
 import { nodeEnv } from "../configs/env";
 import { eserviceIdPushSignals } from "../lib/common";
@@ -20,7 +22,8 @@ setDefaultTimeout(process.env.CUCUMBER_SET_DEFAULT_TIMEOUT_MS);
 BeforeAll(async function () {
   console.info(`\n*** BEGIN SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***`);
   console.info("Start database connection");
-  await connect();
+  await connectInterop();
+  await connectSignal();
 });
 
 Before({ tags: "@pull_signals4" }, async function () {
@@ -42,6 +45,7 @@ Before(async function () {
 
 AfterAll(async function () {
   console.info("End database connection");
-  await disconnect();
+  await disconnectInterop();
+  await disconnectSignal();
   console.info(`*** END SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***\n`);
 });

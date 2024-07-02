@@ -35,6 +35,7 @@ Given(
   async function () {
     const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER, {
       PURPOSE_ID: purposeIdDifferentFromEservicePushSignals,
+      AUDIENCE: "some-wrong-audience",
     });
     this.voucher = voucher;
   }
