@@ -14,6 +14,11 @@ import { PaginationSignal } from "../../../api/pull-signals.models";
 import { getVoucherBy } from "../../../lib/voucher";
 import { VoucherTypologies } from "../../../lib/voucher.env";
 
+Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
+  // This sleep function simulate the time SQS will take to process the signal and put on DB
+  await sleep(5000);
+});
+
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
@@ -59,20 +64,6 @@ When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
   );
 });
 
-When(
-  "l'utente consumatore recupera un segnale per un e-service con cui non ha una richiesta di fruizione",
-  async function () {
-    const pullSignalRequest = createPullSignalRequest({
-      eserviceId: eserviceIdNotAgreementWithConsumer,
-    });
-
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
-      pullSignalRequest,
-      getAuthorizationHeader(this.consumerVoucher)
-    );
-  }
-);
-
 Given(
   "l'utente produttore di segnali deposita {int} segnal(e)(i)",
   async function (signalLength: number) {
@@ -97,6 +88,46 @@ Given(
     await Promise.all(allSignalIdsToPush.map(pushASignal));
 
     this.startSignalId = startSignalId;
+  }
+);
+
+When(
+  "l'utente consumatore recupera un segnale per un e-service con cui non ha una richiesta di fruizione",
+  async function () {
+    const pullSignalRequest = createPullSignalRequest({
+      eserviceId: eserviceIdNotAgreementWithConsumer,
+    });
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
+  }
+);
+
+When(
+  "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
+  async function () {
+    const pullSignalRequest = createPullSignalRequest();
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
+  }
+);
+
+When(
+  "l'utente consumatore recupera un segnale inserendo un signalId uguale a {int}",
+  async function (startSignalId: number) {
+    const pullSignalRequest = createPullSignalRequest({
+      signalId: startSignalId,
+    });
+
+    this.response = await pullSignalApiClient.pullSignal.getRequest(
+      pullSignalRequest,
+      getAuthorizationHeader(this.consumerVoucher)
+    );
   }
 );
 
@@ -131,34 +162,3 @@ Then(
     assert.strictEqual(this.response.status, statusCode);
   }
 );
-
-When(
-  "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
-  async function () {
-    const pullSignalRequest = createPullSignalRequest();
-
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
-      pullSignalRequest,
-      getAuthorizationHeader(this.consumerVoucher)
-    );
-  }
-);
-
-When(
-  "l'utente consumatore recupera un segnale inserendo un signalId uguale a {int}",
-  async function (startSignalId: number) {
-    const pullSignalRequest = createPullSignalRequest({
-      signalId: startSignalId,
-    });
-
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
-      pullSignalRequest,
-      getAuthorizationHeader(this.consumerVoucher)
-    );
-  }
-);
-
-Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
-  // This sleep function simulate the time SQS will take to process the signal and put on DB
-  await sleep(5000);
-});
