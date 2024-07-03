@@ -4,6 +4,7 @@ import {
   assertValidResponse,
   createPullSignalRequest,
   createSignal,
+  eserviceIdAgreementSuspendedWithConsumer,
   eserviceIdNotAgreementWithConsumer,
   getAuthorizationHeader,
   sleep,
@@ -108,7 +109,9 @@ When(
 When(
   "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
   async function () {
-    const pullSignalRequest = createPullSignalRequest();
+    const pullSignalRequest = createPullSignalRequest({
+      eserviceId: eserviceIdAgreementSuspendedWithConsumer,
+    });
 
     this.response = await pullSignalApiClient.pullSignal.getRequest(
       pullSignalRequest,

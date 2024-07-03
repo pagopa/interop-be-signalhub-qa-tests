@@ -23,7 +23,9 @@ function getActors() {
   const eserviceIdPushSignals = signalProducer.eservices[0].id;
   const eserviceIdSecondPushSignals = signalProducer.eservices[1].id;
   const eserviceIdNotAgreementWithConsumer = signalProducer.eservices[1].id;
-  const eserviceIdNotPublished = signalProducer.eservices[2].id;
+  const eserviceIdAgreementSuspendedWithConsumer =
+    signalProducer.eservices[2].id;
+  const eserviceIdNotPublished = signalProducer.eservices[3].id;
   const eserviceIdPublishedByAnotherOrganization =
     eserviceProducer.eservices[0].id;
   const purposeIdDifferentFromEservicePushSignals =
@@ -35,6 +37,7 @@ function getActors() {
     eserviceIdPushSignals,
     eserviceIdSecondPushSignals,
     eserviceIdNotAgreementWithConsumer,
+    eserviceIdAgreementSuspendedWithConsumer,
     eserviceIdNotPublished,
     eserviceIdPublishedByAnotherOrganization,
     purposeIdDifferentFromEservicePushSignals,
@@ -48,6 +51,7 @@ export const {
   eserviceIdPushSignals,
   eserviceIdSecondPushSignals,
   eserviceIdNotAgreementWithConsumer,
+  eserviceIdAgreementSuspendedWithConsumer,
   eserviceIdNotPublished,
   eserviceIdPublishedByAnotherOrganization,
   purposeIdDifferentFromEservicePushSignals,
