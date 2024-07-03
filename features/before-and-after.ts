@@ -1,5 +1,4 @@
 import {
-  After,
   AfterAll,
   Before,
   BeforeAll,
@@ -9,12 +8,10 @@ import {
   connectInterop,
   disconnectInterop,
   truncateSignalTable,
-  updateConsumerAgreementState,
   connectSignal,
   disconnectSignal,
 } from "../data/db";
 import { nodeEnv } from "../configs/env";
-import { eserviceIdPushSignals } from "../lib/common";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
 setDefaultTimeout(process.env.CUCUMBER_SET_DEFAULT_TIMEOUT_MS);
@@ -24,18 +21,6 @@ BeforeAll(async function () {
   console.info("Start database connection");
   await connectInterop();
   await connectSignal();
-});
-
-Before({ tags: "@pull_signals4" }, async function () {
-  if (nodeEnv === "development" || nodeEnv === "local") {
-    await updateConsumerAgreementState("DRAFT", eserviceIdPushSignals);
-  }
-});
-// This After reset the state of agreement to ACTIVE after specific test
-After({ tags: "@pull_signals4" }, async function () {
-  if (nodeEnv === "development" || nodeEnv === "local") {
-    await updateConsumerAgreementState("ACTIVE", eserviceIdPushSignals);
-  }
 });
 
 Before(async function () {
