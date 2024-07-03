@@ -38,6 +38,12 @@
             "state": "PUBLISHED"
           },
           {
+            "name": "domicili_digitali_terziario",
+            "id": "62b362db-a56d-4b0b-b4f8-43e988b36bc3",
+            "descriptor": "200e1f33-fbcf-4afc-9c3d-6ccc3186097f",
+            "state": "PUBLISHED"
+          },
+          {
             "name": "e-service non pubblicato",
             "id": "1dc2108b-2c5e-4057-a2ae-6ce7aeb96551",
             "descriptor": "13bebc85-9d37-4df3-9989-87c1d59f7e27",
@@ -93,6 +99,14 @@
             "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
             "purpose": "-",
             "state": "ACTIVE"
+          },
+          {
+            "name": "domicili_digitali_terziario",
+            "id": "4350efc8-af83-485d-a28e-5fd136a629b9",
+            "eservice": "62b362db-a56d-4b0b-b4f8-43e988b36bc3",
+            "descriptor": "200e1f33-fbcf-4afc-9c3d-6ccc3186097f",
+            "purpose": "-",
+            "state": "SUSPENDED"
           },
           {
             "name": "pull",
