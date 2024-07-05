@@ -1,5 +1,4 @@
 import pg from "pg";
-import { AgreementState } from "../api/interop.models";
 import {
   signalProducer,
   signalConsumer,
@@ -83,15 +82,4 @@ export async function setupConsumerEserviceTable() {
     };
     await clientSchemaInterop.query(query);
   }
-}
-
-export async function updateConsumerAgreementState(
-  agreementState: AgreementState,
-  eserviceId: string
-) {
-  const query = {
-    text: "UPDATE dev_interop.consumer_eservice SET state=$1 where eservice_id=$2",
-    values: [agreementState, eserviceId],
-  };
-  await clientSchemaInterop.query(query);
 }

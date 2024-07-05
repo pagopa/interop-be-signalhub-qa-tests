@@ -9,10 +9,10 @@ import {
 (async () => {
   console.info(`\n*** SIGNALHUB DATA PREPARATION IN ENV [${nodeEnv}] ***\n`);
   await connectInterop();
-  console.info("Set up database table ESERVICE: truncate and insert");
+  console.info("Set up database table ESERVICE: insert data");
   // await truncateEserviceTable();
   await setupEserviceTable();
-  console.info("Set up database table: CONSUMER_ESERVICE: truncate and insert");
+  console.info("Set up database table: CONSUMER_ESERVICE: insert data");
   // await truncateConsumerEserviceTable();
   await setupConsumerEserviceTable();
 })()
