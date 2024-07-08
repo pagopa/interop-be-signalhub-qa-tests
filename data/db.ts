@@ -1,5 +1,4 @@
 import pg from "pg";
-import { AgreementState } from "../api/interop.models";
 import {
   signalProducer,
   signalConsumer,
@@ -49,7 +48,7 @@ export async function setupEserviceTable() {
       (e: any) => !("skip_insert" in e)
     )) {
       const query = {
-        text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5)",
+        text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
         values: [eservice.id, id, eservice.descriptor, ++count, eservice.state],
       };
       await clientSchemaInterop.query(query);
@@ -71,7 +70,7 @@ export async function setupConsumerEserviceTable() {
     (e: any) => !("skip_insert" in e)
   )) {
     const query = {
-      text: "INSERT INTO dev_interop.consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6)",
+      text: "INSERT INTO dev_interop.consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6) ON CONFLICT(eservice_id, consumer_id, descriptor_id) DO NOTHING",
       values: [
         agreement.id,
         agreement.eservice,
@@ -83,15 +82,4 @@ export async function setupConsumerEserviceTable() {
     };
     await clientSchemaInterop.query(query);
   }
-}
-
-export async function updateConsumerAgreementState(
-  agreementState: AgreementState,
-  eserviceId: string
-) {
-  const query = {
-    text: "UPDATE dev_interop.consumer_eservice SET state=$1 where eservice_id=$2",
-    values: [agreementState, eserviceId],
-  };
-  await clientSchemaInterop.query(query);
 }
