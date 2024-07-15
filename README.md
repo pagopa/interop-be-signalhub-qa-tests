@@ -17,9 +17,9 @@ To execute test suite you have to do some steps.
 
 ### Environment
 
-Choose an [enviroment](#enviroment): writing coherent environment files (`.env.some_environment_you_want_run_in`, ...) and set env variable:
+Choose an [enviroment](#enviroment): writing coherent environment files (`.env.some_environment`, ...) and set env variable:
 
-`export NODE_ENV=some_environment_you_want_run_in` (ex: `development`, `qa`, ...).
+`export NODE_ENV=some_environment` (ex: `development`, `qa`, ...).
 
 Eventually check environment whith: `pnpm run show:env`.
 
@@ -27,9 +27,14 @@ If you are in a local environment, run all services needed to simulate all the c
 
 ### Data preparation
 
-Execute data preparation if your environment need this (**BE CAREFUL!** data preparation truncate some tables!):
+Execute data preparation if your environment need this:
 
 `pnpm run data-preparation`
+
+
+### AWS credentials and authenticated session
+
+
 
 ### Test suite
 
@@ -45,7 +50,7 @@ Run all pull tests:
 
 `pnpm test:pull`
 
-If you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`
+If you want execute just specific test you can use `pnpm test:tags "@some_useful_tag"`.
 
 
 ## <a name="enviroment"></a>Environment and enviroment variables
