@@ -55,14 +55,14 @@ export async function setupEserviceTable() {
     }
   }
 }
-export async function truncateConsumerEserviceTable() {
-  await clientSchemaInterop.query("delete from dev_interop.consumer_eservice;");
+export async function truncateAgreementTable() {
+  await clientSchemaInterop.query("delete from dev_interop.agreement;");
 }
 
 export async function truncateSignalTable() {
   await clientSchemaSignal.query("delete from dev_signalhub.signal;");
 }
-export async function setupConsumerEserviceTable() {
+export async function setupAgreementTable() {
   const { id, agreements } = signalConsumer;
   let count = 0;
   for (const agreement of agreements.filter(
@@ -70,7 +70,7 @@ export async function setupConsumerEserviceTable() {
     (e: any) => !("skip_insert" in e)
   )) {
     const query = {
-      text: "INSERT INTO dev_interop.consumer_eservice (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6) ON CONFLICT(eservice_id, consumer_id, descriptor_id) DO NOTHING",
+      text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6) ON CONFLICT(eservice_id, consumer_id, descriptor_id) DO NOTHING",
       values: [
         agreement.id,
         agreement.eservice,
