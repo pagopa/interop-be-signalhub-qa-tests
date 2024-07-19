@@ -154,7 +154,7 @@ export namespace PushSignal {
    * @tags Gateway
    * @name PushSignal
    * @summary Insert signals
-   * @request POST:/push-signal
+   * @request POST:/signals
    * @secure
    */
   export namespace PushSignal {
@@ -172,7 +172,7 @@ export namespace PushSignalByConsumers {
    * @tags Gateway
    * @name PushSignalList
    * @summary Insert signals
-   * @request POST:/push-signal-by-consumers
+   * @request POST:/signals-by-consumers
    * @secure
    */
   export namespace PushSignalList {
@@ -375,12 +375,12 @@ export class Api<
      * @tags Gateway
      * @name PushSignal
      * @summary Insert signals
-     * @request POST:/push-signal
+     * @request POST:/signals
      * @secure
      */
     pushSignal: (data: SignalRequest, params: RequestParams = {}) =>
       this.request<Signal, Problem>({
-        path: `/push-signal`,
+        path: `/signals`,
         method: "POST",
         body: data,
         secure: true,
@@ -396,12 +396,12 @@ export class Api<
      * @tags Gateway
      * @name PushSignalList
      * @summary Insert signals
-     * @request POST:/push-signal-by-consumers
+     * @request POST:/signals-by-consumers
      * @secure
      */
     pushSignalList: (data: SignalConsumerRequest, params: RequestParams = {}) =>
       this.request<Signal, Problem>({
-        path: `/push-signal-by-consumers`,
+        path: `/signals-by-consumers`,
         method: "POST",
         body: data,
         secure: true,

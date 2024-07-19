@@ -126,7 +126,7 @@ export namespace PullSignal {
    * @tags gateway
    * @name GetRequest
    * @summary Get a list of signals
-   * @request GET:/pull-signal/{eserviceId}
+   * @request GET:/signals/{eserviceId}
    * @secure
    */
   export namespace GetRequest {
@@ -302,12 +302,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags gateway
      * @name GetRequest
      * @summary Get a list of signals
-     * @request GET:/pull-signal/{eserviceId}
+     * @request GET:/signals/{eserviceId}
      * @secure
      */
     getRequest: ({ eserviceId, ...query }: GetRequestParams, params: RequestParams = {}) =>
       this.request<PaginationSignal, Problem>({
-        path: `/pull-signal/${eserviceId}`,
+        path: `/signals/${eserviceId}`,
         method: "GET",
         query: query,
         secure: true,
