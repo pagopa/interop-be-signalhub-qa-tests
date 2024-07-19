@@ -4,7 +4,6 @@ import {
   disconnectInterop,
   setupAgreementTable,
   setupEserviceTable,
-  truncateAgreementTable,
 } from "../data/db";
 
 (async () => {

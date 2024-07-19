@@ -80,7 +80,7 @@ Feature: Deposito segnali
     When l'utente deposita un segnale
     Then la richiesta va in errore con status code 403
   # @push_signals11 @wait_for_fix
-  # Scenario Outline: Un utente, la cui organizzazione abbia una richiesta di fruizione per l’e-service deposito segnali, deposita un segnale per un consumer specifico. La richiesta va a buon fine. NB: endpoint /push-signal-by-consumers
+  # Scenario Outline: Un utente, la cui organizzazione abbia una richiesta di fruizione per l’e-service deposito segnali, deposita un segnale per un consumer specifico. La richiesta va a buon fine. NB: endpoint /signals-by-consumers
   #   Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
   #   When l'utente deposita un segnale specifico per un consumer
   #   Then la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
