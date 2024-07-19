@@ -2,8 +2,9 @@ import { nodeEnv } from "../configs/env";
 import {
   connectInterop,
   disconnectInterop,
-  setupConsumerEserviceTable,
+  setupAgreementTable,
   setupEserviceTable,
+  truncateAgreementTable,
 } from "../data/db";
 
 (async () => {
@@ -12,9 +13,9 @@ import {
   console.info("Set up database table ESERVICE: insert data");
   // await truncateEserviceTable();
   await setupEserviceTable();
-  console.info("Set up database table: CONSUMER_ESERVICE: insert data");
-  // await truncateConsumerEserviceTable();
-  await setupConsumerEserviceTable();
+  console.info("Set up database table: AGREEMENT: insert data");
+  // await truncateAgreementTable();
+  await setupAgreementTable();
 })()
   .catch((err) => {
     console.error(err);
