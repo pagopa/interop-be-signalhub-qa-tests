@@ -4,6 +4,7 @@ import {
   disconnectInterop,
   setupAgreementTable,
   setupEserviceTable,
+  truncateAgreementTable,
 } from "../data/db";
 
 (async () => {
@@ -13,6 +14,7 @@ import {
   // await truncateEserviceTable();
   await setupEserviceTable();
   console.info("Set up database table: AGREEMENT: insert data");
+  // await truncateAgreementTable();
   await setupAgreementTable();
 })()
   .catch((err) => {
