@@ -4,6 +4,7 @@ import {
   disconnectInterop,
   setupAgreementTable,
   setupEserviceTable,
+  setupPurposeTable,
 } from "../data/db";
 
 (async () => {
@@ -15,6 +16,8 @@ import {
   console.info("Set up database table: AGREEMENT: insert data");
   // await truncateAgreementTable();
   await setupAgreementTable();
+  console.info("Set up database table: PURPOSE: insert data");
+  await setupPurposeTable();
 })()
   .catch((err) => {
     console.error(err);
