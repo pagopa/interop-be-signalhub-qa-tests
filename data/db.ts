@@ -1,41 +1,31 @@
-import pg from "pg";
 import {
   signalProducer,
   signalConsumer,
   eserviceProducer,
 } from "../lib/common";
 import { databaseConfig } from "../configs/db.config";
+import { createDbInstance } from "./initDb";
 
-const { Client } = pg;
-
-export const clientSchemaInterop = new Client({
+export const clientSchemaInterop = createDbInstance({
   database: databaseConfig.dbName,
   host: databaseConfig.dbHost,
   port: databaseConfig.dbPort,
-  user: databaseConfig.dbUserBatchUpdate,
+  username: databaseConfig.dbUserBatchUpdate,
   password: databaseConfig.dbPasswordBatchUpdate,
-  ssl:
-    process.env.DB_USE_SSL === "true"
-      ? { rejectUnauthorized: false }
-      : undefined,
+  useSSL: databaseConfig.dbUseSSL,
 });
 
-export const clientSchemaSignal = new Client({
+export const clientSchemaSignal = createDbInstance({
   database: databaseConfig.dbName,
   host: databaseConfig.dbHost,
   port: databaseConfig.dbPort,
-  user: databaseConfig.dbUserBatchCleanup,
+  username: databaseConfig.dbUserBatchCleanup,
   password: databaseConfig.dbPasswordBatchCleanup,
-  ssl:
-    process.env.DB_USE_SSL === "true"
-      ? { rejectUnauthorized: false }
-      : undefined,
+  useSSL: databaseConfig.dbUseSSL,
 });
 
 export const connectInterop = async () => await clientSchemaInterop.connect();
-export const disconnectInterop = async () => await clientSchemaInterop.end();
 export const connectSignal = async () => await clientSchemaSignal.connect();
-export const disconnectSignal = async () => await clientSchemaSignal.end();
 export async function truncateEserviceTable() {
   await clientSchemaInterop.query("delete from dev_interop.eservice;");
 }

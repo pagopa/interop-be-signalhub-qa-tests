@@ -1,7 +1,6 @@
 import { nodeEnv } from "../configs/env";
 import {
   connectInterop,
-  disconnectInterop,
   setupAgreementTable,
   setupEserviceTable,
   setupPurposeTable,
@@ -24,5 +23,4 @@ import {
   })
   .finally(async () => {
     console.info("End database connection");
-    await disconnectInterop();
   });

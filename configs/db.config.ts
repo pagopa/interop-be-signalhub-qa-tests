@@ -13,6 +13,9 @@ const databaseEnvConfig = z
     DB_PASSWORD_BATCH_UPDATE: z.string(),
     DB_USER_BATCH_CLEANUP: z.string(),
     DB_PASSWORD_BATCH_CLEANUP: z.string(),
+    DB_USE_SSL: z
+      .enum(["true", "false"])
+      .transform((value) => value === "true"),
   })
   .transform((c) => ({
     dbName: c.DB_NAME,
@@ -22,6 +25,7 @@ const databaseEnvConfig = z
     dbPasswordBatchUpdate: c.DB_PASSWORD_BATCH_UPDATE,
     dbUserBatchCleanup: c.DB_USER_BATCH_CLEANUP,
     dbPasswordBatchCleanup: c.DB_PASSWORD_BATCH_CLEANUP,
+    dbUseSSL: c.DB_USE_SSL,
   }));
 
 export type DatabaseEnvConfig = z.infer<typeof databaseEnvConfig>;
