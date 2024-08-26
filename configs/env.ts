@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { TypeOf, z } from "zod";
 
-export const nodeEnv = process.env.NODE_ENV || "local";
+export const nodeEnv = process.env.NODE_ENV || "personal";
 dotenv.config({ path: `.env.${nodeEnv}` });
 
 export const Env = z.object({
