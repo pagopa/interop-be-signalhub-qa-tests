@@ -23,4 +23,5 @@ import {
   })
   .finally(async () => {
     console.info("End database connection");
+    process.exit(0);
   });
