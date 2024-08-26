@@ -4,15 +4,16 @@ import {
   signalConsumer,
   eserviceProducer,
 } from "../lib/common";
+import { databaseConfig } from "../configs/db.config";
 
 const { Client } = pg;
 
 export const clientSchemaInterop = new Client({
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER_BATCH_UPDATE,
-  password: process.env.DB_PASSWORD_BATCH_UPDATE,
+  database: databaseConfig.dbName,
+  host: databaseConfig.dbHost,
+  port: databaseConfig.dbPort,
+  user: databaseConfig.dbUserBatchUpdate,
+  password: databaseConfig.dbPasswordBatchUpdate,
   ssl:
     process.env.DB_USE_SSL === "true"
       ? { rejectUnauthorized: false }
@@ -20,11 +21,11 @@ export const clientSchemaInterop = new Client({
 });
 
 export const clientSchemaSignal = new Client({
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER_BATCH_CLEANUP,
-  password: process.env.DB_PASSWORD_BATCH_CLEANUP,
+  database: databaseConfig.dbName,
+  host: databaseConfig.dbHost,
+  port: databaseConfig.dbPort,
+  user: databaseConfig.dbUserBatchCleanup,
+  password: databaseConfig.dbPasswordBatchCleanup,
   ssl:
     process.env.DB_USE_SSL === "true"
       ? { rejectUnauthorized: false }
