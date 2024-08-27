@@ -12,7 +12,7 @@ import {
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { PaginationSignal } from "../../../api/pull-signals.models";
-import { getVoucherBy } from "../../../lib/voucher";
+import { getExpiredVoucher, getVoucherBy } from "../../../lib/voucher";
 import { VoucherTypologies } from "../../../lib/voucher.env";
 
 Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
@@ -47,7 +47,8 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali",
   async function () {
-    this.consumerVoucher = process.env.EXPIRED_TOKEN;
+    const expired = await getExpiredVoucher(VoucherTypologies.Enum.CONSUMER);
+    this.consumerVoucher = expired;
   }
 );
 
