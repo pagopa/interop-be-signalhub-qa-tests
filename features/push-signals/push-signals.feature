@@ -78,7 +78,7 @@ Feature: Deposito segnali
   Scenario Outline: Un utente, la cui organizzazione non abbia una richiesta di fruizione per deposito segnali ma per un altro e-service, deposita un segnale. La richiesta va in errore. NB. Non è possibile depositare un segnale senza una richiesta di fruizione attiva verso l'e-service di deposito segnali. Il processo di autenticazione dell'e-service deposito segnali considera il voucher non valido a causa dell'audience non corrispondente a quello dell'e-service deposito segnali. Il claim "aud" è impostato dell'authentication server in base alla purposeId presente nella client assertion
     Given Un utente, come produttore di segnali, ma come fruitore di un altro e-service, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali
     When l'utente deposita un segnale
-    Then la richiesta va in errore con status code 403
+    Then la richiesta va in errore con status code 401
   # @push_signals11 @wait_for_fix
   # Scenario Outline: Un utente, la cui organizzazione abbia una richiesta di fruizione per l’e-service deposito segnali, deposita un segnale per un consumer specifico. La richiesta va a buon fine. NB: endpoint /signals-by-consumers
   #   Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali

@@ -121,12 +121,3 @@ export async function sleep(time: number) {
     setTimeout(resolve, time);
   });
 }
-
-export function assertHttpErrorStatusCode(actual: number, expected: number) {
-  if (process.env.LEVEL_VERIFY_ERROR_HTTP_CODE === "loose") {
-    const looseExpected = Number(expected.toString().slice(0, -1));
-    const looseActual = Number(actual.toString().slice(0, -1));
-    return assert.strictEqual(looseActual, looseExpected);
-  }
-  return assert.strictEqual(actual, expected);
-}
