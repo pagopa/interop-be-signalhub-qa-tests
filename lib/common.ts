@@ -1,6 +1,5 @@
 import "../configs/env";
 import fs from "fs";
-import assert from "assert";
 import { AxiosResponse } from "axios";
 import {
   SignalConsumerRequest,
