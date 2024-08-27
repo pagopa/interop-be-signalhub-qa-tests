@@ -27,9 +27,7 @@ export const getVoucherBy = async (
 
 export const getExpiredVoucher = async (
   voucherType: VoucherTypologies
-): Promise<string> => {
-  return await buildVoucher(voucherType, {}, true);
-};
+): Promise<string> => await buildVoucher(voucherType, {}, true);
 
 const buildCachedVouchers = async () => {
   const vouchers = {} as SessionVouchers;

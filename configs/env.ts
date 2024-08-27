@@ -10,7 +10,6 @@ export const Env = z.object({
   URL_AUTH_TOKEN: z.string(),
   API_BASE_URL_PUSH: z.string(),
   API_BASE_URL_PULL: z.string(),
-  EXPIRED_TOKEN: z.string(),
   CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
   LEVEL_VERIFY_ERROR_HTTP_CODE: z.enum(["strict", "loose"]).default("strict"),
