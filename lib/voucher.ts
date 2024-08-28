@@ -25,6 +25,10 @@ export const getVoucherBy = async (
   return voucher;
 };
 
+export const getExpiredVoucher = async (
+  voucherType: VoucherTypologies
+): Promise<string> => await buildVoucher(voucherType, {}, true);
+
 const buildCachedVouchers = async () => {
   const vouchers = {} as SessionVouchers;
   for (const vType of VoucherTypologies.options) {
@@ -35,20 +39,24 @@ const buildCachedVouchers = async () => {
 
 const buildVoucher = async (
   voucherType: VoucherTypologies,
-  partialVoucherEnv: Partial<VoucherEnv>
+  partialVoucherEnv: Partial<VoucherEnv>,
+  generateExpiredToken: boolean = false
 ) => {
   const voucherEnv = {
     ...getVocherEnvBy(voucherType),
     ...partialVoucherEnv,
   };
-  return await getVoucherSelfSigned(voucherEnv);
+  return await getVoucherSelfSigned(voucherEnv, generateExpiredToken);
 };
 
 const getVoucherSelfSigned = async (
-  voucherEnv: VoucherEnv
+  voucherEnv: VoucherEnv,
+  generateExpiredToken: boolean = false
 ): Promise<string> => {
   try {
-    return await voucherGenerator(voucherEnv).buildSelfSignedVoucher();
+    return await voucherGenerator(voucherEnv).buildSelfSignedVoucher(
+      generateExpiredToken
+    );
   } catch (err) {
     console.log(err);
     throw new Error("no voucher");

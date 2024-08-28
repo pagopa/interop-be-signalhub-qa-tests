@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { TypeOf, z } from "zod";
 
-export const nodeEnv = process.env.NODE_ENV || "local";
+export const nodeEnv = process.env.NODE_ENV || "personal";
 dotenv.config({ path: `.env.${nodeEnv}` });
 
 export const Env = z.object({
@@ -10,14 +10,6 @@ export const Env = z.object({
   URL_AUTH_TOKEN: z.string(),
   API_BASE_URL_PUSH: z.string(),
   API_BASE_URL_PULL: z.string(),
-  EXPIRED_TOKEN: z.string(),
-  DB_NAME: z.string(),
-  DB_HOST: z.string(),
-  DB_PORT: z.coerce.number(),
-  DB_USER_BATCH_UPDATE: z.string(),
-  DB_PASSWORD_BATCH_UPDATE: z.string(),
-  DB_USER_BATCH_CLEANUP: z.string(),
-  DB_PASSWORD_BATCH_CLEANUP: z.string(),
   CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
   LEVEL_VERIFY_ERROR_HTTP_CODE: z.enum(["strict", "loose"]).default("strict"),

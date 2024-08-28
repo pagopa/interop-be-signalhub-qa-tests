@@ -36,9 +36,13 @@ export const voucherGenerator = (voucherEnv: VoucherEnv) => {
   const kms: KMSClient = new KMSClient();
 
   return {
-    async buildSelfSignedVoucher(): Promise<string> {
+    async buildSelfSignedVoucher(
+      generateExpiredToken: boolean = false
+    ): Promise<string> {
       try {
-        const token = createToken(voucherEnv);
+        const token = generateExpiredToken
+          ? createExpiredToken(voucherEnv)
+          : createToken(voucherEnv);
         const signedToken = await signToken(voucherEnv.KMS_KEY_ID, token, kms);
         return `${token}.${base64EncodeBuffer(signedToken)}`;
       } catch (err: unknown) {
@@ -74,6 +78,16 @@ async function signToken(
 function createToken(voucherEnv: VoucherEnv): string {
   const header: JWTHeader = createHeader(voucherEnv);
   const payload: JWTPayload = createPayload(voucherEnv);
+  return `${base64EncodeObject(header)}.${base64EncodeObject(payload)}`;
+}
+
+function createExpiredToken(voucherEnv: VoucherEnv): string {
+  const header: JWTHeader = createHeader(voucherEnv);
+  const payload: JWTPayload = createPayload(voucherEnv);
+
+  const oneDayInMs = 864e5; // 24 * 60 * 60 * 1000
+  payload.exp = Math.floor((Date.now() - oneDayInMs) / 1000);
+
   return `${base64EncodeObject(header)}.${base64EncodeObject(payload)}`;
 }
 

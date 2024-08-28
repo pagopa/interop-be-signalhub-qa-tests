@@ -4,13 +4,7 @@ import {
   BeforeAll,
   setDefaultTimeout,
 } from "@cucumber/cucumber";
-import {
-  connectInterop,
-  disconnectInterop,
-  truncateSignalTable,
-  connectSignal,
-  disconnectSignal,
-} from "../data/db";
+import { connectInterop, truncateSignalTable, connectSignal } from "../data/db";
 import { nodeEnv } from "../configs/env";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
@@ -30,7 +24,5 @@ Before(async function () {
 
 AfterAll(async function () {
   console.info("End database connection");
-  await disconnectInterop();
-  await disconnectSignal();
   console.info(`*** END SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***\n`);
 });
