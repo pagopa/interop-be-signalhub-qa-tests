@@ -4,6 +4,7 @@ node_modules
 
 # Local env files
 # In this way .env file will be pushed!
+*.local*
 .env.*.local
 .env.local
 .env.development.local
