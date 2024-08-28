@@ -7,13 +7,13 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per un e-service diverso da lettura segnali. L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: La richiesta non va a buon fine (status code: 401) poichè l’utente che vuole leggere il segnale non ha inviato un voucher che non è valido per dialogare con l’e-service lettura-segnali.
     Given un utente, come consumatore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di lettura segnali
     When l'utente consumatore recupera un segnale
-    Then la richiesta va in errore con status code 403
+    Then la richiesta va in errore con status code 401
 
   @pull_signals2
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher scaduto. L’utente consumatore recupera un segnale. La richiesta non va a buon fine.
     Given un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali
     When l'utente consumatore recupera un segnale
-    Then la richiesta va in errore con status code 403
+    Then la richiesta va in errore con status code 401
 
   @pull_signals3
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore non ha una richiesta di fruizione per un e-service sottoscritto all' e-service deposito segnali. L’utente consumatore recupera un segnale. La richiesta non va a buon fine. NB: Nonostante il consumatore abbia una richiesta di fruizione verso l’e-service di lettura segnali, non ha una richiesta di fruizione per l’e-service per cui si richiede il segnale.
@@ -54,6 +54,7 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
   @pull_signals8
   Scenario Outline: Un utente consumatore di segnali, ottiene un voucher valido per l’accesso all'e-service lettura segnali. L’utente consumatore ha una richiesta di fruizione per un e-service sottoscritto all' e-service deposito segnali. L’utente produttore deposita 20 segnali. L’utente consumatore recupera la lista di segnali. La richiesta va a buon fine e restituisce un lista di 10 segnali con lastSignalId = 10.
  NB. Il limite per pagina per il recupero dei segnali è impostato a 100.
+
     Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     Given un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     Given l'utente produttore di segnali deposita 105 segnali
