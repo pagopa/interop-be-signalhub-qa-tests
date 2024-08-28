@@ -17,7 +17,7 @@ import { VoucherTypologies } from "../../../lib/voucher.env";
 
 Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
   // This sleep function simulate the time SQS will take to process the signal and put on DB
-  await sleep(5000);
+  await sleep(10000);
 });
 
 Given(
