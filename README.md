@@ -36,10 +36,15 @@ Execute data preparation if your environment need this:
 
 Authenticated AWS session (+ export profile)
 
-`~/.aws.config`
-`[PROFILE YOUR_AWS_PROFILE]`
+```
+# file ~/.aws.config
+[PROFILE <YOUR_AWS_PROFILE>]
+sso_role_name
+sso_account_id
+... and other informations
+```
 
-`export AWS_PROFILE=YOUR_AWS_PROFILE` 
+`export AWS_PROFILE=<YOUR_AWS_PROFILE>` 
 `aws sso login`
 
 ### Test suite
