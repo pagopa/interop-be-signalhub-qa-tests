@@ -26,13 +26,13 @@ const databaseEnvConfig = z
     dbHost: c.DB_HOST,
     dbPort: c.DB_PORT,
     dbUserAgreement: c.DB_AGREEMENT_USER,
-    dbPasswordAgreement: c.DB_AGREEMENT_PASSWORD,
+    dbPasswordAgreement: encodeURIComponent(c.DB_AGREEMENT_PASSWORD),
     dbUserEservice: c.DB_ESERVICE_USER,
-    dbPasswordEservice: c.DB_ESERVICE_PASSWORD,
+    dbPasswordEservice: encodeURIComponent(c.DB_ESERVICE_PASSWORD),
     dbUserPurpose: c.DB_PURPOSE_USER,
-    dbPasswordPurpose: c.DB_PURPOSE_PASSWORD,
+    dbPasswordPurpose: encodeURIComponent(c.DB_PURPOSE_PASSWORD),
     dbUserBatchCleanup: c.DB_USER_BATCH_CLEANUP,
-    dbPasswordBatchCleanup: c.DB_PASSWORD_BATCH_CLEANUP,
+    dbPasswordBatchCleanup: encodeURIComponent(c.DB_PASSWORD_BATCH_CLEANUP),
     dbUseSSL: c.DB_USE_SSL,
   }));
 
