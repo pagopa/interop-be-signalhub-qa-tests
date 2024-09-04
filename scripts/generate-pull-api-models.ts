@@ -2,7 +2,7 @@ import path from "path";
 import { generateApi } from "swagger-typescript-api";
 
 const openApiSpecificationFileUrl =
-  "https://raw.githubusercontent.com/pagopa/interop-be-signalhub-pull-service/feature/poc/docs/openapi/pull-signal_v1.yaml";
+  "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/main/packages/pull-signal/src/api/pull-signals_1.2.0_.yaml";
 
 const apiFolderPath = path.resolve("./api/");
 

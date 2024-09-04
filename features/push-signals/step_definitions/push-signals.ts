@@ -3,7 +3,6 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
   createSignal,
-  createSignalConsumers,
   eserviceIdNotPublished,
   eserviceIdPublishedByAnotherOrganization,
   eserviceIdSecondPushSignals,
@@ -13,13 +12,10 @@ import {
   sleep,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
-import {
-  Problem,
-  SignalRequest,
-  SignalType,
-} from "../../../api/push-signals.models";
+import { PushSignalPayload as SignalRequest } from "../../../api/push-signals.models";
 import { getVoucherBy } from "../../../lib/voucher";
 import { VoucherTypologies } from "../../../lib/voucher.env";
+import { SignalType } from "../../../lib/types";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
@@ -43,7 +39,7 @@ Given(
 Given("l'utente deposita un segnale per il primo e-service", async function () {
   const signalRequest = createSignal();
 
-  const response = await pushSignalApiClient.pushSignal.pushSignal(
+  const response = await pushSignalApiClient.signals.pushSignal(
     signalRequest,
     getAuthorizationHeader(this.voucher)
   );
@@ -51,6 +47,11 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
 
   this.requestSignalId = signalRequest.signalId;
 });
+
+// When("l'utente verifica lo stato del servizio" , async function () {
+
+//   this.response = await pushSignalApiClient.
+// })
 
 When(
   "l'utente deposita un segnale per il secondo e-service",
@@ -62,7 +63,7 @@ When(
       eserviceId,
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -79,7 +80,7 @@ When(
       eserviceId,
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -96,7 +97,7 @@ When(
       signalId: this.requestSignalId,
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -106,7 +107,7 @@ When(
 When("l'utente deposita un segnale", async function () {
   const signalRequest = createSignal();
 
-  this.response = await pushSignalApiClient.pushSignal.pushSignal(
+  this.response = await pushSignalApiClient.signals.pushSignal(
     signalRequest,
     getAuthorizationHeader(this.voucher)
   );
@@ -114,18 +115,17 @@ When("l'utente deposita un segnale", async function () {
   this.requestSignalId = signalRequest.signalId;
 });
 
-When(
-  "l'utente deposita un segnale specifico per un consumer",
-  async function () {
-    const signalRequest = createSignalConsumers();
-    this.response =
-      await pushSignalApiClient.pushSignalByConsumers.pushSignalList(
-        signalRequest,
-        getAuthorizationHeader(this.voucher)
-      );
-    this.requestSignalId = signalRequest.signalId;
-  }
-);
+// When(
+//   "l'utente deposita un segnale specifico per un consumer",
+//   async function () {
+//     const signalRequest = createSignalConsumers();
+//     this.response = await pushSignalApiClient.signals.pushSignalList(
+//       signalRequest,
+//       getAuthorizationHeader(this.voucher)
+//     );
+//     this.requestSignalId = signalRequest.signalId;
+//   }
+// );
 
 When(
   "l'utente deposita un segnale per un e-service che non esiste",
@@ -133,7 +133,7 @@ When(
     const eserviceId = "this-eservice-does-not-exist";
     const signalRequest = createSignal({ eserviceId });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -146,7 +146,7 @@ When(
     const eserviceId = eserviceIdNotPublished;
     const signalRequest = createSignal({ eserviceId });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -160,7 +160,7 @@ When(
       signalType: "TEST" as SignalType,
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -175,7 +175,7 @@ When(
       signalId: getRandomSignalId(),
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -185,7 +185,7 @@ When(
 );
 
 When("l'utente deposita un segnale vuoto", async function () {
-  this.response = await pushSignalApiClient.pushSignal.pushSignal(
+  this.response = await pushSignalApiClient.signals.pushSignal(
     {} as SignalRequest,
     getAuthorizationHeader(this.voucher)
   );
@@ -199,7 +199,7 @@ When(
       eserviceId,
     });
 
-    this.response = await pushSignalApiClient.pushSignal.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -209,7 +209,7 @@ When(
 Then(
   "la richiesta va in errore con status code {int}",
   function (statusCode: number) {
-    const { errors } = this.response.data as Problem;
+    const { errors } = this.response.data;
     assert.strictEqual(this.response.status, statusCode);
     // assertHttpErrorStatusCode(this.response.status, statusCode);
     assert.ok(errors.length > 0);

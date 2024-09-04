@@ -1,12 +1,9 @@
 import "../configs/env";
 import fs from "fs";
 import { AxiosResponse } from "axios";
-import {
-  SignalConsumerRequest,
-  SignalRequest,
-  SignalType,
-} from "../api/push-signals.models";
-import { GetRequestParams } from "../api/pull-signals.models";
+import { PushSignalPayload as SignalRequest } from "../api/push-signals.models";
+import { PullSignalParams } from "../api/pull-signals.models";
+import { SignalType } from "./types";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
@@ -84,8 +81,8 @@ export function createSignal(
 }
 
 export function createPullSignalRequest(
-  partialPullSignalRequest: Partial<GetRequestParams> = {}
-): GetRequestParams {
+  partialPullSignalRequest: Partial<PullSignalParams> = {}
+): PullSignalParams {
   return {
     eserviceId: eserviceIdPushSignals, // This has to be Eservice which puts signal on SQS
     signalId: 0, // To Be defined
@@ -93,20 +90,20 @@ export function createPullSignalRequest(
   };
 }
 
-export function createSignalConsumers(): SignalConsumerRequest {
-  return {
-    signalByConsumers: [
-      {
-        consumerId: signalConsumer.id,
-        objectId: crypto.randomUUID(),
-      },
-    ],
-    signalType: SIGNAL_TYPE_DEFAULT,
-    eserviceId: eserviceIdPushSignals,
-    objectType: crypto.randomUUID(),
-    signalId: getRandomSignalId(),
-  };
-}
+// export function createSignalConsumers(): SignalConsumerRequest {
+//   return {
+//     signalByConsumers: [
+//       {
+//         consumerId: signalConsumer.id,
+//         objectId: crypto.randomUUID(),
+//       },
+//     ],
+//     signalType: SIGNAL_TYPE_DEFAULT,
+//     eserviceId: eserviceIdPushSignals,
+//     objectType: crypto.randomUUID(),
+//     signalId: getRandomSignalId(),
+//   };
+// }
 
 export function getRandomSignalId() {
   return parseInt(
