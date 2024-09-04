@@ -79,3 +79,8 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
     Given il sistema deposita i segnali
     When l'utente consumatore recupera un segnale inserendo un signalId uguale a 3
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 2 segnali e lastSignalId = 5
+
+  @pull_signals11
+  Scenario Outline: Un utente, verifica la salute del servizio di recupero segnali mediante l'API di healtcheck. La richiesta va a buon fine.
+    When l'utente verifica lo stato del servizio di recupero segnali
+    Then la richiesta va a buon fine con status code 200

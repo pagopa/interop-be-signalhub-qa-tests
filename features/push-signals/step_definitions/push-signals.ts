@@ -115,18 +115,6 @@ When("l'utente deposita un segnale", async function () {
   this.requestSignalId = signalRequest.signalId;
 });
 
-// When(
-//   "l'utente deposita un segnale specifico per un consumer",
-//   async function () {
-//     const signalRequest = createSignalConsumers();
-//     this.response = await pushSignalApiClient.signals.pushSignalList(
-//       signalRequest,
-//       getAuthorizationHeader(this.voucher)
-//     );
-//     this.requestSignalId = signalRequest.signalId;
-//   }
-// );
-
 When(
   "l'utente deposita un segnale per un e-service che non esiste",
   async function () {
@@ -192,6 +180,13 @@ When("l'utente deposita un segnale vuoto", async function () {
 });
 
 When(
+  "l'utente verifica lo stato del servizio di deposito segnali",
+  async function () {
+    this.response = await pushSignalApiClient.status.getStatus();
+  }
+);
+
+When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
   async function () {
     const eserviceId = eserviceIdPublishedByAnotherOrganization; // e-service id presente in tabella postgres
@@ -205,6 +200,10 @@ When(
     );
   }
 );
+
+Then("la richiesta va a buon fine con status code 200", function () {
+  assert.strictEqual(this.response.status, 200);
+});
 
 Then(
   "la richiesta va in errore con status code {int}",

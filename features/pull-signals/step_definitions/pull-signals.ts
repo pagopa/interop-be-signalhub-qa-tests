@@ -107,6 +107,13 @@ When(
 );
 
 When(
+  "l'utente verifica lo stato del servizio di recupero segnali",
+  async function () {
+    this.response = await pullSignalApiClient.status.getStatus();
+  }
+);
+
+When(
   "l'utente consumatore recupera un segnale per un e-service con cui ha una richiesta di fruizone in stato diverso da ACTIVE",
   async function () {
     const pullSignalRequest = createPullSignalRequest({
