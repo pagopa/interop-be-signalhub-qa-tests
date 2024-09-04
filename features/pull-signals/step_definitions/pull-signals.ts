@@ -11,12 +11,11 @@ import {
 } from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
-import { PaginationSignal } from "../../../api/pull-signals.models";
 import { getExpiredVoucher, getVoucherBy } from "../../../lib/voucher";
 import { VoucherTypologies } from "../../../lib/voucher.env";
 
 Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
-  // This sleep function simulate the time SQS will take to process the signal and put on DB
+  // This sleep functioxn simulate the time SQS will take to process the signal and put on DB
   await sleep(10000);
 });
 
@@ -60,7 +59,7 @@ When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
     size: 100,
   });
 
-  this.response = await pullSignalApiClient.pullSignal.getRequest(
+  this.response = await pullSignalApiClient.signals.pullSignal(
     pullSignalRequest,
     getAuthorizationHeader(this.consumerVoucher)
   );
@@ -78,7 +77,7 @@ Given(
       .fill(0)
       .map((_, index) => index + startSignalId);
     const pushASignal = async (signalId: number) => {
-      const response = await pushSignalApiClient.pushSignal.pushSignal(
+      const response = await pushSignalApiClient.signals.pushSignal(
         {
           ...signalRequest,
           signalId,
@@ -100,10 +99,17 @@ When(
       eserviceId: eserviceIdNotAgreementWithConsumer,
     });
 
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
+  }
+);
+
+When(
+  "l'utente verifica lo stato del servizio di recupero segnali",
+  async function () {
+    this.response = await pullSignalApiClient.status.getStatus();
   }
 );
 
@@ -114,7 +120,7 @@ When(
       eserviceId: eserviceIdAgreementSuspendedWithConsumer,
     });
 
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
@@ -128,7 +134,7 @@ When(
       signalId: startSignalId,
     });
 
-    this.response = await pullSignalApiClient.pullSignal.getRequest(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
@@ -138,7 +144,7 @@ When(
 Then(
   "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i)",
   function (statusCode: number, numberOfSignalList: number) {
-    const data: PaginationSignal = this.response.data;
+    const data = this.response.data;
 
     assert.strictEqual(data.signals?.length, numberOfSignalList);
     assert.strictEqual(this.response.status, statusCode);
@@ -148,7 +154,7 @@ Then(
 Then(
   "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e lastSignalId = {int}",
   function (statusCode: number, signalsLength: number, lastSignalId: number) {
-    const data: PaginationSignal = this.response.data;
+    const data = this.response.data;
 
     assert.strictEqual(data.signals?.length, signalsLength);
     assert.strictEqual(data.lastSignalId, lastSignalId);
@@ -159,7 +165,7 @@ Then(
 Then(
   "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e nessun lastSignalId",
   function (statusCode: number, numberOfSignalList: number) {
-    const data: PaginationSignal = this.response.data;
+    const data = this.response.data;
 
     assert.strictEqual(data.signals?.length, numberOfSignalList);
     assert.strictEqual(data.lastSignalId, null);
