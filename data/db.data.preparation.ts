@@ -41,7 +41,6 @@ export async function truncateEserviceTable() {
 }
 export async function setupEserviceTable() {
   const allProducers = [signalProducer, eserviceProducer];
-  let count = 0;
   for (const producer of allProducers) {
     const { id, eservices } = producer;
     for (const eservice of eservices.filter(
@@ -49,8 +48,8 @@ export async function setupEserviceTable() {
       (e: any) => !("skip_insert" in e)
     )) {
       const query = {
-        text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
-        values: [eservice.id, id, eservice.descriptor, ++count, eservice.state],
+        text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state) values ($1, $2, $3, $4) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
+        values: [eservice.id, id, eservice.descriptor, eservice.state],
       };
       await clientSchemaInteropEservice.query(query);
     }
@@ -64,19 +63,17 @@ export async function truncateAgreementTable() {
 
 export async function setupAgreementTable() {
   const { id, agreements } = signalConsumer;
-  let count = 0;
   for (const agreement of agreements.filter(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (e: any) => !("skip_insert" in e)
   )) {
     const query = {
-      text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, event_id, state) values ($1, $2, $3, $4, $5,$6) ON CONFLICT(agreement_id) DO NOTHING",
+      text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(agreement_id) DO NOTHING",
       values: [
         agreement.id,
         agreement.eservice,
         id,
         agreement.descriptor,
-        ++count,
         agreement.state,
       ],
     };
