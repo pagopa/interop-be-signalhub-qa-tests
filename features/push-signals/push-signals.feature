@@ -85,7 +85,8 @@ Feature: Deposito segnali
   #   When l'utente deposita un segnale specifico per un consumer
   #   Then la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
 
-  @push_signals_12
+  @push_signals12
   Scenario Outline: Un utente, verifica la salute del servizio di deposito segnali mediante l'API di healtcheck. La richiesta va a buon fine.
+    Given Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali
     When l'utente verifica lo stato del servizio di deposito segnali
     Then la richiesta va a buon fine con status code 200

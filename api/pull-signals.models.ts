@@ -9,6 +9,31 @@
  * ---------------------------------------------------------------
  */
 
+export type SignalType = "CREATE" | "UPDATE" | "DELETE" | "SEEDUPDATE";
+
+export interface SignalPullResponse {
+  signals: {
+    signalType: SignalType;
+    objectId: string;
+    eserviceId: string;
+    signalId: number;
+    objectType: string;
+  }[];
+  lastSignalId?: number | null;
+}
+
+export interface Problem {
+  type: string;
+  status: number;
+  title: string;
+  correlationId?: string | null;
+  detail: string;
+  errors: {
+    code: string;
+    detail: string;
+  }[];
+}
+
 export interface PullSignalParams {
   /**
    * @min 0
@@ -24,13 +49,12 @@ export interface PullSignalParams {
   eserviceId: string;
 }
 
-export namespace Status {
+export namespace V1 {
   /**
    * @description Should return OK
    * @name GetStatus
    * @summary Health status endpoint
-   * @request GET:/status
-   * @secure
+   * @request GET:/v1/pull/status
    */
   export namespace GetStatus {
     export type RequestParams = {};
@@ -39,15 +63,11 @@ export namespace Status {
     export type RequestHeaders = {};
     export type ResponseBody = "OK";
   }
-}
-
-export namespace Signals {
   /**
    * @description Retrieve a list o signals on a specific eservice starting from signalId
    * @name PullSignal
    * @summary Get a list of signals
-   * @request GET:/signals/{eserviceId}
-   * @secure
+   * @request GET:/v1/pull/signals/{eserviceId}
    */
   export namespace PullSignal {
     export type RequestParams = {
@@ -70,16 +90,7 @@ export namespace Signals {
     export type RequestHeaders = {
       authorization: string;
     };
-    export type ResponseBody = {
-      signals: {
-        signalType: "CREATE" | "UPDATE" | "DELETE" | "SEEDUPDATE";
-        objectId: string;
-        eserviceId: string;
-        signalId: number;
-        objectType: string;
-      }[];
-      lastSignalId?: number | null;
-    };
+    export type ResponseBody = SignalPullResponse;
   }
 }
 
@@ -223,62 +234,34 @@ export class HttpClient<SecurityDataType = unknown> {
  * @contact PagoPA support <Interop-sprint@pagopa.it> (https://github.com/pagopa/interop-signalhub-core/issues)
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  status = {
+  v1 = {
     /**
      * @description Should return OK
      *
      * @name GetStatus
      * @summary Health status endpoint
-     * @request GET:/status
-     * @secure
+     * @request GET:/v1/pull/status
      */
     getStatus: (params: RequestParams = {}) =>
       this.request<"OK", any>({
-        path: `/status`,
+        path: `/v1/pull/status`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
-  };
-  signals = {
+
     /**
      * @description Retrieve a list o signals on a specific eservice starting from signalId
      *
      * @name PullSignal
      * @summary Get a list of signals
-     * @request GET:/signals/{eserviceId}
-     * @secure
+     * @request GET:/v1/pull/signals/{eserviceId}
      */
     pullSignal: ({ eserviceId, ...query }: PullSignalParams, params: RequestParams = {}) =>
-      this.request<
-        {
-          signals: {
-            signalType: "CREATE" | "UPDATE" | "DELETE" | "SEEDUPDATE";
-            objectId: string;
-            eserviceId: string;
-            signalId: number;
-            objectType: string;
-          }[];
-          lastSignalId?: number | null;
-        },
-        {
-          type: string;
-          status: number;
-          title: string;
-          correlationId?: string | null;
-          detail: string;
-          errors: {
-            code: string;
-            detail: string;
-          }[];
-          toString: any;
-        }
-      >({
-        path: `/signals/${eserviceId}`,
+      this.request<SignalPullResponse, Problem>({
+        path: `/v1/pull/signals/${eserviceId}`,
         method: "GET",
         query: query,
-        secure: true,
         format: "json",
         ...params,
       }),

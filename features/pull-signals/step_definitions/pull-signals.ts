@@ -59,7 +59,7 @@ When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
     size: 100,
   });
 
-  this.response = await pullSignalApiClient.signals.pullSignal(
+  this.response = await pullSignalApiClient.v1.pullSignal(
     pullSignalRequest,
     getAuthorizationHeader(this.consumerVoucher)
   );
@@ -77,7 +77,7 @@ Given(
       .fill(0)
       .map((_, index) => index + startSignalId);
     const pushASignal = async (signalId: number) => {
-      const response = await pushSignalApiClient.signals.pushSignal(
+      const response = await pushSignalApiClient.v1.pushSignal(
         {
           ...signalRequest,
           signalId,
@@ -99,7 +99,7 @@ When(
       eserviceId: eserviceIdNotAgreementWithConsumer,
     });
 
-    this.response = await pullSignalApiClient.signals.pullSignal(
+    this.response = await pullSignalApiClient.v1.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
@@ -109,7 +109,9 @@ When(
 When(
   "l'utente verifica lo stato del servizio di recupero segnali",
   async function () {
-    this.response = await pullSignalApiClient.status.getStatus();
+    this.response = await pullSignalApiClient.v1.getStatus(
+      getAuthorizationHeader(this.consumerVoucher)
+    );
   }
 );
 
@@ -120,7 +122,7 @@ When(
       eserviceId: eserviceIdAgreementSuspendedWithConsumer,
     });
 
-    this.response = await pullSignalApiClient.signals.pullSignal(
+    this.response = await pullSignalApiClient.v1.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
@@ -134,7 +136,7 @@ When(
       signalId: startSignalId,
     });
 
-    this.response = await pullSignalApiClient.signals.pullSignal(
+    this.response = await pullSignalApiClient.v1.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.consumerVoucher)
     );
