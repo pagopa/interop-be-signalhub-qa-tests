@@ -139,7 +139,10 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "/signals" });
+    this.instance = axios.create({
+      ...axiosConfig,
+      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it",
+    });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -227,11 +230,12 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pull signal Service API
- * @version 1.2.0
+ * @version 1.1.0
  * @license ISC (https://opensource.org/license/isc-license-txt)
  * @termsOfService https://docs.pagopa.it/interoperabilita-1/normativa-e-approfondimenti
- * @baseUrl /signals
- * @contact PagoPA support <Interop-sprint@pagopa.it> (https://github.com/pagopa/interop-signalhub-core/issues)
+ * @baseUrl https://api.signalhub.interop.pagopa.it
+ *
+ * Exposes the API for Signal-hub pull service
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   v1 = {

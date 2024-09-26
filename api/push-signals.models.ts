@@ -111,7 +111,10 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "/signals" });
+    this.instance = axios.create({
+      ...axiosConfig,
+      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it",
+    });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -199,11 +202,10 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Push signal Service API
- * @version 1.2.0
+ * @version 1.1.0
  * @license ISC (https://opensource.org/license/isc-license-txt)
  * @termsOfService https://docs.pagopa.it/interoperabilita-1/normativa-e-approfondimenti
- * @baseUrl /signals
- * @contact PagoPA support (https://www.interop.pagopa.it/)
+ * @baseUrl https://api.signalhub.interop.pagopa.it
  *
  * Exposes the API for Signal-hub push service
  */
