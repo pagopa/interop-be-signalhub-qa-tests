@@ -1,9 +1,8 @@
 import "../configs/env";
 import fs from "fs";
 import { AxiosResponse } from "axios";
-import { PushSignalPayload as SignalRequest } from "../api/push-signals.models";
+import { SignalPayload, SignalType } from "../api/push-signals.models";
 import { PullSignalParams } from "../api/pull-signals.models";
-import { SignalType } from "./types";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
@@ -68,8 +67,8 @@ export function assertValidResponse<T>(response: AxiosResponse<T>) {
 }
 
 export function createSignal(
-  partialSignal: Partial<SignalRequest> = {}
-): SignalRequest {
+  partialSignal: Partial<SignalPayload> = {}
+): SignalPayload {
   return {
     objectId: crypto.randomUUID(),
     signalType: SIGNAL_TYPE_DEFAULT,

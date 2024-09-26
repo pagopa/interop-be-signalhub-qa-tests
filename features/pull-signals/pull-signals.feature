@@ -82,5 +82,6 @@ Un utente (applicativo), che ha un <ruolo>, di un <ente> aderente, come consumat
 
   @pull_signals11
   Scenario Outline: Un utente, verifica la salute del servizio di recupero segnali mediante l'API di healtcheck. La richiesta va a buon fine.
+    Given un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali
     When l'utente verifica lo stato del servizio di recupero segnali
     Then la richiesta va a buon fine con status code 200
