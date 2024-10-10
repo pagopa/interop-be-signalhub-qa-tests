@@ -7,6 +7,17 @@ type SessionVouchers = z.infer<typeof SessionVouchers>;
 
 let cachedVouchers: SessionVouchers | undefined;
 
+export const getVoucherApi = async (
+  partialVoucherEnv: Partial<VoucherEnv> = {},
+  generateExpiredToken: boolean = false
+): Promise<string> => {
+  const voucherEnv = {
+    ...getVocherEnvBy(),
+    ...partialVoucherEnv,
+  };
+  return await getVoucherSelfSigned(voucherEnv, generateExpiredToken);
+};
+
 export const getVoucherBy = async (
   voucherType: VoucherTypologies,
   partialVoucherEnv: Partial<VoucherEnv> = {}

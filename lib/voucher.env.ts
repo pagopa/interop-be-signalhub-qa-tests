@@ -19,10 +19,12 @@ const Env = z.object({
 
 export type VoucherEnv = z.infer<typeof Env>;
 
-export const VoucherTypologies = z.enum(["PRODUCER", "CONSUMER"]);
+export const VoucherTypologies = z.enum(["PRODUCER", "CONSUMER", ""]);
 export type VoucherTypologies = z.infer<typeof VoucherTypologies>;
 
-export function getVocherEnvBy(voucherType: VoucherTypologies): VoucherEnv {
+export function getVocherEnvBy(
+  voucherType: VoucherTypologies = ""
+): VoucherEnv {
   const voucherConfigData = {};
   const path = `.env.${nodeEnv}.voucher.${voucherType.toLowerCase()}`;
   dotenv.config({
