@@ -208,7 +208,7 @@ Then(
   }
 );
 
-Given("Un utente pubblica un e-service con l'opzione utilizzo SH", () => {
+Given("Un utente pubblica un e-service con l'opzione utilizzo SH", async () => {
   await createEservice(true);
 });
 
