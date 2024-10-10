@@ -15,7 +15,7 @@ import { SignalPayload, SignalType } from "../../../api/push-signals.models";
 import { getVoucherApi } from "../../../lib/voucher";
 
 Given(
-  "Un utente, come produttore di segnali, ottiene un voucher api",
+  "l'utente (produttore)(consumatore) di segnali ha ottenuto un voucher api",
   async function () {
     const voucher = await getVoucherApi();
     this.voucher = voucher;
@@ -207,32 +207,41 @@ Then(
   }
 );
 
-Given("Un utente pubblica un e-service con l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
-
-Given("Un utente pubblica un altro e-service con l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
-
 Given(
-  "Un utente, appartenente a un'altra organizzazione, come erogatore pubblica un e-service con il flag utilizzo SH",
+  "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
   () => {
     // Write code here that turns the phrase above into concrete actions
   }
 );
 
 Given(
-  "Un utente crea in stato DRAFT un e-service con l'opzione utilizzo SH",
+  "l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH",
   () => {
     // Write code here that turns the phrase above into concrete actions
   }
 );
 
-Given("Un utente pubblica un e-service senza l'opzione utilizzo SH", () => {
+Given(
+  "Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH",
+  () => {
+    // Write code here that turns the phrase above into concrete actions
+  }
+);
+
+Given(
+  "l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH",
+  () => {
+    // Write code here that turns the phrase above into concrete actions
+  }
+);
+
+Given("l'utente ha pubblicato un e-service senza l'opzione utilizzo SH", () => {
   // Write code here that turns the phrase above into concrete actions
 });
 
-Given("Un utente modifica l'e-service eliminando l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
+Given(
+  "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
+  () => {
+    // Write code here that turns the phrase above into concrete actions
+  }
+);
