@@ -44,14 +44,14 @@ Given(
 );
 
 Given(
-  "un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali",
+  "l'utente consumatore di segnali ha ottenuto un voucher api scaduto",
   async function () {
     const expired = await getExpiredVoucher(VoucherTypologies.Enum.CONSUMER);
     this.consumerVoucher = expired;
   }
 );
 
-When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
+When("l'utente recupera (un)(i) segnal(e)(i)", async function () {
   // If SignalId is not present in previous given start by signalId = 1
   const signalId = (this.startSignalId || 1) - 1;
   const pullSignalRequest = createPullSignalRequest({
@@ -66,7 +66,7 @@ When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
 });
 
 Given(
-  "l'utente produttore di segnali deposita {int} segnal(e)(i)",
+  "un utente produttore di segnali deposita {int} segnal(e)(i)",
   async function (signalLength: number) {
     const startSignalId = 1;
     const signalRequest = createSignal({
@@ -130,7 +130,7 @@ When(
 );
 
 When(
-  "l'utente consumatore recupera un segnale inserendo un signalId uguale a {int}",
+  "l'utente recupera un segnale inserendo un signalId uguale a {int}",
   async function (startSignalId: number) {
     const pullSignalRequest = createPullSignalRequest({
       signalId: startSignalId,
