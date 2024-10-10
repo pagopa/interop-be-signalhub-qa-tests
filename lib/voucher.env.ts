@@ -22,11 +22,10 @@ export type VoucherEnv = z.infer<typeof Env>;
 export const VoucherTypologies = z.enum(["PRODUCER", "CONSUMER", ""]);
 export type VoucherTypologies = z.infer<typeof VoucherTypologies>;
 
-export function getVocherEnvBy(
-  voucherType: VoucherTypologies = ""
-): VoucherEnv {
+export function getVocherEnvBy(): VoucherEnv {
   const voucherConfigData = {};
-  const path = `.env.${nodeEnv}.voucher.${voucherType.toLowerCase()}`;
+  const path = `.env.${nodeEnv}.voucher`;
+
   dotenv.config({
     path,
     processEnv: voucherConfigData,
@@ -37,7 +36,10 @@ export function getVocherEnvBy(
     const invalidEnvVars = parsedVoucherEnv.error.issues.flatMap(
       (issue) => issue.path
     );
-    console.error("Invalid or missing env vars: " + invalidEnvVars.join(", "));
+    console.error(
+      "Invalid or missing env vars (voucher creation): " +
+        invalidEnvVars.join(", ")
+    );
     process.exit(1);
   }
   return parsedVoucherEnv.data;

@@ -2,6 +2,7 @@ import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
+  createEservice,
   createSignal,
   eserviceIdNotPublished,
   eserviceIdPublishedByAnotherOrganization,
@@ -208,7 +209,7 @@ Then(
 );
 
 Given("Un utente pubblica un e-service con l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
+  await createEservice(true);
 });
 
 Given("Un utente pubblica un altro e-service con l'opzione utilizzo SH", () => {

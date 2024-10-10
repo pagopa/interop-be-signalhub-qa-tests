@@ -43,7 +43,7 @@ export const getExpiredVoucher = async (
 const buildCachedVouchers = async () => {
   const vouchers = {} as SessionVouchers;
   for (const vType of VoucherTypologies.options) {
-    vouchers[vType] = await getVoucherSelfSigned(getVocherEnvBy(vType));
+    vouchers[vType] = await getVoucherSelfSigned(getVocherEnvBy());
   }
   cachedVouchers = SessionVouchers.parse(vouchers);
 };
@@ -54,7 +54,7 @@ const buildVoucher = async (
   generateExpiredToken: boolean = false
 ) => {
   const voucherEnv = {
-    ...getVocherEnvBy(voucherType),
+    ...getVocherEnvBy(),
     ...partialVoucherEnv,
   };
   return await getVoucherSelfSigned(voucherEnv, generateExpiredToken);

@@ -3,6 +3,7 @@ import fs from "fs";
 import { AxiosResponse } from "axios";
 import { SignalPayload, SignalType } from "../api/push-signals.models";
 import { PullSignalParams } from "../api/pull-signals.models";
+import { clientSchemaInteropEservice } from "../data/db.data.preparation";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
@@ -115,4 +116,14 @@ export async function sleep(time: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
+}
+
+export async function createEservice(isEnabledToSH: boolean) {
+  const { id, descriptor, state } = signalProducer.eservices[0];
+  const query = {
+    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
+    values: [id, signalProducer.id, descriptor, state, isEnabledToSH],
+  };
+
+  await clientSchemaInteropEservice.query(query);
 }
