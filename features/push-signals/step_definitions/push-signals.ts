@@ -8,29 +8,16 @@ import {
   eserviceIdSecondPushSignals,
   getAuthorizationHeader,
   getRandomSignalId,
-  purposeIdDifferentFromEservicePushSignals,
   sleep,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { SignalPayload, SignalType } from "../../../api/push-signals.models";
-import { getVoucherBy } from "../../../lib/voucher";
-import { VoucherTypologies } from "../../../lib/voucher.env";
+import { getVoucherApi } from "../../../lib/voucher";
 
 Given(
-  "Un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
+  "Un utente, come produttore di segnali, ottiene un voucher api",
   async function () {
-    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER);
-    this.voucher = voucher;
-  }
-);
-
-Given(
-  "Un utente, come produttore di segnali, ma come fruitore di un altro e-service, ottiene un voucher valido per un e-service diverso dall'e-service di deposito segnali",
-  async function () {
-    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER, {
-      PURPOSE_ID: purposeIdDifferentFromEservicePushSignals,
-      AUDIENCE: "some-wrong-audience",
-    });
+    const voucher = await getVoucherApi();
     this.voucher = voucher;
   }
 );
@@ -46,11 +33,6 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
 
   this.requestSignalId = signalRequest.signalId;
 });
-
-// When("l'utente verifica lo stato del servizio" , async function () {
-
-//   this.response = await pushSignalApiClient.
-// })
 
 When(
   "l'utente deposita un segnale per il secondo e-service",
@@ -224,3 +206,33 @@ Then(
     assert.strictEqual(this.response.status, 200);
   }
 );
+
+Given("Un utente pubblica un e-service con l'opzione utilizzo SH", () => {
+  // Write code here that turns the phrase above into concrete actions
+});
+
+Given("Un utente pubblica un altro e-service con l'opzione utilizzo SH", () => {
+  // Write code here that turns the phrase above into concrete actions
+});
+
+Given(
+  "Un utente, appartenente a un'altra organizzazione, come erogatore pubblica un e-service con il flag utilizzo SH",
+  () => {
+    // Write code here that turns the phrase above into concrete actions
+  }
+);
+
+Given(
+  "Un utente crea in stato DRAFT un e-service con l'opzione utilizzo SH",
+  () => {
+    // Write code here that turns the phrase above into concrete actions
+  }
+);
+
+Given("Un utente pubblica un e-service senza l'opzione utilizzo SH", () => {
+  // Write code here that turns the phrase above into concrete actions
+});
+
+Given("Un utente modifica l'e-service eliminando l'opzione utilizzo SH", () => {
+  // Write code here that turns the phrase above into concrete actions
+});
