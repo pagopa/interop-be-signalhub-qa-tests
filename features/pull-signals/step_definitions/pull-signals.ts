@@ -11,8 +11,7 @@ import {
 } from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
-import { getExpiredVoucher, getVoucherBy } from "../../../lib/voucher";
-import { VoucherTypologies } from "../../../lib/voucher.env";
+import { getExpiredVoucher, getVoucher } from "../../../lib/voucher";
 
 Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
   // This sleep functioxn simulate the time SQS will take to process the signal and put on DB
@@ -22,7 +21,7 @@ Given("il sistema deposita (il)(i) segnal(e)(i)", async function () {
 Given(
   "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
   async function () {
-    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER);
+    const voucher = await getVoucher();
     this.producerVoucher = voucher;
   }
 );
@@ -30,7 +29,7 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali",
   async function () {
-    const voucher = await getVoucherBy(VoucherTypologies.Enum.CONSUMER);
+    const voucher = await getVoucher();
     this.consumerVoucher = voucher;
   }
 );
@@ -38,7 +37,7 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di lettura segnali",
   async function () {
-    const voucher = await getVoucherBy(VoucherTypologies.Enum.PRODUCER);
+    const voucher = await getVoucher();
     this.consumerVoucher = voucher;
   }
 );
@@ -46,7 +45,7 @@ Given(
 Given(
   "un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali",
   async function () {
-    const expired = await getExpiredVoucher(VoucherTypologies.Enum.CONSUMER);
+    const expired = await getExpiredVoucher();
     this.consumerVoucher = expired;
   }
 );

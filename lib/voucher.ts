@@ -1,60 +1,55 @@
-import { z } from "zod";
-import { VoucherEnv, VoucherTypologies, getVocherEnvBy } from "./voucher.env";
+import { VoucherEnv, getVocherEnv } from "./voucher.env";
 import { voucherGenerator } from "./voucherGenerator";
 
-const SessionVouchers = z.record(VoucherTypologies, z.string());
-type SessionVouchers = z.infer<typeof SessionVouchers>;
-
-let cachedVouchers: SessionVouchers | undefined;
+let cachedVouchers: string | undefined;
 
 export const getVoucherApi = async (
   partialVoucherEnv: Partial<VoucherEnv> = {},
   generateExpiredToken: boolean = false
 ): Promise<string> => {
   const voucherEnv = {
-    ...getVocherEnvBy(),
+    ...getVocherEnv(),
     ...partialVoucherEnv,
   };
   return await getVoucherSelfSigned(voucherEnv, generateExpiredToken);
 };
 
-export const getVoucherBy = async (
-  voucherType: VoucherTypologies,
+export const getVoucher = async (
   partialVoucherEnv: Partial<VoucherEnv> = {}
 ): Promise<string> => {
-  if (Object.keys(partialVoucherEnv).length !== 0) {
-    return await buildVoucher(voucherType, partialVoucherEnv);
+  if (isVoucherOverWritten(partialVoucherEnv)) {
+    return await buildVoucher(partialVoucherEnv);
   }
   if (!cachedVouchers) {
-    await buildCachedVouchers();
+    await buildCachedVoucher();
   }
-  const voucher = cachedVouchers![voucherType];
+  const voucher = cachedVouchers!;
 
   if (!voucher) {
-    throw new Error(`Voucher not found for voucherType: ${voucherType}`);
+    throw new Error("Voucher not found");
   }
   return voucher;
 };
 
-export const getExpiredVoucher = async (
-  voucherType: VoucherTypologies
-): Promise<string> => await buildVoucher(voucherType, {}, true);
+export const getExpiredVoucher = async (): Promise<string> =>
+  await buildVoucher({}, true);
 
-const buildCachedVouchers = async () => {
-  const vouchers = {} as SessionVouchers;
-  for (const vType of VoucherTypologies.options) {
-    vouchers[vType] = await getVoucherSelfSigned(getVocherEnvBy());
-  }
-  cachedVouchers = SessionVouchers.parse(vouchers);
+const buildCachedVoucher = async () => {
+  cachedVouchers = await getVoucherSelfSigned(getVocherEnv());
+};
+
+const isVoucherOverWritten = (
+  overrideVoucher: Partial<VoucherEnv>
+): boolean => {
+  return Object.keys(overrideVoucher).length !== 0;
 };
 
 const buildVoucher = async (
-  voucherType: VoucherTypologies,
   partialVoucherEnv: Partial<VoucherEnv>,
   generateExpiredToken: boolean = false
 ) => {
   const voucherEnv = {
-    ...getVocherEnvBy(),
+    ...getVocherEnv(),
     ...partialVoucherEnv,
   };
   return await getVoucherSelfSigned(voucherEnv, generateExpiredToken);
