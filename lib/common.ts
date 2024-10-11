@@ -7,6 +7,14 @@ import { clientSchemaInteropEservice } from "../data/db.data.preparation";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
+type EserviceInfo = {
+  eServiceId: string;
+  producerId: string;
+  state: string;
+  descriptorId: string;
+  isEnabledToSH: boolean;
+};
+
 function getActors() {
   const catalogInteropData = JSON.parse(
     Buffer.from(
@@ -52,6 +60,22 @@ export const {
   eserviceIdPublishedByAnotherOrganization,
   purposeIdDifferentFromEservicePushSignals,
 } = getActors();
+
+export function getEServiceProducerInfo(): Omit<EserviceInfo, "isEnabledToSH"> {
+  const { eServices, id: producerId } = signalProducer;
+  const { id: eServiceId, descriptor, state } = eServices[0];
+
+  return { eServiceId, producerId, descriptorId: descriptor, state };
+}
+
+export function getEserviceProducerDiffOwnerInfo(): Omit<
+  EserviceInfo,
+  "isEnabledToSH"
+> {
+  const { eServices, id: producerId } = eserviceProducer;
+  const { id: eServiceId, descriptor, state } = eServices[0];
+  return { eServiceId, producerId, descriptorId: descriptor, state };
+}
 
 export function getAuthorizationHeader(token: string) {
   return { headers: { Authorization: "Bearer " + token } } as const;
@@ -118,11 +142,22 @@ export async function sleep(time: number) {
   });
 }
 
-export async function createEservice(isEnabledToSH: boolean) {
-  const { id, descriptor, state } = signalProducer.eservices[0];
+export async function createEservice(eServiceInfo: EserviceInfo) {
+  const { producerId, eServiceId, descriptorId, state, isEnabledToSH } =
+    eServiceInfo;
+
   const query = {
     text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
-    values: [id, signalProducer.id, descriptor, state, isEnabledToSH],
+    values: [eServiceId, producerId, descriptorId, state, isEnabledToSH],
+  };
+
+  await clientSchemaInteropEservice.query(query);
+}
+
+export async function updateEserviceSHOptions(eServiceId: string) {
+  const query = {
+    text: "UPDATE dev_interop.eservice SET enabled_signal_hub = $1 WHERE eservice_id = $2",
+    values: [true, eServiceId],
   };
 
   await clientSchemaInteropEservice.query(query);

@@ -51,7 +51,7 @@ Feature: Deposito segnali
   @push_signals6
   Scenario Outline: Un utente, come produttore di segnali, deposita due segnali, uno per ciascun e-service di cui è erogatore. Il signalId è lo stesso. Entrambe le richieste vanno a buon fine.
     Given Un utente pubblica un e-service con l'opzione utilizzo SH
-    Given Un utente pubblica un altro e-service con l'opzione utilizzo SH  
+    Given Un utente pubblica un altro e-service con l'opzione utilizzo SH
     Given Un utente, come produttore di segnali, ottiene un voucher api
     Given l'utente deposita un segnale per il primo e-service
     When l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo
@@ -90,7 +90,7 @@ Feature: Deposito segnali
     Given Un utente pubblica un e-service senza l'opzione utilizzo SH
     Given Un utente, come produttore di segnali, ottiene un voucher api
     Given l'utente deposita un segnale
-    Then la richiesta va in errore con status code 400   
+    Then la richiesta va in errore con status code 400
 
   @push_signals11
   Scenario Outline: L'utente, come produttore di segnali, prima deposita un segnale per un e-service abilitato a Signal Hub, poi deposita un segnale per lo stesso e-service non più abilitato a Signal Hub. La richiesta va a in errore

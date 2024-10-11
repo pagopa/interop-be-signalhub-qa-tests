@@ -8,17 +8,21 @@ import {
   eserviceIdPublishedByAnotherOrganization,
   eserviceIdSecondPushSignals,
   getAuthorizationHeader,
+  getEServiceProducerInfo,
+  getEserviceProducerDiffOwnerInfo,
   getRandomSignalId,
+  signalProducer,
   sleep,
+  updateEserviceSHOptions,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { SignalPayload, SignalType } from "../../../api/push-signals.models";
-import { getVoucherApi } from "../../../lib/voucher";
+import { getVoucher } from "../../../lib/voucher";
 
 Given(
   "Un utente, come produttore di segnali, ottiene un voucher api",
   async function () {
-    const voucher = await getVoucherApi();
+    const voucher = await getVoucher();
     this.voucher = voucher;
   }
 );
@@ -208,32 +212,97 @@ Then(
   }
 );
 
-Given("Un utente pubblica un e-service con l'opzione utilizzo SH", async () => {
-  await createEservice(true);
-});
+Given(
+  "Un utente pubblica un e-service con l'opzione utilizzo SH",
+  async function () {
+    const eServiceProducer = getEServiceProducerInfo();
+    const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: true,
+    });
 
-Given("Un utente pubblica un altro e-service con l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
+    this.eserviceId = eServiceId;
+  }
+);
+
+Given(
+  "Un utente pubblica un altro e-service con l'opzione utilizzo SH",
+  async function () {
+    // Write code here that turns the phrase above into concrete actions
+    const eServiceInfo = getEServiceProducerInfo();
+    const { producerId, state } = eServiceInfo;
+    const eServiceId = signalProducer.eservices[1].id;
+    const descriptorId = signalProducer.eservices[1].descriptor;
+    createEservice({
+      producerId,
+      descriptorId, // override descriptorID
+      eServiceId, // override eserviceID
+      state,
+      isEnabledToSH: true,
+    });
+
+    this.eserviceId = eServiceId;
+  }
+);
 
 Given(
   "Un utente, appartenente a un'altra organizzazione, come erogatore pubblica un e-service con il flag utilizzo SH",
-  () => {
-    // Write code here that turns the phrase above into concrete actions
+  async function () {
+    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
+    const { eServiceId, producerId, descriptorId, state } =
+      eServiceDiffOwnerInfo;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: true,
+    });
+    this.eServiceId = eServiceId;
   }
 );
 
 Given(
   "Un utente crea in stato DRAFT un e-service con l'opzione utilizzo SH",
   () => {
-    // Write code here that turns the phrase above into concrete actions
+    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
+    const { eServiceId, producerId, descriptorId, state } =
+      eServiceDiffOwnerInfo;
+    createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state: "DRAFT",
+      isEnabledToSH: true,
+    });
   }
 );
 
-Given("Un utente pubblica un e-service senza l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
+Given(
+  "Un utente pubblica un e-service senza l'opzione utilizzo SH",
+  async function () {
+    const eServiceInfo = getEServiceProducerInfo();
+    const { producerId, state, eServiceId, descriptorId } = eServiceInfo;
 
-Given("Un utente modifica l'e-service eliminando l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
+    createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: false,
+    });
+
+    this.eserviceId = eServiceId;
+  }
+);
+
+Given(
+  "Un utente modifica l'e-service eliminando l'opzione utilizzo SH",
+  async function () {
+    await updateEserviceSHOptions(this.eserviceId);
+  }
+);
