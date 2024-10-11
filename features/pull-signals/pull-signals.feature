@@ -1,6 +1,13 @@
 @pull_signals
 Feature: Recupero segnali
 
+  Background:
+    Given un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato "Agid"
+    And un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato "Comune di Milano"
+    And un e-service pubblicato dall'ente erogatore chiamato "domicili digitali"
+    And l'ente erogatore chiamato "Agid" è denominato produttore di segnali
+    And l'ente fruitore chiamato "Comune di Milano" è denominato consumatore di segnali
+
   @pull_signals1
   Scenario Outline: L'utente consumatore di segnali ottiene un voucher scaduto. L'utente consumatore recupera un segnale. La richiesta non va a buon fine con status code 401.
     Given l'utente consumatore di segnali ha ottenuto un voucher api scaduto
