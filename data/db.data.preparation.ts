@@ -1,7 +1,7 @@
 import {
   signalProducer,
   signalConsumer,
-  eserviceProducer,
+  anotherSignalProducer,
 } from "../lib/common";
 import { databaseConfig } from "../configs/db.config";
 import { createDbInstance } from "./initDb";
@@ -40,7 +40,7 @@ export async function truncateEserviceTable() {
   await clientSchemaInteropAgreement.query("delete from dev_interop.eservice;");
 }
 export async function setupEserviceTable() {
-  const allProducers = [signalProducer, eserviceProducer];
+  const allProducers = [signalProducer, anotherSignalProducer];
   for (const producer of allProducers) {
     const { id, eservices } = producer;
     for (const eservice of eservices.filter(
@@ -83,7 +83,7 @@ export async function setupAgreementTable() {
 }
 
 export async function setupPurposeTable(): Promise<void> {
-  const items = [signalProducer, eserviceProducer, signalConsumer];
+  const items = [signalProducer, anotherSignalProducer, signalConsumer];
   // eslint-disable-next-line functional/no-let
 
   for (const organization of items) {

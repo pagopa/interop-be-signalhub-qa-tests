@@ -2,7 +2,9 @@ import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
+  createAgreement,
   createPullSignalRequest,
+  createPurpose,
   createSignal,
   getAuthorizationHeader,
   sleep,
@@ -56,17 +58,15 @@ Given(
 
 Given(
   "l'utente ha già una richiesta di fruizione in stato {string} per l'e-service produttore di segnali",
-  function (agreementStatus: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return agreementStatus;
+  async function (agreementStatus: string) {
+    return await createAgreement({ state: agreementStatus });
   }
 );
 
 Given(
   "l'utente ha già una finalità in stato {string} per quell'e-service",
-  function (purposeStatus: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return purposeStatus;
+  async function (purposeStatus: string) {
+    return await createPurpose({ state: purposeStatus });
   }
 );
 
