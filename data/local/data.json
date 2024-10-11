@@ -10,21 +10,21 @@
             "id": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
             "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
             "state": "PUBLISHED",
-            "enable_signal_hub": "true"
+            "enable_signal_hub": true
           },
           {
             "name": "domicili fiscali",
             "id": "a023c23b-7662-4971-994e-0eb9adabc728",
             "descriptor": "200e1f33-fbcf-4afc-9c3d-6ccc3186097f",
             "state": "PUBLISHED",
-            "enable_signal_hub": "true"
+            "enable_signal_hub": true
           },
           {
             "name": "domicili legali",
             "id": "1dc2108b-2c5e-4057-a2ae-6ce7aeb96551",
             "descriptor": "13bebc85-9d37-4df3-9989-87c1d59f7e27",
             "state": "SUSPENDED",
-            "enable_signal_hub": "false"
+            "enable_signal_hub": false
           }
         ],
         "agreements": [],
@@ -42,7 +42,7 @@
             "id": "4a127c23c-7662-4974-994e-0eb9adabc999",
             "descriptor": "2342dfb3-6bff-48ee-9724-14fd0858w62f",
             "state": "PUBLISHED",
-            "enable_signal_hub": "true"
+            "enable_signal_hub": true
           }
         ],
         "agreements": [],
@@ -101,12 +101,6 @@
             "id": "78d1ea9-e9ac-4a35-a4d1-ba7e3b564dd61",
             "eservice": "1dc2108b-2c5e-4057-a2ae-6ce7aeb96551",
             "name": "domicili legali",
-            "state": "ACTIVE",
-            "version": -1
-          },
-          {
-            "id": "purpose-id-not-active",
-            "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
             "state": "DRAFT",
             "version": -1
           }

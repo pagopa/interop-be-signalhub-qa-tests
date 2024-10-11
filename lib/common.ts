@@ -81,36 +81,45 @@ export function assertValidResponse<T>(response: AxiosResponse<T>) {
   }
 }
 
-export async function createAgreement(
-  agreementInput: Partial<Agreement>
-): Promise<void> {
-  const { id: consumerId, agreements } = signalConsumer;
-  const defaultAgreement = agreements
-    .filter((agreement: Agreement) => agreement.name === "domicili digitali")
-    .shift();
-  const agreement = { ...defaultAgreement, ...agreementInput };
-  const { id, eservice, descriptor, state } = agreement;
+export function getConsumerOrganization(): string {
+  const { id } = signalConsumer;
+  return id;
+}
 
+export function getAgreement(eservice: string): Agreement {
+  const { agreements } = signalConsumer;
+  return agreements
+    .filter((agreement: Agreement) => agreement.name === eservice)
+    .shift();
+}
+
+export async function createAgreement(
+  agreement: Agreement,
+  organizationId: string
+): Promise<void> {
+  const { id, eservice, descriptor, state } = agreement;
   const query = {
     text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(agreement_id) DO NOTHING",
-    values: [id, eservice, consumerId, descriptor, state],
+    values: [id, eservice, organizationId, descriptor, state],
   };
   await clientSchemaInteropAgreement.query(query);
 }
 
-export async function createPurpose(
-  purposeInput: Partial<Purpose>
-): Promise<void> {
-  const { id: consumerId, purposes } = signalConsumer;
-  const defaultPurpose = purposes
-    .filter((purpose: Purpose) => purpose.name === "domicili digitali")
+export function getPurpose(eservice: string): Purpose {
+  const { purposes } = signalConsumer;
+  return purposes
+    .filter((purpose: Purpose) => purpose.name === eservice)
     .shift();
-  const purpose = { ...defaultPurpose, ...purposeInput };
-  const { state, version, eservice, id } = purpose;
+}
 
+export async function createPurpose(
+  purpose: Purpose,
+  organizationId: string
+): Promise<void> {
+  const { state, version, eservice, id } = purpose;
   const query = {
     text: "INSERT INTO DEV_INTEROP.purpose(purpose_id, purpose_version_id, purpose_state, eservice_id, consumer_id) values ($1, $2, $3, $4, $5) ON CONFLICT(purpose_id) DO NOTHING",
-    values: [id, version, state, eservice, consumerId],
+    values: [id, version, state, eservice, organizationId],
   };
   await clientSchemaInteropPurpose.query(query);
 }

@@ -6,7 +6,10 @@ import {
   createPullSignalRequest,
   createPurpose,
   createSignal,
+  getAgreement,
   getAuthorizationHeader,
+  getConsumerOrganization,
+  getPurpose,
   sleep,
 } from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
@@ -57,44 +60,54 @@ Given(
 );
 
 Given(
-  "l'utente ha già una richiesta di fruizione in stato {string} per l'e-service produttore di segnali",
-  async function (agreementStatus: string) {
-    return await createAgreement({ state: agreementStatus });
+  "l'utente ha già una richiesta di fruizione in stato {string} per l'e-service {string}",
+  async function (agreementStatus: string, eserviceName: string) {
+    const organization = getConsumerOrganization();
+    const agreement = getAgreement(eserviceName);
+    return await createAgreement(
+      {
+        ...agreement,
+        ...{ state: agreementStatus },
+      },
+      organization
+    );
   }
 );
 
 Given(
-  "l'utente ha già una finalità in stato {string} per quell'e-service",
-  async function (purposeStatus: string) {
-    return await createPurpose({ state: purposeStatus });
+  "l'utente ha già una finalità in stato {string} per l'e-service {string}",
+  async function (purposeStatus: string, eserviceName: string) {
+    const organization = getConsumerOrganization();
+    const purpose = getPurpose(eserviceName);
+    return await createPurpose(
+      {
+        ...purpose,
+        ...{ state: purposeStatus },
+      },
+      organization
+    );
   }
 );
 
-When("l'utente recupera (un)(i) segnal(e)(i)", async function () {
-  // If SignalId is not present in previous given start by signalId = 1
-  const signalId = (this.startSignalId || 1) - 1;
-  const pullSignalRequest = createPullSignalRequest({
-    signalId,
-    size: 100,
-  });
-
-  this.response = await pullSignalApiClient.v1.pullSignal(
-    pullSignalRequest,
-    getAuthorizationHeader(this.voucher)
-  );
-});
-
 When(
-  "l'utente verifica lo stato del servizio di recupero segnali",
+  "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",
   async function () {
-    this.response = await pullSignalApiClient.v1.getStatus(
+    // If SignalId is not present in previous given start by signalId = 1
+    const signalId = (this.startSignalId || 1) - 1;
+    const pullSignalRequest = createPullSignalRequest({
+      signalId,
+      size: 100,
+    });
+
+    this.response = await pullSignalApiClient.v1.pullSignal(
+      pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
   }
 );
 
 When(
-  "l'utente recupera un segnale con un signalId uguale a {int}",
+  "l'utente recupera un segnale dell'e-service {string} con un signalId uguale a {int}",
   async function (startSignalId: number) {
     const pullSignalRequest = createPullSignalRequest({
       signalId: startSignalId,
@@ -102,6 +115,15 @@ When(
 
     this.response = await pullSignalApiClient.v1.pullSignal(
       pullSignalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
+
+When(
+  "l'utente verifica lo stato del servizio di recupero segnali",
+  async function () {
+    this.response = await pullSignalApiClient.v1.getStatus(
       getAuthorizationHeader(this.voucher)
     );
   }
