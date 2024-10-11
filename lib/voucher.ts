@@ -38,11 +38,8 @@ const buildCachedVoucher = async () => {
   cachedVouchers = await getVoucherSelfSigned(getVocherEnv());
 };
 
-const isVoucherOverWritten = (
-  overrideVoucher: Partial<VoucherEnv>
-): boolean => {
-  return Object.keys(overrideVoucher).length !== 0;
-};
+const isVoucherOverWritten = (overrideVoucher: Partial<VoucherEnv>): boolean =>
+  Object.keys(overrideVoucher).length !== 0;
 
 const buildVoucher = async (
   partialVoucherEnv: Partial<VoucherEnv>,
