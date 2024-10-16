@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
@@ -133,5 +134,45 @@ Then(
     assert.strictEqual(data.signals?.length, signalsLength);
     assert.strictEqual(data.lastSignalId, lastSignalId);
     assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
+Given(
+  "l'ente fruitore chiamato {string} è denominato consumatore di segnali",
+  (organizationName: string) => {
+    // Write code here that turns the phrase above into concrete actions
+    return organizationName;
+  }
+);
+
+Given(
+  "l'ente erogatore chiamato {string} è denominato produttore di segnali",
+  (organizationName: string) => {
+    // Write code here that turns the phrase above into concrete actions
+    return organizationName;
+  }
+);
+
+Given(
+  "un e-service pubblicato dall'ente erogatore chiamato {string}",
+  (eserviceName: string) => {
+    // Write code here that turns the phrase above into concrete actions
+    return eserviceName;
+  }
+);
+
+Given(
+  "un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato {string}",
+  (organizationName: string) => {
+    // Write code here that turns the phrase above into concrete actions
+    return organizationName;
+  }
+);
+
+Given(
+  "un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato {string}",
+  (organizationName: string) => {
+    // Write code here that turns the phrase above into concrete actions
+    return organizationName;
   }
 );
