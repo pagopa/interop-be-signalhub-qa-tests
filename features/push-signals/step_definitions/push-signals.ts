@@ -2,22 +2,27 @@ import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
+  createEservice,
   createSignal,
   eserviceIdNotPublished,
   eserviceIdPublishedByAnotherOrganization,
   eserviceIdSecondPushSignals,
   getAuthorizationHeader,
+  getEServiceProducerInfo,
+  getEserviceProducerDiffOwnerInfo,
   getRandomSignalId,
+  signalProducer,
   sleep,
+  updateEserviceSHOptions,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { SignalPayload, SignalType } from "../../../api/push-signals.models";
-import { getVoucherApi } from "../../../lib/voucher";
+import { getVoucher } from "../../../lib/voucher";
 
 Given(
   "l'utente (produttore)(consumatore) di segnali ha ottenuto un voucher api",
   async function () {
-    const voucher = await getVoucherApi();
+    const voucher = await getVoucher();
     this.voucher = voucher;
   }
 );
@@ -31,6 +36,7 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
   );
   assertValidResponse(response);
 
+  this.response = response;
   this.requestSignalId = signalRequest.signalId;
 });
 
@@ -48,6 +54,7 @@ When(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );
@@ -209,39 +216,94 @@ Then(
 
 Given(
   "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
-  () => {
-    // Write code here that turns the phrase above into concrete actions
+  async function () {
+    const eServiceProducer = getEServiceProducerInfo();
+    const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: true,
+    });
+
+    this.eserviceId = eServiceId;
   }
 );
 
 Given(
   "l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH",
-  () => {
+  async function () {
     // Write code here that turns the phrase above into concrete actions
+    const eServiceInfo = getEServiceProducerInfo();
+    const { producerId, state } = eServiceInfo;
+    const eServiceId = signalProducer.eservices[1].id;
+    const descriptorId = signalProducer.eservices[1].descriptor;
+    await createEservice({
+      producerId,
+      descriptorId, // override descriptorID
+      eServiceId, // override eserviceID
+      state,
+      isEnabledToSH: true,
+    });
+
+    this.eserviceId = eServiceId;
   }
 );
 
 Given(
   "Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH",
-  () => {
-    // Write code here that turns the phrase above into concrete actions
+  async function () {
+    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
+    const { eServiceId, producerId, descriptorId, state } =
+      eServiceDiffOwnerInfo;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: true,
+    });
+    this.eServiceId = eServiceId;
   }
 );
 
 Given(
   "l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH",
-  () => {
-    // Write code here that turns the phrase above into concrete actions
+  async function () {
+    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
+    const { eServiceId, producerId, descriptorId } = eServiceDiffOwnerInfo;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state: "DRAFT",
+      isEnabledToSH: true,
+    });
   }
 );
 
-Given("l'utente ha pubblicato un e-service senza l'opzione utilizzo SH", () => {
-  // Write code here that turns the phrase above into concrete actions
-});
+Given(
+  "l'utente ha pubblicato un e-service senza l'opzione utilizzo SH",
+  async function () {
+    const eServiceInfo = getEServiceProducerInfo();
+    const { producerId, state, eServiceId, descriptorId } = eServiceInfo;
+
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: false,
+    });
+
+    this.eserviceId = eServiceId;
+  }
+);
 
 Given(
   "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
-  () => {
-    // Write code here that turns the phrase above into concrete actions
+  async function () {
+    await updateEserviceSHOptions(this.eserviceId, false);
   }
 );

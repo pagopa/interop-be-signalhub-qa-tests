@@ -14,8 +14,7 @@ import {
 } from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
-import { getExpiredVoucher } from "../../../lib/voucher";
-import { VoucherTypologies } from "../../../lib/voucher.env";
+import { getExpiredVoucher, getVoucher } from "../../../lib/voucher";
 
 Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
   // This sleep function simulate the time SQS will take to process the signal and put on DB
@@ -23,7 +22,53 @@ Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
 });
 
 Given(
-  "un utente produttore di segnali ha depositato {int} segnal(e)(i)",
+  "un utente, come produttore di segnali, ottiene un voucher valido per l'accesso all'e-service deposito segnali",
+  async function () {
+    const voucher = await getVoucher();
+    this.producerVoucher = voucher;
+  }
+);
+
+Given(
+  "un utente, come consumatore di segnali, ottiene un voucher valido per l'accesso all'e-service lettura segnali",
+  async function () {
+    const voucher = await getVoucher();
+    this.consumerVoucher = voucher;
+  }
+);
+
+Given(
+  "un utente, come consumatore di segnali, ottiene un voucher valido per un e-service diverso dall'e-service di lettura segnali",
+  async function () {
+    const voucher = await getVoucher();
+    this.consumerVoucher = voucher;
+  }
+);
+
+Given(
+  "un utente, come consumatore di segnali, ottiene un voucher scaduto per l'accesso all'e-service lettura segnali",
+  async function () {
+    const expired = await getExpiredVoucher();
+    this.consumerVoucher = expired;
+  }
+);
+
+When("l'utente consumatore recupera (un)(i) segnal(e)(i)", async function () {
+  // If SignalId is not present in previous given start by signalId = 1
+  const signalId = (this.startSignalId || 1) - 1;
+  const pullSignalRequest = createPullSignalRequest({
+    signalId,
+    size: 100,
+  });
+
+  this.response = await pullSignalApiClient.v1.pullSignal(
+    pullSignalRequest,
+    getAuthorizationHeader(this.consumerVoucher)
+  );
+});
+
+Given(
+  "l'utente produttore di segnali deposita {int} segnal(e)(i)",
   async function (signalLength: number) {
     const startSignalId = 1;
     const signalRequest = createSignal({
@@ -52,9 +97,7 @@ Given(
 Given(
   "l'utente consumatore di segnali ha ottenuto un voucher api scaduto",
   async function () {
-    const voucherExpired = await getExpiredVoucher(
-      VoucherTypologies.Enum.CONSUMER
-    );
+    const voucherExpired = await getExpiredVoucher();
     this.voucher = voucherExpired;
   }
 );

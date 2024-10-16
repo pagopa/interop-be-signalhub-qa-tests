@@ -29,7 +29,8 @@ type JWTPayload = {
   iat: number;
   jti: string;
   client_id: string;
-  purposeId: string;
+  role: string;
+  organizationId: string;
 };
 
 export const voucherGenerator = (voucherEnv: VoucherEnv) => {
@@ -106,8 +107,8 @@ function createPayload(voucherEnv: VoucherEnv): JWTPayload {
   const subject = voucherEnv.SUBJECT ?? "";
   const issuer = voucherEnv.ISSUER ?? "";
   const audience = voucherEnv.AUDIENCE ?? "";
-  const purposeId = voucherEnv.PURPOSE_ID ?? "";
   const clientId = voucherEnv.CLIENT_ID ?? "";
+  const organizationId = voucherEnv.ORGANIZATION_ID ?? "";
   const expireIn = 3600;
 
   const jwtPayload: JWTPayload = {
@@ -119,7 +120,8 @@ function createPayload(voucherEnv: VoucherEnv): JWTPayload {
     iat: currentTimeInSeconds,
     jti: uuidv4(),
     client_id: clientId,
-    purposeId,
+    organizationId,
+    role: "m2m",
   };
   return jwtPayload;
 }
