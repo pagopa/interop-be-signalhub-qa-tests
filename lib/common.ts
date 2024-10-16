@@ -62,8 +62,9 @@ export const {
 } = getActors();
 
 export function getEServiceProducerInfo(): Omit<EserviceInfo, "isEnabledToSH"> {
-  const { eServices, id: producerId } = signalProducer;
-  const { id: eServiceId, descriptor, state } = eServices[0];
+  const { eservices, id: producerId } = signalProducer;
+
+  const { id: eServiceId, descriptor, state } = eservices[0];
 
   return { eServiceId, producerId, descriptorId: descriptor, state };
 }
@@ -72,8 +73,8 @@ export function getEserviceProducerDiffOwnerInfo(): Omit<
   EserviceInfo,
   "isEnabledToSH"
 > {
-  const { eServices, id: producerId } = eserviceProducer;
-  const { id: eServiceId, descriptor, state } = eServices[0];
+  const { eservices, id: producerId } = eserviceProducer;
+  const { id: eServiceId, descriptor, state } = eservices[0];
   return { eServiceId, producerId, descriptorId: descriptor, state };
 }
 
@@ -154,10 +155,13 @@ export async function createEservice(eServiceInfo: EserviceInfo) {
   await clientSchemaInteropEservice.query(query);
 }
 
-export async function updateEserviceSHOptions(eServiceId: string) {
+export async function updateEserviceSHOptions(
+  eServiceId: string,
+  isEnabledToSH: boolean
+) {
   const query = {
     text: "UPDATE dev_interop.eservice SET enabled_signal_hub = $1 WHERE eservice_id = $2",
-    values: [true, eServiceId],
+    values: [isEnabledToSH, eServiceId],
   };
 
   await clientSchemaInteropEservice.query(query);

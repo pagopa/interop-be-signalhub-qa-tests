@@ -36,6 +36,7 @@ Given("l'utente deposita un segnale per il primo e-service", async function () {
   );
   assertValidResponse(response);
 
+  this.response = response;
   this.requestSignalId = signalRequest.signalId;
 });
 
@@ -53,6 +54,7 @@ When(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
+
     this.requestSignalId = signalRequest.signalId;
   }
 );
@@ -237,7 +239,7 @@ Given(
     const { producerId, state } = eServiceInfo;
     const eServiceId = signalProducer.eservices[1].id;
     const descriptorId = signalProducer.eservices[1].descriptor;
-    createEservice({
+    await createEservice({
       producerId,
       descriptorId, // override descriptorID
       eServiceId, // override eserviceID
@@ -268,11 +270,10 @@ Given(
 
 Given(
   "Un utente crea in stato DRAFT un e-service con l'opzione utilizzo SH",
-  () => {
+  async function () {
     const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
-    const { eServiceId, producerId, descriptorId, state } =
-      eServiceDiffOwnerInfo;
-    createEservice({
+    const { eServiceId, producerId, descriptorId } = eServiceDiffOwnerInfo;
+    await createEservice({
       producerId,
       descriptorId,
       eServiceId,
@@ -288,7 +289,7 @@ Given(
     const eServiceInfo = getEServiceProducerInfo();
     const { producerId, state, eServiceId, descriptorId } = eServiceInfo;
 
-    createEservice({
+    await createEservice({
       producerId,
       descriptorId,
       eServiceId,
@@ -303,6 +304,6 @@ Given(
 Given(
   "Un utente modifica l'e-service eliminando l'opzione utilizzo SH",
   async function () {
-    await updateEserviceSHOptions(this.eserviceId);
+    await updateEserviceSHOptions(this.eserviceId, false);
   }
 );
