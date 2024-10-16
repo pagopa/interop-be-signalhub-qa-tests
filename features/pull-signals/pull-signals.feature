@@ -2,11 +2,11 @@
 Feature: Recupero segnali
 
   Background:
-    Given un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato "Agid"
-    And un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato "Comune di Milano"
-    And un e-service pubblicato dall'ente erogatore chiamato "domicili digitali"
-    And l'ente erogatore chiamato "Agid" è denominato produttore di segnali
-    And l'ente fruitore chiamato "Comune di Milano" è denominato consumatore di segnali
+    # Given un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato "Agid"
+    # And un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato "Comune di Milano"
+    Given un e-service pubblicato dall'ente erogatore chiamato "domicili digitali" abilitato a Signal Hub
+    # And l'ente erogatore chiamato "Agid" è denominato produttore di segnali
+    # And l'ente fruitore chiamato "Comune di Milano" è denominato consumatore di segnali
 
   @pull_signals1
   Scenario Outline: L'utente consumatore di segnali ottiene un voucher scaduto. L'utente consumatore recupera un segnale. La richiesta non va a buon fine con status code 403.
@@ -18,7 +18,7 @@ Feature: Recupero segnali
   Scenario Outline:
   L'utente consumatore di segnali recupera un segnale per un e-service per cui non è autorizzato. La richiesta non va a buon fine con status code 403.
     Given l'utente consumatore di segnali ha ottenuto un voucher api
-    When l'utente recupera un segnale dell'e-service "domicili digitali"
+    When l'utente recupera un segnale dell'e-service "domicili legali"
     Then la richiesta va in errore con status code 403
 
   @pull_signals3
@@ -83,7 +83,7 @@ Feature: Recupero segnali
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per l'e-service "domicili digitali"
     Given l'utente ha già una finalità in stato "ACTIVE" per l'e-service "domicili digitali"
     When l'utente recupera i segnali dell'e-service "domicili digitali"
-    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 10 segnali
+    Then la richiesta va a buon fine con status code 206 e restituisce una lista di 10 segnali
 
   @pull_signals9
   Scenario Outline: L'utente consumatore di segnali recupera una lista di segnali con un lastSignalId uguale (o maggiore) al signalId dell'ultimo segnale presente. La richiesta va a buon fine.
@@ -92,8 +92,8 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per l'e-service "domicili digitali"
     Given l'utente ha già una finalità in stato "ACTIVE" per l'e-service "domicili digitali"
-    When l'utente recupera un segnale dell'e-service "domicili digitali" con un signalId uguale a 3
-    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali e lastSignalId = 3
+    When l'utente recupera un segnale dell'e-service "domicili digitali" con un signalId uguale a 4
+    Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali e nessun lastSignalId
 
   @pull_signals10
   Scenario Outline: L'utente consumatore di segnali recupera una lista di segnali con un lastSignalId minore rispetto al signalId dell'ultimo segnale presente. La richiesta va a buon fine.

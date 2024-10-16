@@ -18,7 +18,17 @@ type EserviceInfo = {
   state: string;
   descriptorId: string;
   isEnabledToSH: boolean;
+  name?: string;
 };
+
+type Eservice = {
+  name: string;
+  id: string;
+  descriptor: string;
+  state: string;
+  enable_signal_hub: boolean;
+};
+
 type Agreement = {
   id: string;
   state: string;
@@ -112,10 +122,22 @@ export function getConsumerOrganization(): string {
   return id;
 }
 
-export function getAgreement(eservice: string): Agreement {
+export function getProducerOrganization(): string {
+  const { id } = signalProducer;
+  return id;
+}
+
+export function getEservice(eserviceName: string): Eservice {
+  const { eservices } = signalProducer;
+  return eservices
+    .filter((eservice: Eservice) => eservice.name === eserviceName)
+    .shift();
+}
+
+export function getAgreement(eserviceName: string): Agreement {
   const { agreements } = signalConsumer;
   return agreements
-    .filter((agreement: Agreement) => agreement.name === eservice)
+    .filter((agreement: Agreement) => agreement.name === eserviceName)
     .shift();
 }
 
@@ -125,16 +147,16 @@ export async function createAgreement(
 ): Promise<void> {
   const { id, eservice, descriptor, state } = agreement;
   const query = {
-    text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(agreement_id) DO NOTHING",
+    text: "INSERT INTO dev_interop.agreement (agreement_id, eservice_id, consumer_id, descriptor_id, state) values ($1, $2, $3, $4, $5) ON CONFLICT(agreement_id) DO UPDATE SET state = EXCLUDED.state",
     values: [id, eservice, organizationId, descriptor, state],
   };
   await clientSchemaInteropAgreement.query(query);
 }
 
-export function getPurpose(eservice: string): Purpose {
+export function getPurpose(eserviceName: string): Purpose {
   const { purposes } = signalConsumer;
   return purposes
-    .filter((purpose: Purpose) => purpose.name === eservice)
+    .filter((purpose: Purpose) => purpose.name === eserviceName)
     .shift();
 }
 
@@ -144,7 +166,7 @@ export async function createPurpose(
 ): Promise<void> {
   const { state, version, eservice, id } = purpose;
   const query = {
-    text: "INSERT INTO DEV_INTEROP.purpose(purpose_id, purpose_version_id, purpose_state, eservice_id, consumer_id) values ($1, $2, $3, $4, $5) ON CONFLICT(purpose_id) DO NOTHING",
+    text: "INSERT INTO DEV_INTEROP.purpose(purpose_id, purpose_version_id, purpose_state, eservice_id, consumer_id) values ($1, $2, $3, $4, $5) ON CONFLICT(purpose_id) DO UPDATE SET purpose_state = EXCLUDED.purpose_state",
     values: [id, version, state, eservice, organizationId],
   };
   await clientSchemaInteropPurpose.query(query);
@@ -191,7 +213,7 @@ export async function createEservice(eServiceInfo: EserviceInfo) {
     eServiceInfo;
 
   const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
+    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET state = EXCLUDED.state",
     values: [eServiceId, producerId, descriptorId, state, isEnabledToSH],
   };
 

@@ -4,18 +4,31 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
   createAgreement,
+  createEservice,
   createPullSignalRequest,
   createPurpose,
   createSignal,
   getAgreement,
   getAuthorizationHeader,
   getConsumerOrganization,
+  getEservice,
+  getEServiceProducerInfo,
   getPurpose,
   sleep,
 } from "../../../lib/common";
 import { pullSignalApiClient } from "../../../api/pull-signal.client";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { getExpiredVoucher, getVoucher } from "../../../lib/voucher";
+
+Given(
+  "l'utente consumatore di segnali ha ottenuto un voucher api",
+  async function () {
+    const voucher = await getVoucher({
+      ORGANIZATION_ID: getConsumerOrganization(),
+    });
+    this.voucher = voucher;
+  }
+);
 
 Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
   // This sleep function simulate the time SQS will take to process the signal and put on DB
@@ -24,19 +37,49 @@ Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
 
 Given(
   "l'utente produttore di segnali, già in possesso di voucher api, ha depositato {int} segnal(e)(i) per l'e-service {string}",
-  async function (_howManySignals: number, _eserviceName: string) {
-    const signalRequest = createSignal();
+  async function (signalLength: number, eserviceName: string) {
     const voucher = await getVoucher();
-    const response = await pushSignalApiClient.v1.pushSignal(
-      signalRequest,
-      getAuthorizationHeader(voucher)
-    );
-    assertValidResponse(response);
+    const eservice = getEservice(eserviceName);
+    const startSignalId = 1;
+    const signalRequest = createSignal({
+      signalId: startSignalId,
+      eserviceId: eservice.id,
+    });
 
-    this.response = response;
-    this.requestSignalId = signalRequest.signalId;
+    const allSignalIdsToPush = Array(signalLength)
+      .fill(0)
+      .map((_, index) => index + startSignalId);
+    const pushASignal = async (signalId: number) => {
+      const response = await pushSignalApiClient.v1.pushSignal(
+        {
+          ...signalRequest,
+          signalId,
+        },
+        getAuthorizationHeader(voucher)
+      );
+      assertValidResponse(response);
+    };
+    await Promise.all(allSignalIdsToPush.map(pushASignal));
+
+    this.startSignalId = startSignalId;
   }
 );
+
+// Given(
+//   "l'utente produttore di segnali, già in possesso di voucher api, ha depositato {int} segnal(e)(i) per l'e-service {string}",
+//   async function (_howManySignals: number, _eserviceName: string) {
+//     const signalRequest = createSignal();
+//     const voucher = await getVoucher();
+//     const response = await pushSignalApiClient.v1.pushSignal(
+//       signalRequest,
+//       getAuthorizationHeader(voucher)
+//     );
+//     assertValidResponse(response);
+
+//     this.response = response;
+//     this.requestSignalId = signalRequest.signalId;
+//   }
+// );
 
 Given(
   "l'utente consumatore di segnali ha ottenuto un voucher api scaduto",
@@ -78,12 +121,14 @@ Given(
 
 When(
   "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",
-  async function (_eserviceName: string) {
+  async function (eserviceName: string) {
+    const { id } = getEservice(eserviceName);
     // If SignalId is not present in previous given start by signalId = 1
     const signalId = (this.startSignalId || 1) - 1;
     const pullSignalRequest = createPullSignalRequest({
+      eserviceId: id,
       signalId,
-      size: 100,
+      size: 10,
     });
 
     this.response = await pullSignalApiClient.v1.pullSignal(
@@ -95,9 +140,11 @@ When(
 
 When(
   "l'utente recupera un segnale dell'e-service {string} con un signalId uguale a {int}",
-  async function (startSignalId: number) {
+  async function (serviceName: string, startSignalId: number) {
+    const eservice = getEservice(serviceName);
     const pullSignalRequest = createPullSignalRequest({
       signalId: startSignalId,
+      eserviceId: eservice.id,
     });
 
     this.response = await pullSignalApiClient.v1.pullSignal(
@@ -128,7 +175,11 @@ Then(
 
 Then(
   "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e lastSignalId = {int}",
-  function (statusCode: number, signalsLength: number, lastSignalId: number) {
+  function (
+    statusCode: number,
+    signalsLength: number,
+    lastSignalId: number | null
+  ) {
     const data = this.response.data;
 
     assert.strictEqual(data.signals?.length, signalsLength);
@@ -137,9 +188,20 @@ Then(
   }
 );
 
+Then(
+  "la richiesta va a buon fine con status code {int} e restituisce una lista di {int} segnal(e)(i) e nessun lastSignalId",
+  function (statusCode: number, numberOfSignalList: number) {
+    const data = this.response.data;
+
+    assert.strictEqual(data.signals?.length, numberOfSignalList);
+    assert.strictEqual(data.lastSignalId, null);
+    assert.strictEqual(this.response.status, statusCode);
+  }
+);
+
 Given(
   "l'ente fruitore chiamato {string} è denominato consumatore di segnali",
-  (organizationName: string) => {
+  function (organizationName: string) {
     // Write code here that turns the phrase above into concrete actions
     return organizationName;
   }
@@ -147,23 +209,33 @@ Given(
 
 Given(
   "l'ente erogatore chiamato {string} è denominato produttore di segnali",
-  (organizationName: string) => {
+  function (organizationName: string) {
     // Write code here that turns the phrase above into concrete actions
     return organizationName;
   }
 );
 
 Given(
-  "un e-service pubblicato dall'ente erogatore chiamato {string}",
-  (eserviceName: string) => {
-    // Write code here that turns the phrase above into concrete actions
-    return eserviceName;
+  "un e-service pubblicato dall'ente erogatore chiamato {string} abilitato a Signal Hub",
+  async function (eserviceName: string) {
+    const eServiceProducer = getEServiceProducerInfo();
+    const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
+    await createEservice({
+      producerId,
+      descriptorId,
+      eServiceId,
+      state,
+      isEnabledToSH: true,
+      name: eserviceName,
+    });
+
+    this.eserviceId = eServiceId;
   }
 );
 
 Given(
   "un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato {string}",
-  (organizationName: string) => {
+  function (organizationName: string) {
     // Write code here that turns the phrase above into concrete actions
     return organizationName;
   }
@@ -171,7 +243,7 @@ Given(
 
 Given(
   "un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato {string}",
-  (organizationName: string) => {
+  function (organizationName: string) {
     // Write code here that turns the phrase above into concrete actions
     return organizationName;
   }

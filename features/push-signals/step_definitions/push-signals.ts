@@ -10,6 +10,7 @@ import {
   getAuthorizationHeader,
   getEServiceProducerInfo,
   getEserviceProducerDiffOwnerInfo,
+  getProducerOrganization,
   getRandomSignalId,
   signalProducer,
   sleep,
@@ -20,9 +21,11 @@ import { SignalPayload, SignalType } from "../../../api/push-signals.models";
 import { getVoucher } from "../../../lib/voucher";
 
 Given(
-  "l'utente (produttore)(consumatore) di segnali ha ottenuto un voucher api",
+  "l'utente produttore di segnali ha ottenuto un voucher api",
   async function () {
-    const voucher = await getVoucher();
+    const voucher = await getVoucher({
+      ORGANIZATION_ID: getProducerOrganization(),
+    });
     this.voucher = voucher;
   }
 );
