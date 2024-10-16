@@ -20,7 +20,7 @@ import { SignalPayload, SignalType } from "../../../api/push-signals.models";
 import { getVoucher } from "../../../lib/voucher";
 
 Given(
-  "Un utente, come produttore di segnali, ottiene un voucher api",
+  "l'utente (produttore)(consumatore) di segnali ha ottenuto un voucher api",
   async function () {
     const voucher = await getVoucher();
     this.voucher = voucher;
@@ -215,7 +215,7 @@ Then(
 );
 
 Given(
-  "Un utente pubblica un e-service con l'opzione utilizzo SH",
+  "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
   async function () {
     const eServiceProducer = getEServiceProducerInfo();
     const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
@@ -232,7 +232,7 @@ Given(
 );
 
 Given(
-  "Un utente pubblica un altro e-service con l'opzione utilizzo SH",
+  "l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH",
   async function () {
     // Write code here that turns the phrase above into concrete actions
     const eServiceInfo = getEServiceProducerInfo();
@@ -252,7 +252,7 @@ Given(
 );
 
 Given(
-  "Un utente, appartenente a un'altra organizzazione, come erogatore pubblica un e-service con il flag utilizzo SH",
+  "Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH",
   async function () {
     const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
     const { eServiceId, producerId, descriptorId, state } =
@@ -269,7 +269,7 @@ Given(
 );
 
 Given(
-  "Un utente crea in stato DRAFT un e-service con l'opzione utilizzo SH",
+  "l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH",
   async function () {
     const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
     const { eServiceId, producerId, descriptorId } = eServiceDiffOwnerInfo;
@@ -284,7 +284,7 @@ Given(
 );
 
 Given(
-  "Un utente pubblica un e-service senza l'opzione utilizzo SH",
+  "l'utente ha pubblicato un e-service senza l'opzione utilizzo SH",
   async function () {
     const eServiceInfo = getEServiceProducerInfo();
     const { producerId, state, eServiceId, descriptorId } = eServiceInfo;
@@ -302,7 +302,7 @@ Given(
 );
 
 Given(
-  "Un utente modifica l'e-service eliminando l'opzione utilizzo SH",
+  "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
   async function () {
     await updateEserviceSHOptions(this.eserviceId, false);
   }
