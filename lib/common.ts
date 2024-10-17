@@ -1,147 +1,46 @@
 import "../configs/env";
-import fs from "fs";
 import { AxiosResponse } from "axios";
 import { SignalPayload, SignalType } from "../api/push-signals.models";
 import { PullSignalParams } from "../api/pull-signals.models";
 import { clientSchemaInteropEservice } from "../data/db.data.preparation";
-
 import {
   clientSchemaInteropAgreement,
   clientSchemaInteropPurpose,
 } from "../data/db.data.preparation";
+import { Eservice, Agreement, Purpose } from "./data.interop";
 
 const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 
-type EserviceInfo = {
-  eServiceId: string;
-  producerId: string;
-  state: string;
-  descriptorId: string;
-  isEnabledToSH: boolean;
-  name?: string;
-};
+export const signalProducer = undefined;
+export const signalConsumer = undefined;
+export const anotherSignalProducer = undefined;
 
-type Eservice = {
-  name: string;
-  id: string;
-  descriptor: string;
-  state: string;
-  enable_signal_hub: boolean;
-};
-
-type Agreement = {
-  id: string;
-  state: string;
-  eservice: string;
-  name: string;
-  descriptor: string;
-  purpose: string;
-};
-
-type Purpose = {
-  id: string;
-  version: string;
-  state: string;
-  eservice: string;
-  name: string;
-};
-
-function getActors() {
-  const catalogInteropData = JSON.parse(
-    Buffer.from(
-      fs.readFileSync(process.env.CATALOG_INTEROP_DATA_PREPARATION_FILE)
-    ).toString()
-  );
-  const signalProducer = catalogInteropData.PRODUCERS[0].organization;
-  const anotherSignalProducer = catalogInteropData.PRODUCERS[1].organization;
-  const signalConsumer = catalogInteropData.CONSUMERS[0].organization;
-
-  const eserviceIdPushSignals = signalProducer.eservices[0].id;
-  const eserviceIdSecondPushSignals = signalProducer.eservices[1].id;
-  const eserviceIdAgreementSuspendedWithConsumer =
-    signalProducer.eservices[2].id;
-  const eserviceIdNotPublished = signalProducer.eservices[2].id;
-  const eserviceIdPublishedByAnotherOrganization =
-    anotherSignalProducer.eservices[0].id;
-
-  return {
-    signalProducer,
-    signalConsumer,
-    anotherSignalProducer,
-    eserviceIdPushSignals,
-    eserviceIdSecondPushSignals,
-    eserviceIdAgreementSuspendedWithConsumer,
-    eserviceIdNotPublished,
-    eserviceIdPublishedByAnotherOrganization,
+export async function createOrUpdateEservice(
+  eservice: Eservice,
+  organizationId: string
+) {
+  const { id, descriptor, state, enable_signal_hub } = eservice;
+  const query = {
+    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET enabled_signal_hub = EXCLUDED.enabled_signal_hub",
+    values: [id, organizationId, descriptor, state, enable_signal_hub],
   };
+
+  await clientSchemaInteropEservice.query(query);
 }
 
-export const {
-  signalProducer,
-  signalConsumer,
-  eserviceIdPushSignals,
-  anotherSignalProducer,
-  eserviceIdNotPublished,
-  eserviceIdPublishedByAnotherOrganization,
-  eserviceIdSecondPushSignals,
-} = getActors();
+export async function updateEserviceSHOptions(
+  eServiceId: string,
+  isEnabledToSH: boolean
+) {
+  const query = {
+    text: "UPDATE dev_interop.eservice SET enabled_signal_hub = $1 WHERE eservice_id = $2",
+    values: [isEnabledToSH, eServiceId],
+  };
 
-export function getEServiceProducerInfo(): Omit<EserviceInfo, "isEnabledToSH"> {
-  const { eservices, id: producerId } = signalProducer;
-
-  const { id: eServiceId, descriptor, state } = eservices[0];
-
-  return { eServiceId, producerId, descriptorId: descriptor, state };
+  await clientSchemaInteropEservice.query(query);
 }
 
-export function getEserviceProducerDiffOwnerInfo(): Omit<
-  EserviceInfo,
-  "isEnabledToSH"
-> {
-  const { eservices, id: producerId } = signalProducer;
-  const { id: eServiceId, descriptor, state } = eservices[0];
-  return { eServiceId, producerId, descriptorId: descriptor, state };
-}
-
-export function getAuthorizationHeader(token: string) {
-  return { headers: { Authorization: "Bearer " + token } } as const;
-}
-
-export function assertValidResponse<T>(response: AxiosResponse<T>) {
-  if (response.status >= 400) {
-    throw Error(
-      `Something went wrong: ${JSON.stringify(
-        response.data ?? response.statusText
-      )}`
-    );
-  }
-}
-
-export function getConsumerOrganization(): string {
-  const { id } = signalConsumer;
-  return id;
-}
-
-export function getProducerOrganization(): string {
-  const { id } = signalProducer;
-  return id;
-}
-
-export function getEservice(eserviceName: string): Eservice {
-  const { eservices } = signalProducer;
-  return eservices
-    .filter((eservice: Eservice) => eservice.name === eserviceName)
-    .shift();
-}
-
-export function getAgreement(eserviceName: string): Agreement {
-  const { agreements } = signalConsumer;
-  return agreements
-    .filter((agreement: Agreement) => agreement.name === eserviceName)
-    .shift();
-}
-
-export async function createAgreement(
+export async function createOrUpdateAgreement(
   agreement: Agreement,
   organizationId: string
 ): Promise<void> {
@@ -153,14 +52,7 @@ export async function createAgreement(
   await clientSchemaInteropAgreement.query(query);
 }
 
-export function getPurpose(eserviceName: string): Purpose {
-  const { purposes } = signalConsumer;
-  return purposes
-    .filter((purpose: Purpose) => purpose.name === eserviceName)
-    .shift();
-}
-
-export async function createPurpose(
+export async function createOrUpdatePurpose(
   purpose: Purpose,
   organizationId: string
 ): Promise<void> {
@@ -178,7 +70,7 @@ export function createSignal(
   return {
     objectId: crypto.randomUUID(),
     signalType: SIGNAL_TYPE_DEFAULT,
-    eserviceId: eserviceIdPushSignals,
+    eserviceId: "1",
     objectType: crypto.randomUUID(),
     signalId: getRandomSignalId(),
     ...partialSignal,
@@ -189,7 +81,7 @@ export function createPullSignalRequest(
   partialPullSignalRequest: Partial<PullSignalParams> = {}
 ): PullSignalParams {
   return {
-    eserviceId: eserviceIdPushSignals, // This has to be Eservice which puts signal on SQS
+    eserviceId: "1", // This has to be Eservice which puts signal on SQS
     signalId: 0, // To Be defined
     ...partialPullSignalRequest,
   };
@@ -208,26 +100,16 @@ export async function sleep(time: number) {
   });
 }
 
-export async function createEservice(eServiceInfo: EserviceInfo) {
-  const { producerId, eServiceId, descriptorId, state, isEnabledToSH } =
-    eServiceInfo;
-
-  const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET state = EXCLUDED.state",
-    values: [eServiceId, producerId, descriptorId, state, isEnabledToSH],
-  };
-
-  await clientSchemaInteropEservice.query(query);
+export function getAuthorizationHeader(token: string) {
+  return { headers: { Authorization: "Bearer " + token } } as const;
 }
 
-export async function updateEserviceSHOptions(
-  eServiceId: string,
-  isEnabledToSH: boolean
-) {
-  const query = {
-    text: "UPDATE dev_interop.eservice SET enabled_signal_hub = $1 WHERE eservice_id = $2",
-    values: [isEnabledToSH, eServiceId],
-  };
-
-  await clientSchemaInteropEservice.query(query);
+export function assertValidResponse<T>(response: AxiosResponse<T>) {
+  if (response.status >= 400) {
+    throw Error(
+      `Something went wrong: ${JSON.stringify(
+        response.data ?? response.statusText
+      )}`
+    );
+  }
 }
