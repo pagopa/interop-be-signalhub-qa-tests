@@ -18,6 +18,37 @@ import {
 } from "../../../lib/data.interop";
 
 Given(
+  "l'ente {string}, aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali",
+  function (organizationName: string) {
+    const organization = getOrganizationByName(organizationName);
+    this.producerId = organization.id;
+  }
+);
+
+Given(
+  "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
+  async function (eserviceName: string) {
+    const { name, id, descriptor, state, enable_signal_hub } = getEserviceBy(
+      this.producerId,
+      eserviceName
+    );
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub,
+        name,
+      },
+      this.producerId
+    );
+
+    this.eserviceId = id;
+    this.eserviceName = name;
+  }
+);
+
+Given(
   "l'utente produttore di segnali ha ottenuto un voucher api",
   async function () {
     const voucher = await getVoucher({
@@ -77,7 +108,7 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale con lo stesso signalId del primo",
+  "l'utente deposita un segnale per quell'e-service con lo stesso signalId del primo",
   async function () {
     await sleep(process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
 
@@ -92,8 +123,10 @@ When(
   }
 );
 
-When("l'utente deposita un segnale", async function () {
-  const signalRequest = createSignal();
+When("l'utente deposita un segnale per quell'e-service", async function () {
+  const signalRequest = createSignal({
+    eserviceId: this.eserviceId,
+  });
 
   this.response = await pushSignalApiClient.v1.pushSignal(
     signalRequest,
@@ -130,7 +163,7 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale di una tipologia non prevista",
+  "l'utente deposita un segnale per quell'e-service con una tipologia non prevista",
   async function () {
     const signalRequest = createSignal({
       signalType: "TEST" as SignalType,
@@ -144,7 +177,7 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale con tipologia {string}",
+  "l'utente deposita un segnale per quell'e-service con tipologia {string}",
   async function (signalType: SignalType) {
     const signalRequest = createSignal({
       signalType,
@@ -160,12 +193,15 @@ When(
   }
 );
 
-When("l'utente deposita un segnale vuoto", async function () {
-  this.response = await pushSignalApiClient.v1.pushSignal(
-    {} as SignalPayload,
-    getAuthorizationHeader(this.voucher)
-  );
-});
+When(
+  "l'utente deposita un segnale vuoto per quell'e-service",
+  async function () {
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      {} as SignalPayload,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
 
 When(
   "l'utente verifica lo stato del servizio di deposito segnali",
@@ -217,7 +253,7 @@ Then(
 Given(
   "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
   async function () {
-    const eservice = getEserviceBy("org", "name");
+    const eservice = getEserviceBy(this.producerId, "name");
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -227,7 +263,7 @@ Given(
         enable_signal_hub: true,
         name,
       },
-      "org"
+      this.producerId
     );
 
     this.eserviceId = id;
@@ -238,7 +274,7 @@ Given(
   "l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH",
   async function () {
     // Write code here that turns the phrase above into concrete actions
-    const eservice = getEserviceBy("org", "name");
+    const eservice = getEserviceBy(this.producerId, "name");
     const { state, name } = eservice;
     const id = "someEserviceId";
     const descriptor = "someDescriptorId";
@@ -250,7 +286,7 @@ Given(
         enable_signal_hub: true,
         name,
       },
-      "org"
+      this.producerId
     );
 
     this.eserviceId = id;
@@ -260,7 +296,7 @@ Given(
 Given(
   "Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH",
   async function () {
-    const eservice = getEserviceBy("org", "name");
+    const eservice = getEserviceBy(this.producerId, "name");
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -270,7 +306,7 @@ Given(
         enable_signal_hub: true,
         name,
       },
-      "org"
+      this.producerId
     );
 
     this.eserviceId = id;
@@ -280,7 +316,7 @@ Given(
 Given(
   "l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH",
   async function () {
-    const eservice = getEserviceBy("org", "name");
+    const eservice = getEserviceBy(this.producerId, "name");
     const { id, descriptor, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -290,7 +326,7 @@ Given(
         enable_signal_hub: true,
         name,
       },
-      "org"
+      this.producerId
     );
 
     this.eserviceId = id;
@@ -300,7 +336,7 @@ Given(
 Given(
   "l'utente ha pubblicato un e-service senza l'opzione utilizzo SH",
   async function () {
-    const eservice = getEserviceBy("org", "name");
+    const eservice = getEserviceBy(this.producerId, "name");
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -310,7 +346,7 @@ Given(
         enable_signal_hub: false,
         name,
       },
-      "org"
+      this.producerId
     );
 
     this.eserviceId = id;

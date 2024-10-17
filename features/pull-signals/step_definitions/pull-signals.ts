@@ -4,7 +4,6 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import {
   assertValidResponse,
   createOrUpdateAgreement,
-  createOrUpdateEservice,
   createPullSignalRequest,
   createOrUpdatePurpose,
   createSignal,
@@ -22,41 +21,10 @@ import {
 } from "../../../lib/data.interop";
 
 Given(
-  "l'ente {string}, aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali",
-  function (organizationName: string) {
-    const organization = getOrganizationByName(organizationName);
-    this.producerId = organization.id;
-  }
-);
-
-Given(
   "l'ente {string}, aderente a PDND Interop, è fruitore e consumatore dei segnali",
   function (organizationName: string) {
     const organization = getOrganizationByName(organizationName);
     this.consumerId = organization.id;
-  }
-);
-
-Given(
-  "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
-  async function (eserviceName: string) {
-    const { name, id, descriptor, state, enable_signal_hub } = getEserviceBy(
-      this.producerId,
-      eserviceName
-    );
-    await createOrUpdateEservice(
-      {
-        id,
-        descriptor,
-        state,
-        enable_signal_hub,
-        name,
-      },
-      this.producerId
-    );
-
-    this.eserviceId = id;
-    this.eserviceName = name;
   }
 );
 
