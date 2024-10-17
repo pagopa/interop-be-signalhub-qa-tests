@@ -191,7 +191,7 @@ export async function createEservice(eServiceInfo: EserviceInfo) {
     eServiceInfo;
 
   const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO NOTHING",
+    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET enabled_signal_hub = EXCLUDED.enabled_signal_hub",
     values: [eServiceId, producerId, descriptorId, state, isEnabledToSH],
   };
 

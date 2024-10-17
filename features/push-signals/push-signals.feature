@@ -90,7 +90,7 @@ Feature: Deposito segnali
     Given l'utente ha pubblicato un e-service senza l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     Given l'utente deposita un segnale
-    Then la richiesta va in errore con status code 400
+    Then la richiesta va in errore con status code 403
 
   @push_signals11
   Scenario Outline: L'utente, come produttore di segnali, prima deposita un segnale per un e-service abilitato a Signal Hub, poi deposita un segnale per lo stesso e-service non più abilitato a Signal Hub. La richiesta va a in errore
