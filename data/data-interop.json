@@ -33,7 +33,7 @@
     "name": "INPS",
     "eservices": [
       {
-        "name": "cassetto_fiscale",
+        "name": "cassetto fiscale",
         "id": "4a127c23c-7662-4974-994e-0eb9adabc999",
         "descriptor": "2342dfb3-6bff-48ee-9724-14fd0858w62f",
         "state": "PUBLISHED",

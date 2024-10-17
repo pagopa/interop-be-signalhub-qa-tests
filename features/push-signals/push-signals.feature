@@ -15,14 +15,12 @@ Feature: Deposito segnali
 
   @push_signals2
   Scenario Outline: L'utente, come produttore di segnali, non deposita nessun segnale. La richiesta va in errore.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale vuoto per quell'e-service
     Then la richiesta va in errore con status code 400
 
   @push_signals3
   Scenario Outline: L'utente, come produttore di segnali, deposita un segnale con un SignalType presente nella lista. La richiesta va a buon fine.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale per quell'e-service con tipologia "<signalType>" 
     Then la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
@@ -36,33 +34,30 @@ Feature: Deposito segnali
 
   @push_signals4
   Scenario Outline: L'utente, come produttore di segnali, deposita un segnale con un signalType errato. La richiesta va in errore.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale per quell'e-service con una tipologia non prevista 
     Then la richiesta va in errore con status code 400
 
   @push_signals5
   Scenario Outline: L'utente, come produttore di segnali, deposita due segnali, uno per ciascun e-service di cui è erogatore. Entrambe le richieste vanno a buon fine.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
-    Given l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH
+    Given l'utente ha pubblicato un secondo e-service denominato "domicili fiscali" con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
-    Given l'utente deposita un segnale per quell'e-service
+    Given l'utente deposita un segnale per il primo e-service
     Given la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
     When l'utente deposita un segnale per il secondo e-service
     Then la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
 
   @push_signals6
   Scenario Outline: Un utente, come produttore di segnali, deposita due segnali, uno per ciascun e-service di cui è erogatore. Il signalId è lo stesso. Entrambe le richieste vanno a buon fine.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
-    Given l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH
+    Given l'utente ha pubblicato un secondo e-service denominato "domicili fiscali" con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
-    Given l'utente deposita un segnale per quell'e-service
+    Given l'utente deposita un segnale per il primo e-service
     When l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo
     Then la richiesta va a buon fine con status code 200 e il segnale viene preso in carico
 
   @push_signals7
   Scenario Outline: L'utente, come produttore di segnali, deposita un segnale per un e-service di cui non è erogatore. La richiesta va in errore.
-    Given Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH
+    Given Un utente, appartenente a un'altra organizzazione denominata "INPS", come erogatore ha pubblicato un e-service denominato "cassetto fiscale" con il flag utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale per un e-service di cui non è erogatore
     Then la richiesta va in errore con status code 403
@@ -75,14 +70,13 @@ Feature: Deposito segnali
 
   @push_signals8b
   Scenario Outline: Un utente, come produttore di segnali, deposita un segnale per un e-service non pubblicato. La richiesta va in errore
-    Given l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH
+    Given l'utente ha creato un e-service denominato "domicili fiscali" in stato "DRAFT" con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale per un e-service che non è stato pubblicato
     Then la richiesta va in errore con status code 403
 
   @push_signals9
   Scenario Outline: L'utente, come produttore di segnali, deposita due segnali con lo stesso signalId. La seconda richiesta va in errore: viene rifiutata perché signalId duplicato. NB. Viene introdotto un timeout per consentire al sistema la prima scrittura, dato che avviene con un collaborazione tra processi asincroni.
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     Given l'utente deposita un segnale per quell'e-service
     When l'utente deposita un segnale per quell'e-service con lo stesso signalId del primo
@@ -90,14 +84,13 @@ Feature: Deposito segnali
 
   @push_signals10
   Scenario Outline: L'utente, come produttore di segnali, deposita un segnale per un e-service non abilitato a Signal Hub. La richiesta va a in errore.
-    Given l'utente ha pubblicato un e-service senza l'opzione utilizzo SH
+    Given l'utente ha pubblicato un e-service denominato "domicili legali" senza l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     Given l'utente deposita un segnale per quell'e-service
-    Then la richiesta va in errore con status code 400
+    Then la richiesta va in errore con status code 403
 
   @push_signals11
   Scenario Outline: L'utente, come produttore di segnali, prima deposita un segnale per un e-service abilitato a Signal Hub, poi deposita un segnale per lo stesso e-service non più abilitato a Signal Hub. La richiesta va a in errore
-    Given l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH
     Given l'utente produttore di segnali ha ottenuto un voucher api
     Given l'utente deposita un segnale per quell'e-service
     Given la richiesta va a buon fine con status code 200 e il segnale viene preso in carico

@@ -21,7 +21,7 @@ export async function createOrUpdateEservice(
 ) {
   const { id, descriptor, state, enable_signal_hub } = eservice;
   const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET enabled_signal_hub = EXCLUDED.enabled_signal_hub",
+    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET state = EXCLUDED.state, enabled_signal_hub = EXCLUDED.enabled_signal_hub",
     values: [id, organizationId, descriptor, state, enable_signal_hub],
   };
 
@@ -70,7 +70,7 @@ export function createSignal(
   return {
     objectId: crypto.randomUUID(),
     signalType: SIGNAL_TYPE_DEFAULT,
-    eserviceId: "1",
+    eserviceId: "this-is-a-fake-eservice-id",
     objectType: crypto.randomUUID(),
     signalId: getRandomSignalId(),
     ...partialSignal,
@@ -93,6 +93,9 @@ export function getRandomSignalId() {
     10
   );
 }
+
+export const getRandomInt = () =>
+  Number(Math.random() * Number.MAX_SAFE_INTEGER).toFixed(0);
 
 export async function sleep(time: number) {
   return new Promise((resolve) => {
