@@ -2,11 +2,10 @@
 Feature: Recupero segnali
 
   Background:
-    # Given un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato "Agid"
-    # And un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato "Comune di Milano"
-    Given un e-service pubblicato dall'ente erogatore chiamato "domicili digitali" abilitato a Signal Hub
-    # And l'ente erogatore chiamato "Agid" è denominato produttore di segnali
-    # And l'ente fruitore chiamato "Comune di Milano" è denominato consumatore di segnali
+    Given l'ente "Agid", aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali
+    Given l'ente erogatore ha pubblicato un e-service denominato "domicili digitali" abilitato a Signal Hub
+    Given l'ente "Comune di Milano", aderente a PDND Interop, è fruitore e consumatore dei segnali
+    
 
   @pull_signals1
   Scenario Outline: L'utente consumatore di segnali ottiene un voucher scaduto. L'utente consumatore recupera un segnale. La richiesta non va a buon fine con status code 403.

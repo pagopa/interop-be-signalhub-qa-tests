@@ -12,7 +12,7 @@ import {
   getAuthorizationHeader,
   getConsumerOrganization,
   getEservice,
-  getEServiceProducerInfo,
+  getProducerOrganization,
   getPurpose,
   sleep,
 } from "../../../lib/common";
@@ -21,10 +21,42 @@ import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { getExpiredVoucher, getVoucher } from "../../../lib/voucher";
 
 Given(
+  "l'ente {string}, aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali",
+  function (_organizationName: string) {
+    this.signalProducerId = getProducerOrganization();
+  }
+);
+
+Given(
+  "l'ente {string}, aderente a PDND Interop, è fruitore e consumatore dei segnali",
+  function (_organizationName: string) {
+    this.signalConsumerId = getConsumerOrganization();
+  }
+);
+
+Given(
+  "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
+  async function (eserviceName: string) {
+    const eServiceProducer = getEservice(eserviceName);
+    const { name, id, descriptor, state, enable_signal_hub } = eServiceProducer;
+    await createEservice({
+      producerId: this.signalProducerId,
+      descriptorId: descriptor,
+      eServiceId: id,
+      state,
+      isEnabledToSH: enable_signal_hub,
+      name,
+    });
+
+    this.eserviceId = id;
+  }
+);
+
+Given(
   "l'utente consumatore di segnali ha ottenuto un voucher api",
   async function () {
     const voucher = await getVoucher({
-      ORGANIZATION_ID: getConsumerOrganization(),
+      ORGANIZATION_ID: this.signalConsumerId,
     });
     this.voucher = voucher;
   }
@@ -65,22 +97,6 @@ Given(
   }
 );
 
-// Given(
-//   "l'utente produttore di segnali, già in possesso di voucher api, ha depositato {int} segnal(e)(i) per l'e-service {string}",
-//   async function (_howManySignals: number, _eserviceName: string) {
-//     const signalRequest = createSignal();
-//     const voucher = await getVoucher();
-//     const response = await pushSignalApiClient.v1.pushSignal(
-//       signalRequest,
-//       getAuthorizationHeader(voucher)
-//     );
-//     assertValidResponse(response);
-
-//     this.response = response;
-//     this.requestSignalId = signalRequest.signalId;
-//   }
-// );
-
 Given(
   "l'utente consumatore di segnali ha ottenuto un voucher api scaduto",
   async function () {
@@ -92,7 +108,7 @@ Given(
 Given(
   "l'utente ha già una richiesta di fruizione in stato {string} per l'e-service {string}",
   async function (agreementStatus: string, eserviceName: string) {
-    const organization = getConsumerOrganization();
+    const organization = this.signalConsumerId;
     const agreement = getAgreement(eserviceName);
     return await createAgreement(
       {
@@ -107,7 +123,7 @@ Given(
 Given(
   "l'utente ha già una finalità in stato {string} per l'e-service {string}",
   async function (purposeStatus: string, eserviceName: string) {
-    const organization = getConsumerOrganization();
+    const organization = this.signalConsumerId;
     const purpose = getPurpose(eserviceName);
     return await createPurpose(
       {
@@ -196,55 +212,5 @@ Then(
     assert.strictEqual(data.signals?.length, numberOfSignalList);
     assert.strictEqual(data.lastSignalId, null);
     assert.strictEqual(this.response.status, statusCode);
-  }
-);
-
-Given(
-  "l'ente fruitore chiamato {string} è denominato consumatore di segnali",
-  function (organizationName: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return organizationName;
-  }
-);
-
-Given(
-  "l'ente erogatore chiamato {string} è denominato produttore di segnali",
-  function (organizationName: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return organizationName;
-  }
-);
-
-Given(
-  "un e-service pubblicato dall'ente erogatore chiamato {string} abilitato a Signal Hub",
-  async function (eserviceName: string) {
-    const eServiceProducer = getEServiceProducerInfo();
-    const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
-    await createEservice({
-      producerId,
-      descriptorId,
-      eServiceId,
-      state,
-      isEnabledToSH: true,
-      name: eserviceName,
-    });
-
-    this.eserviceId = eServiceId;
-  }
-);
-
-Given(
-  "un ente aderente a PDND Interop che riveste ruolo di fruitore chiamato {string}",
-  function (organizationName: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return organizationName;
-  }
-);
-
-Given(
-  "un ente aderente a PDND Interop che riveste il ruolo di erogatore chiamato {string}",
-  function (organizationName: string) {
-    // Write code here that turns the phrase above into concrete actions
-    return organizationName;
   }
 );
