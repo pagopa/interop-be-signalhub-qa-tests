@@ -6,6 +6,7 @@ import {
 } from "@cucumber/cucumber";
 import { truncateSignalTable, connectSignal } from "../data/db";
 import { nodeEnv } from "../configs/env";
+import { getRandomInt } from "../lib/common";
 
 // Increase duration of every step with the following timeout (Default is 5000 milliseconds)
 setDefaultTimeout(process.env.CUCUMBER_SET_DEFAULT_TIMEOUT_MS);
@@ -17,6 +18,7 @@ BeforeAll(async function () {
 });
 
 Before(async function () {
+  this.TEST_SEED = `QA-${getRandomInt()}/`;
   // see https://cucumber.io/docs/cucumber/state/?lang=javascript
   await truncateSignalTable();
 });

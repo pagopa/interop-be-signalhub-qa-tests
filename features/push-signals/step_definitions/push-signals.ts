@@ -1,53 +1,176 @@
 import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
 import {
-  assertValidResponse,
-  createEservice,
+  createOrUpdateEservice,
   createSignal,
-  eserviceIdNotPublished,
-  eserviceIdPublishedByAnotherOrganization,
-  eserviceIdSecondPushSignals,
   getAuthorizationHeader,
-  getEServiceProducerInfo,
-  getEserviceProducerDiffOwnerInfo,
-  getRandomSignalId,
-  signalProducer,
   sleep,
   updateEserviceSHOptions,
 } from "../../../lib/common";
 import { pushSignalApiClient } from "../../../api/push-signals.client";
 import { SignalPayload, SignalType } from "../../../api/push-signals.models";
 import { getVoucher } from "../../../lib/voucher";
+import {
+  getOrganizationByName,
+  getEserviceBy,
+} from "../../../lib/data.interop";
 
 Given(
-  "l'utente (produttore)(consumatore) di segnali ha ottenuto un voucher api",
+  "l'ente {string}, aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali",
+  function (organizationName: string) {
+    const organization = getOrganizationByName(organizationName);
+    this.producerId = organization.id;
+  }
+);
+
+Given(
+  "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
+  async function (eserviceName: string) {
+    const { name, id, descriptor, state, enable_signal_hub } = getEserviceBy(
+      this.producerId,
+      eserviceName
+    );
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub,
+        name,
+      },
+      this.producerId
+    );
+
+    this.eserviceId = id;
+    this.eserviceName = name;
+  }
+);
+
+Given(
+  "l'utente produttore di segnali ha ottenuto un voucher api",
   async function () {
-    const voucher = await getVoucher();
+    const voucher = await getVoucher({
+      ORGANIZATION_ID: this.producerId,
+    });
     this.voucher = voucher;
   }
 );
 
-Given("l'utente deposita un segnale per il primo e-service", async function () {
-  const signalRequest = createSignal();
+Given(
+  "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
+  async function () {
+    const eservice = getEserviceBy(this.producerId, "name");
+    const { id, descriptor, state, name } = eservice;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub: true,
+        name,
+      },
+      this.producerId
+    );
 
-  const response = await pushSignalApiClient.v1.pushSignal(
-    signalRequest,
-    getAuthorizationHeader(this.voucher)
-  );
-  assertValidResponse(response);
+    this.eserviceId = id;
+  }
+);
 
-  this.response = response;
-  this.requestSignalId = signalRequest.signalId;
-});
+Given(
+  "l'utente ha pubblicato un secondo e-service denominato {string} con l'opzione utilizzo SH",
+  async function (eserviceName: string) {
+    const eservice = getEserviceBy(this.producerId, eserviceName);
+    const { id, descriptor, state, name } = eservice;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub: true,
+        name,
+      },
+      this.producerId
+    );
+
+    this.anotherEserviceId = id;
+  }
+);
+
+Given(
+  "Un utente, appartenente a un'altra organizzazione denominata {string}, come erogatore ha pubblicato un e-service denominato {string} con il flag utilizzo SH",
+  async function (organizationName: string, eserviceName: string) {
+    const organization = getOrganizationByName(organizationName);
+    const eservice = getEserviceBy(organization.id, eserviceName);
+    const { id, descriptor, state, name } = eservice;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub: true,
+        name,
+      },
+      organization.id
+    );
+
+    this.anotherOrganizationEserviceId = id;
+  }
+);
+
+Given(
+  "l'utente ha creato un e-service denominato {string} in stato {string} con l'opzione utilizzo SH",
+  async function (eserviceName: string, eserviceState: string) {
+    const eservice = getEserviceBy(this.producerId, eserviceName);
+    const { id, descriptor, name } = eservice;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state: eserviceState,
+        enable_signal_hub: true,
+        name,
+      },
+      this.producerId
+    );
+
+    this.notPublishedEserviceId = id;
+  }
+);
+
+Given(
+  "l'utente ha pubblicato un e-service denominato {string} senza l'opzione utilizzo SH",
+  async function (eserviceName: string) {
+    const eservice = getEserviceBy(this.producerId, eserviceName);
+    const { id, descriptor, state, name } = eservice;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub: false,
+        name,
+      },
+      this.producerId
+    );
+
+    this.eserviceId = id;
+  }
+);
+
+Given(
+  "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
+  async function () {
+    await updateEserviceSHOptions(this.eserviceId, false);
+  }
+);
 
 When(
   "l'utente deposita un segnale per il secondo e-service",
   async function () {
-    const eserviceId = eserviceIdSecondPushSignals;
     const nextSignalId = (this.requestSignalId as number) + 1;
     const signalRequest = createSignal({
       signalId: nextSignalId,
-      eserviceId,
+      eserviceId: this.anotherEserviceId,
     });
 
     this.response = await pushSignalApiClient.v1.pushSignal(
@@ -62,10 +185,9 @@ When(
 When(
   "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
   async function () {
-    const eserviceId = eserviceIdSecondPushSignals;
     const signalRequest = createSignal({
       signalId: this.requestSignalId,
-      eserviceId,
+      eserviceId: this.anotherEserviceId,
     });
 
     this.response = await pushSignalApiClient.v1.pushSignal(
@@ -77,11 +199,12 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale con lo stesso signalId del primo",
+  "l'utente deposita un segnale per quell'e-service con lo stesso signalId del primo",
   async function () {
     await sleep(process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
 
     const signalRequest = createSignal({
+      eserviceId: this.eserviceId,
       signalId: this.requestSignalId,
     });
 
@@ -92,16 +215,21 @@ When(
   }
 );
 
-When("l'utente deposita un segnale", async function () {
-  const signalRequest = createSignal();
+When(
+  "l'utente deposita un segnale per (il primo e-service)(quell'e-service)",
+  async function () {
+    const signalRequest = createSignal({
+      eserviceId: this.eserviceId,
+    });
 
-  this.response = await pushSignalApiClient.v1.pushSignal(
-    signalRequest,
-    getAuthorizationHeader(this.voucher)
-  );
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
 
-  this.requestSignalId = signalRequest.signalId;
-});
+    this.requestSignalId = signalRequest.signalId;
+  }
+);
 
 When(
   "l'utente deposita un segnale per un e-service che non esiste",
@@ -119,21 +247,8 @@ When(
 When(
   "l'utente deposita un segnale per un e-service che non è stato pubblicato",
   async function () {
-    const eserviceId = eserviceIdNotPublished;
-    const signalRequest = createSignal({ eserviceId });
-
-    this.response = await pushSignalApiClient.v1.pushSignal(
-      signalRequest,
-      getAuthorizationHeader(this.voucher)
-    );
-  }
-);
-
-When(
-  "l'utente deposita un segnale di una tipologia non prevista",
-  async function () {
     const signalRequest = createSignal({
-      signalType: "TEST" as SignalType,
+      eserviceId: this.notPublishedEserviceId,
     });
 
     this.response = await pushSignalApiClient.v1.pushSignal(
@@ -144,11 +259,26 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale con tipologia {string}",
+  "l'utente deposita un segnale per quell'e-service con una tipologia non prevista",
+  async function () {
+    const signalRequest = createSignal({
+      eserviceId: this.eserviceId,
+      signalType: "THIS-SIGNALTYPE-DOES-NOT-EXIST" as SignalType,
+    });
+
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
+
+When(
+  "l'utente deposita un segnale per quell'e-service con tipologia {string}",
   async function (signalType: SignalType) {
     const signalRequest = createSignal({
+      eserviceId: this.eserviceId,
       signalType,
-      signalId: getRandomSignalId(),
     });
 
     this.response = await pushSignalApiClient.v1.pushSignal(
@@ -160,17 +290,11 @@ When(
   }
 );
 
-When("l'utente deposita un segnale vuoto", async function () {
-  this.response = await pushSignalApiClient.v1.pushSignal(
-    {} as SignalPayload,
-    getAuthorizationHeader(this.voucher)
-  );
-});
-
 When(
-  "l'utente verifica lo stato del servizio di deposito segnali",
+  "l'utente deposita un segnale vuoto per quell'e-service",
   async function () {
-    this.response = await pushSignalApiClient.v1.getStatus(
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      { eserviceId: this.eserviceId } as SignalPayload,
       getAuthorizationHeader(this.voucher)
     );
   }
@@ -179,9 +303,8 @@ When(
 When(
   "l'utente deposita un segnale per un e-service di cui non è erogatore",
   async function () {
-    const eserviceId = eserviceIdPublishedByAnotherOrganization; // e-service id presente in tabella postgres
     const signalRequest = createSignal({
-      eserviceId,
+      eserviceId: this.anotherOrganizationEserviceId,
     });
 
     this.response = await pushSignalApiClient.v1.pushSignal(
@@ -200,7 +323,6 @@ Then(
   function (statusCode: number) {
     const { errors } = this.response.data;
     assert.strictEqual(this.response.status, statusCode);
-    // assertHttpErrorStatusCode(this.response.status, statusCode);
     assert.ok(errors.length > 0);
   }
 );
@@ -214,96 +336,11 @@ Then(
   }
 );
 
-Given(
-  "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
+When(
+  "l'utente verifica lo stato del servizio di deposito segnali",
   async function () {
-    const eServiceProducer = getEServiceProducerInfo();
-    const { eServiceId, producerId, descriptorId, state } = eServiceProducer;
-    await createEservice({
-      producerId,
-      descriptorId,
-      eServiceId,
-      state,
-      isEnabledToSH: true,
-    });
-
-    this.eserviceId = eServiceId;
-  }
-);
-
-Given(
-  "l'utente ha pubblicato un altro e-service con l'opzione utilizzo SH",
-  async function () {
-    // Write code here that turns the phrase above into concrete actions
-    const eServiceInfo = getEServiceProducerInfo();
-    const { producerId, state } = eServiceInfo;
-    const eServiceId = signalProducer.eservices[1].id;
-    const descriptorId = signalProducer.eservices[1].descriptor;
-    await createEservice({
-      producerId,
-      descriptorId, // override descriptorID
-      eServiceId, // override eserviceID
-      state,
-      isEnabledToSH: true,
-    });
-
-    this.eserviceId = eServiceId;
-  }
-);
-
-Given(
-  "Un utente, appartenente a un'altra organizzazione, come erogatore ha pubblicato un e-service con il flag utilizzo SH",
-  async function () {
-    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
-    const { eServiceId, producerId, descriptorId, state } =
-      eServiceDiffOwnerInfo;
-    await createEservice({
-      producerId,
-      descriptorId,
-      eServiceId,
-      state,
-      isEnabledToSH: true,
-    });
-    this.eServiceId = eServiceId;
-  }
-);
-
-Given(
-  "l'utente ha creato un e-service in stato DRAFT con l'opzione utilizzo SH",
-  async function () {
-    const eServiceDiffOwnerInfo = getEserviceProducerDiffOwnerInfo();
-    const { eServiceId, producerId, descriptorId } = eServiceDiffOwnerInfo;
-    await createEservice({
-      producerId,
-      descriptorId,
-      eServiceId,
-      state: "DRAFT",
-      isEnabledToSH: true,
-    });
-  }
-);
-
-Given(
-  "l'utente ha pubblicato un e-service senza l'opzione utilizzo SH",
-  async function () {
-    const eServiceInfo = getEServiceProducerInfo();
-    const { producerId, state, eServiceId, descriptorId } = eServiceInfo;
-
-    await createEservice({
-      producerId,
-      descriptorId,
-      eServiceId,
-      state,
-      isEnabledToSH: false,
-    });
-
-    this.eserviceId = eServiceId;
-  }
-);
-
-Given(
-  "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
-  async function () {
-    await updateEserviceSHOptions(this.eserviceId, false);
+    this.response = await pushSignalApiClient.v1.getStatus(
+      getAuthorizationHeader(this.voucher)
+    );
   }
 );
