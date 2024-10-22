@@ -110,16 +110,37 @@ Feature: Recupero segnali
     When l'utente verifica lo stato del servizio di recupero segnali
     Then la richiesta va a buon fine con status code 200
 
-  @pull_signals12
+  @pull_signals12a
   Scenario Outline: L'utente consumatore di segnali ha due finalità: la prima in stato ACTIVE, la seconda in stato SUSPENDED per l' e-service per la quale vuole recuperare il segnale. La richiesta va a buon fine.
     Given l'utente produttore di segnali, già in possesso di voucher api, ha depositato 1 segnale per quell'e-service
     Given il sistema ha depositato il segnale
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
-    Given l'utente ha già una finalità in stato "SUSPENDED" per quell'e-service
+    Given l'utente crea una nuova finalità in stato "SUSPENDED" per quell' e-service
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
+
+  @pull_signals12b
+  Scenario Outline: L'utente consumatore di segnali ha due finalità: la prima in stato ARCHIVED, la seconda in uno stato diverso da active per l' e-service per la quale vuole recuperare il segnale. La richiesta va in errore
+    Given l'utente produttore di segnali, già in possesso di voucher api, ha depositato 1 segnale per quell'e-service
+    Given il sistema ha depositato il segnale
+    Given l'utente consumatore di segnali ha ottenuto un voucher api
+    Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
+    Given l'utente ha già una finalità in stato "ARCHIVED" per quell'e-service
+    Given l'utente crea una nuova finalità in stato "<statoFinalità>" per quell' e-service
+    When l'utente recupera un segnale di quell'e-service
+    Then la richiesta va in errore con status code 403
+
+    Examples:
+      | statoFinalità         |
+      | DRAFT                 |
+      | WAITING FOR APPROVAL  |
+      | REJECTED              |
+      | REJECTED              |
+      | SUSPENDED BY CONSUMER |
+      | SUSPENDED BY PRODUCER |
+      | ARCHIVED              |
 
   @pull_signals13a
   Scenario Outline: L'utente consumatore di segnali recupera un segnale per un e-service che presenta due versioni: (la prima versione di e-service passa in stato DEPRECATED, dato che esistono dei fruitori attivi) la seconda in stato ACTIVE. la richiesta va a buon fine.
@@ -140,8 +161,8 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
-    Given l'utente produttore di segnali pubblica una nuova versione dell e-service
     Given la prima versione dell' e-service è già in stato "ARCHIVED"
+    Given l'utente produttore di segnali pubblica una nuova versione dell e-service
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
