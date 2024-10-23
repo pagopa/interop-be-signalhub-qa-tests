@@ -13,6 +13,7 @@ import { getVoucher } from "../../../lib/voucher";
 import {
   getOrganizationByName,
   getEserviceBy,
+  getEserviceByName,
 } from "../../../lib/data.interop";
 
 Given(
@@ -26,10 +27,8 @@ Given(
 Given(
   "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
   async function (eserviceName: string) {
-    const { name, id, descriptor, state, enable_signal_hub } = getEserviceBy(
-      this.producerId,
-      eserviceName
-    );
+    const { name, id, descriptor, state, enable_signal_hub } =
+      getEserviceByName(this.producerId, eserviceName, this.TEST_SEED);
     await createOrUpdateEservice(
       {
         id,
@@ -57,29 +56,13 @@ Given(
 );
 
 Given(
-  "l'utente, come erogatore, ha pubblicato un e-service con l'opzione utilizzo SH",
-  async function () {
-    const eservice = getEserviceBy(this.producerId, "name");
-    const { id, descriptor, state, name } = eservice;
-    await createOrUpdateEservice(
-      {
-        id,
-        descriptor,
-        state,
-        enable_signal_hub: true,
-        name,
-      },
-      this.producerId
-    );
-
-    this.eserviceId = id;
-  }
-);
-
-Given(
   "l'utente ha pubblicato un secondo e-service denominato {string} con l'opzione utilizzo SH",
   async function (eserviceName: string) {
-    const eservice = getEserviceBy(this.producerId, eserviceName);
+    const eservice = getEserviceByName(
+      this.producerId,
+      eserviceName,
+      this.TEST_SEED
+    );
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -100,7 +83,11 @@ Given(
   "Un utente, appartenente a un'altra organizzazione denominata {string}, come erogatore ha pubblicato un e-service denominato {string} con il flag utilizzo SH",
   async function (organizationName: string, eserviceName: string) {
     const organization = getOrganizationByName(organizationName);
-    const eservice = getEserviceBy(organization.id, eserviceName);
+    const eservice = getEserviceByName(
+      organization.id,
+      eserviceName,
+      this.TEST_SEED
+    );
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -120,8 +107,11 @@ Given(
 Given(
   "l'utente ha creato un e-service denominato {string} in stato {string} con l'opzione utilizzo SH",
   async function (eserviceName: string, eserviceState: string) {
-    const eservice = getEserviceBy(this.producerId, eserviceName);
-    const { id, descriptor, name } = eservice;
+    const { id, descriptor, name } = getEserviceBy(
+      this.producerId,
+      eserviceName,
+      this.TEST_SEED
+    );
     await createOrUpdateEservice(
       {
         id,
@@ -140,7 +130,11 @@ Given(
 Given(
   "l'utente ha pubblicato un e-service denominato {string} senza l'opzione utilizzo SH",
   async function (eserviceName: string) {
-    const eservice = getEserviceBy(this.producerId, eserviceName);
+    const eservice = getEserviceByName(
+      this.producerId,
+      eserviceName,
+      this.TEST_SEED
+    );
     const { id, descriptor, state, name } = eservice;
     await createOrUpdateEservice(
       {
@@ -348,15 +342,17 @@ When(
 Given(
   "l'(utente)(utente produttore di segnali) pubblica una nuova versione dell e-service",
   async function () {
-    const { id, name, descriptor, enable_signal_hub, state } = getEserviceBy(
+    const { name, descriptor, enable_signal_hub, state } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
-
+    const publishedEserviceId = this.eserviceId;
     const newDescriptorId = `${descriptor}-V2`;
+
     await createOrUpdateEservice(
       {
-        id,
+        id: publishedEserviceId,
         descriptor: newDescriptorId,
         name,
         enable_signal_hub,
@@ -372,7 +368,8 @@ Given(
   async function (state: string) {
     const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
 
     await createOrUpdateEservice(
@@ -393,9 +390,9 @@ Given(
   async function (state: string) {
     const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
-
     const newDescriptorId = `${descriptor}-V2`;
 
     await createOrUpdateEservice(
