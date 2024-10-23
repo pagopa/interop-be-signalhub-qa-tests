@@ -123,14 +123,14 @@ Given(
   async function (purposeState: string) {
     const { eservice, name, version, id } = getPurposeBy(
       this.consumerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
-
-    const newPurposeId = `${id}-V2`;
+    // const newPurposeId = `${id}-V2`;
 
     return await createOrUpdatePurpose(
       {
-        id: newPurposeId,
+        id,
         state: purposeState,
         name,
         eservice,

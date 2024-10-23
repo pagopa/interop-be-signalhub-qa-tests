@@ -364,15 +364,17 @@ When(
 Given(
   "l'(utente)(utente produttore di segnali) pubblica una nuova versione dell e-service",
   async function () {
-    const { id, name, descriptor, enable_signal_hub, state } = getEserviceBy(
+    const { name, descriptor, enable_signal_hub, state } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
-
+    const publishedEserviceId = this.eserviceId;
     const newDescriptorId = `${descriptor}-V2`;
+
     await createOrUpdateEservice(
       {
-        id,
+        id: publishedEserviceId,
         descriptor: newDescriptorId,
         name,
         enable_signal_hub,
@@ -388,7 +390,8 @@ Given(
   async function (state: string) {
     const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
 
     await createOrUpdateEservice(
@@ -409,9 +412,9 @@ Given(
   async function (state: string) {
     const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
       this.producerId,
-      this.eserviceName
+      this.eserviceName,
+      this.TEST_SEED
     );
-
     const newDescriptorId = `${descriptor}-V2`;
 
     await createOrUpdateEservice(

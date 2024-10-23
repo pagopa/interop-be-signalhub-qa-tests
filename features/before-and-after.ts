@@ -26,5 +26,6 @@ Before(async function () {
 
 AfterAll(async function () {
   await cleanupQAData(PATTERN_FOR_DELETE_QA_DATA);
+  console.info(`CLEANING UP ALL QA DATA`);
   console.info(`*** END SIGNALHUB QA TEST SUITE IN ENV [${nodeEnv}] ***\n`);
 });
