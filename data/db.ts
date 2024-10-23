@@ -1,7 +1,7 @@
 import { databaseConfig } from "../configs/db.config";
 import { createDbInstance } from "./initDb";
 
-export const clientSchemaSignal = createDbInstance({
+export const clientSchemaSignalhub = createDbInstance({
   database: databaseConfig.dbName,
   host: databaseConfig.dbHost,
   port: databaseConfig.dbPort,
@@ -59,15 +59,19 @@ async function truncatePurposeTable(pattern: string) {
 }
 
 async function truncateSignalTable(pattern: string) {
-  await clientSchemaSignal.query(
+  await clientSchemaSignalhub.query(
     "delete from dev_signalhub.signal where eservice_id like $1;",
     pattern
   );
 }
 
 export async function cleanupQAData(pattern: string) {
-  await truncateEserviceTable(pattern);
-  await truncateAgreementTable(pattern);
-  await truncatePurposeTable(pattern);
-  await truncateSignalTable(pattern);
+  try {
+    await truncateEserviceTable(pattern);
+    await truncateAgreementTable(pattern);
+    await truncatePurposeTable(pattern);
+    await truncateSignalTable(pattern);
+  } catch (error) {
+    console.error(error);
+  }
 }

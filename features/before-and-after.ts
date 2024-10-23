@@ -24,7 +24,8 @@ Before(async function () {
 });
 
 After(async function () {
-  await cleanupQAData(this.TEST_SEED);
+  const patternToDeleteOnlyDataWithSeed = `${this.TEST_SEED}%`;
+  await cleanupQAData(patternToDeleteOnlyDataWithSeed);
 });
 
 AfterAll(async function () {
