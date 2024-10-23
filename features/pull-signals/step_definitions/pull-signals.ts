@@ -121,19 +121,20 @@ Given(
 Given(
   "l'utente crea una nuova finalità in stato {string} per quell' e-service",
   async function (purposeState: string) {
-    const { eservice, name, version, id } = getPurposeBy(
+    const { name, version, id } = getPurposeBy(
       this.consumerId,
       this.eserviceName,
       this.TEST_SEED
     );
-    // const newPurposeId = `${id}-V2`;
+    const newPurposeId = `${id}-V2`;
+    const publishedEserviceId = this.eserviceId;
 
     return await createOrUpdatePurpose(
       {
-        id,
+        id: newPurposeId,
         state: purposeState,
         name,
-        eservice,
+        eservice: publishedEserviceId,
         version,
       },
       this.consumerId

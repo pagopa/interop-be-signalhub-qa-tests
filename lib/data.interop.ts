@@ -62,6 +62,20 @@ export function getOrganizationById(organizationId: string): Organization {
   return organization;
 }
 
+export function getEserviceByName(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string
+): Eservice {
+  const eservice = getOrganizationById(organizationId)
+    .eservices.filter(isEqual("name", eserviceName))
+    .shift();
+  if (eservice === undefined) {
+    throw Error(`e-service ${eserviceName} not found`);
+  }
+  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
+}
+
 export function getEserviceBy(
   organizationId: string,
   eserviceName: string,
@@ -107,5 +121,9 @@ export function getPurposeBy(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isEqual = (key: string, value: string) => (item: any) =>
   item[key] === value;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// const isIncluded = (key: string, value: string) => (item: any) =>
+//   value.includes(item[key]);
 
 const idSeeded = (id: string, seed?: string) => `${seed}${id}`;
