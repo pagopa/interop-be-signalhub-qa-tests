@@ -133,6 +133,8 @@ jobs:
 
       - name: Run pnpm test
         id: pnpm_test
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
         run: |
           set -eo pipefail
 
