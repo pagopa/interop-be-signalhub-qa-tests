@@ -1,0 +1,147 @@
+name: QA workflow
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        type: environment
+      test_tag:
+        description: '(optional) test suite tag to run'
+        required: false
+        type: string
+
+jobs:
+  inputs:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Print Inputs
+        id: print_inputs
+        run: |
+          echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- test_tag: \`${{ inputs.test_tag }}\`" >> $GITHUB_STEP_SUMMARY
+
+  create_runner:
+    name: Create Self-Hosted Runner
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        index: [1]
+      fail-fast: true
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Start GitHub Runner
+        id: start_runner
+        uses: pagopa/interop-github-runner-aws-create-action@main
+        with:
+            environment: ${{ inputs.environment }}
+            aws_region: ${{ secrets.AWS_REGION }}
+            iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
+            ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
+            ecs_task_definition: ${{ secrets.ECS_TASK_DEFINITION }}
+            ecs_container_name: ${{ vars.ECS_TASK_CONTAINER_NAME }}
+            ecs_task_cpu: ${{ vars.ECS_TASK_CPU }}
+            ecs_task_memory: ${{ vars.ECS_TASK_MEMORY }}
+            ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
+            ecs_task_subnet_id: ${{ secrets.SUBNET_ID }}
+            ecs_task_sec_group: ${{ secrets.SEC_GROUP_ID }}
+            pat_token: ${{ secrets.BOT_TOKEN }}
+
+  qa_tests:
+    name: Run QA tests
+    needs: [create_runner]
+    runs-on: [self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}"]
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Get Signal Store DB Credentials
+        id: signal_store_creds
+        env:
+          AGREEMENT_USER_SECRET_ARN: ${{ secrets.AGREEMENT_USER_SECRET_ARN }}
+          ESERVICE_USER_SECRET_ARN: ${{ secrets.ESERVICE_USER_SECRET_ARN }}
+          PURPOSE_USER_SECRET_ARN: ${{ secrets.PURPOSE_USER_SECRET_ARN }}
+          BATCH_USER_SECRET_ARN: ${{ secrets.BATCH_USER_SECRET_ARN }}
+        run: |
+            set -euo pipefail
+
+            echo "Retrieving agreement user credentials..."          
+            AGREEMENT_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$AGREEMENT_USER_SECRET_ARN")"
+            
+            AGREEMENT_USERNAME="$(echo "$AGREEMENT_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .username')"
+            echo "::add-mask::$AGREEMENT_USERNAME"
+            
+            AGREEMENT_USER_PASSWORD="$(echo "$AGREEMENT_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
+            echo "::add-mask::$AGREEMENT_USER_PASSWORD"
+
+            echo "Retrieving eservice user credentials..."
+            ESERVICE_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$ESERVICE_USER_SECRET_ARN")"
+            
+            ESERVICE_USERNAME="$(echo "$ESERVICE_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .username')"
+            echo "::add-mask::$ESERVICE_USERNAME"
+            
+            ESERVICE_USER_PASSWORD="$(echo "$ESERVICE_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
+            echo "::add-mask::$ESERVICE_USER_PASSWORD"
+
+            echo "Retrieving purpose user credentials..."
+            PURPOSE_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$PURPOSE_USER_SECRET_ARN")"
+            
+            PURPOSE_USERNAME="$(echo "$PURPOSE_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .username')"
+            echo "::add-mask::$PURPOSE_USERNAME"
+            
+            PURPOSE_USER_PASSWORD="$(echo "$PURPOSE_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
+            echo "::add-mask::$PURPOSE_USER_PASSWORD"
+
+            echo "Retrieving batch user credentials..."
+            BATCH_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$BATCH_USER_SECRET_ARN")"
+            
+            BATCH_USERNAME="$(echo "$BATCH_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .username')"
+            echo "::add-mask::$BATCH_USERNAME"
+            
+            BATCH_USER_PASSWORD="$(echo "$BATCH_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
+            echo "::add-mask::$BATCH_USER_PASSWORD"
+            
+            echo "Updating GH env with Signal Store credentials..."
+
+            echo "DB_AGREEMENT_USER=$AGREEMENT_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_AGREEMENT_PASSWORD=$AGREEMENT_USER_PASSWORD" >> "$GITHUB_ENV"
+
+            echo "DB_ESERVICE_USER=$ESERVICE_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_ESERVICE_PASSWORD=$ESERVICE_USER_PASSWORD" >> "$GITHUB_ENV"
+
+            echo "DB_PURPOSE_USER=$PURPOSE_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_PURPOSE_PASSWORD=$PURPOSE_USER_PASSWORD" >> "$GITHUB_ENV"
+
+            echo "DB_BATCH_USER=$BATCH_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_BATCH_PASSWORD=$BATCH_USER_PASSWORD" >> "$GITHUB_ENV" 
+
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version-file: ./package.json
+
+      - name: Run pnpm test
+        id: pnpm_test
+        run: |
+          set -eo pipefail
+
+          TEST_TAG="${{ inputs.test_tag }}"
+          
+          echo "Starting QA testing..."
+
+          if [[ -n "$TEST_TAG" ]]; then
+            echo "Running tag $TEST_TAG"
+            pnpm run test:tags "$TEST_TAG"
+          else
+            echo "'test_tag' not set, running all tests"
+            pnpm run test
+          fi
+
+

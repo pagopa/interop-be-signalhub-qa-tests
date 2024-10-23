@@ -2,6 +2,9 @@
   "name": "interop-be-signalhub-qa-tests",
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "generate-model:pull": "ts-node ./scripts/generate-pull-api-models.ts",
     "generate-model:push": "ts-node ./scripts/generate-push-api-models.ts",
