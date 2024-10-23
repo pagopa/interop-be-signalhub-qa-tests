@@ -118,8 +118,8 @@ jobs:
             echo "DB_PURPOSE_USER=$PURPOSE_USERNAME" >> "$GITHUB_ENV"
             echo "DB_PURPOSE_PASSWORD=$PURPOSE_USER_PASSWORD" >> "$GITHUB_ENV"
 
-            echo "DB_BATCH_USER=$BATCH_USERNAME" >> "$GITHUB_ENV"
-            echo "DB_BATCH_PASSWORD=$BATCH_USER_PASSWORD" >> "$GITHUB_ENV" 
+            echo "DB_USER_BATCH_CLEANUP=$BATCH_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_PASSWORD_BATCH_CLEANUP=$BATCH_USER_PASSWORD" >> "$GITHUB_ENV" 
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
 
