@@ -42,48 +42,6 @@ function getInteropData(): Organization[] {
   );
 }
 
-// export function getEServiceProducerInfo(): Omit<EserviceInfo, "isEnabledToSH"> {
-//   const eserviceName = "domicili digitali";
-//   const producerId = "aaa";
-//   const {
-//     id: eServiceId,
-//     descriptor,
-//     state,
-//   } = getEserviceBy(producerId, eserviceName);
-
-//   return {
-//     eServiceId,
-//     producerId,
-//     descriptorId: descriptor,
-//     state,
-//   };
-// }
-
-// export function getEserviceProducerDiffOwnerInfo(): Omit<
-//   EserviceInfo,
-//   "isEnabledToSH"
-// > {
-//   /*
-//   const { eservices, id: producerId } = signalProducer;
-//   const { id: eServiceId, descriptor, state } = eservices[0];
-//   return { eServiceId, producerId, descriptorId: descriptor, state };
-//   */
-//   const eserviceName = "domicili digitali";
-//   const producerId = "aaa";
-//   const {
-//     id: eServiceId,
-//     descriptor,
-//     state,
-//   } = getEserviceBy(producerId, eserviceName);
-
-//   return {
-//     eServiceId,
-//     producerId,
-//     descriptorId: descriptor,
-//     state,
-//   };
-// }
-
 export function getOrganizationByName(organizationName: string): Organization {
   const organization = getInteropData().find(
     (organization) => organization.name === organizationName
@@ -106,7 +64,8 @@ export function getOrganizationById(organizationId: string): Organization {
 
 export function getEserviceBy(
   organizationId: string,
-  eserviceName: string
+  eserviceName: string,
+  seed?: string
 ): Eservice {
   const eservice = getOrganizationById(organizationId)
     .eservices.filter(isEqual("name", eserviceName))
@@ -114,38 +73,13 @@ export function getEserviceBy(
   if (eservice === undefined) {
     throw Error(`e-service ${eserviceName} not found`);
   }
-  return eservice;
-}
-
-export function getEserviceById(
-  organizationId: string,
-  eserviceId: string
-): Eservice {
-  const eservice = getOrganizationById(organizationId)
-    .eservices.filter(isEqual("id", eserviceId))
-    .shift();
-  if (eservice === undefined) {
-    throw Error(`e-service ${eserviceId} not found`);
-  }
-  return eservice;
-}
-
-export function getEserviceByState(
-  organizationId: string,
-  state: string
-): Eservice {
-  const eservice = getOrganizationById(organizationId)
-    .eservices.filter(isEqual("state", state))
-    .shift();
-  if (eservice === undefined) {
-    throw Error(`e-service with state ${state} not found`);
-  }
-  return eservice;
+  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
 }
 
 export function getAgreementBy(
   organizationId: string,
-  eserviceName: string
+  eserviceName: string,
+  seed?: string
 ): Agreement {
   const agreement = getOrganizationById(organizationId)
     .agreements.filter(isEqual("name", eserviceName))
@@ -153,12 +87,13 @@ export function getAgreementBy(
   if (agreement === undefined) {
     throw Error(`agreement for e-service ${eserviceName} not found`);
   }
-  return agreement;
+  return { ...agreement, ...{ id: idSeeded(agreement.id, seed) } };
 }
 
 export function getPurposeBy(
   organizationId: string,
-  eserviceName: string
+  eserviceName: string,
+  seed?: string
 ): Purpose {
   const purpose = getOrganizationById(organizationId)
     .purposes.filter(isEqual("name", eserviceName))
@@ -166,9 +101,11 @@ export function getPurposeBy(
   if (purpose === undefined) {
     throw Error(`purpose for e-service ${eserviceName} not found`);
   }
-  return purpose;
+  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isEqual = (key: string, value: string) => (item: any) =>
   item[key] === value;
+
+const idSeeded = (id: string, seed?: string) => `${seed}${id}`;

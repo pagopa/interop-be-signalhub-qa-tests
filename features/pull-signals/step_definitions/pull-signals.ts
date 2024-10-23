@@ -85,11 +85,15 @@ Given(
 Given(
   "l'utente ha già una richiesta di fruizione in stato {string} per quell'e-service",
   async function (agreementStatus: string) {
-    const agreement = getAgreementBy(this.consumerId, this.eserviceName);
+    const agreement = getAgreementBy(
+      this.consumerId,
+      this.eserviceName,
+      this.TEST_SEED
+    );
     return await createOrUpdateAgreement(
       {
         ...agreement,
-        ...{ state: agreementStatus },
+        ...{ state: agreementStatus, eservice: this.eserviceId },
       },
       this.consumerId
     );
@@ -99,11 +103,15 @@ Given(
 Given(
   "l'utente ha già una finalità in stato {string} per quell'e-service",
   async function (purposeStatus: string) {
-    const purpose = getPurposeBy(this.consumerId, this.eserviceName);
+    const purpose = getPurposeBy(
+      this.consumerId,
+      this.eserviceName,
+      this.TEST_SEED
+    );
     return await createOrUpdatePurpose(
       {
         ...purpose,
-        ...{ state: purposeStatus },
+        ...{ state: purposeStatus, eservice: this.eserviceId },
       },
       this.consumerId
     );
@@ -113,7 +121,7 @@ Given(
 When(
   "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",
   async function (eserviceName: string) {
-    const { id } = getEserviceBy(this.producerId, eserviceName);
+    const { id } = getEserviceBy(this.producerId, eserviceName, this.TEST_SEED);
     // If SignalId is not present in previous given start by signalId = 1
     const signalId = (this.startSignalId || 1) - 1;
     const pullSignalRequest = createPullSignalRequest({

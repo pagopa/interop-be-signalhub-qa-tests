@@ -2,18 +2,12 @@ import "../configs/env";
 import { AxiosResponse } from "axios";
 import { SignalPayload, SignalType } from "../api/push-signals.models";
 import { PullSignalParams } from "../api/pull-signals.models";
-import { clientSchemaInteropEservice } from "../data/db.data.preparation";
 import {
   clientSchemaInteropAgreement,
+  clientSchemaInteropEservice,
   clientSchemaInteropPurpose,
-} from "../data/db.data.preparation";
+} from "../data/db";
 import { Eservice, Agreement, Purpose } from "./data.interop";
-
-const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
-
-export const signalProducer = undefined;
-export const signalConsumer = undefined;
-export const anotherSignalProducer = undefined;
 
 export async function createOrUpdateEservice(
   eservice: Eservice,
@@ -64,6 +58,7 @@ export async function createOrUpdatePurpose(
   await clientSchemaInteropPurpose.query(query);
 }
 
+const SIGNAL_TYPE_DEFAULT: SignalType = "CREATE";
 export function createSignal(
   partialSignal: Partial<SignalPayload> = {}
 ): SignalPayload {
@@ -88,10 +83,7 @@ export function createPullSignalRequest(
 }
 
 export function getRandomSignalId() {
-  return parseInt(
-    Number(Math.random() * Number.MAX_SAFE_INTEGER).toFixed(0),
-    10
-  );
+  return parseInt(getRandomInt(), 10);
 }
 
 export const getRandomInt = () =>
