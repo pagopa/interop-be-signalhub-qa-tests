@@ -360,3 +360,69 @@ When(
     );
   }
 );
+
+Given(
+  "l'(utente)(utente produttore di segnali) pubblica una nuova versione dell e-service",
+  async function () {
+    const { id, name, descriptor, enable_signal_hub, state } = getEserviceBy(
+      this.producerId,
+      this.eserviceName
+    );
+
+    const newDescriptorId = `${descriptor}-V2`;
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor: newDescriptorId,
+        name,
+        enable_signal_hub,
+        state,
+      },
+      this.producerId
+    );
+  }
+);
+
+Given(
+  "la prima versione dell' e-service è già in stato {string}",
+  async function (state: string) {
+    const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
+      this.producerId,
+      this.eserviceName
+    );
+
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        name,
+        enable_signal_hub,
+        state,
+      },
+      this.producerId
+    );
+  }
+);
+
+Given(
+  "la seconda versione dell' e-service è già in stato {string}",
+  async function (state: string) {
+    const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
+      this.producerId,
+      this.eserviceName
+    );
+
+    const newDescriptorId = `${descriptor}-V2`;
+
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor: newDescriptorId,
+        name,
+        enable_signal_hub,
+        state,
+      },
+      this.producerId
+    );
+  }
+);

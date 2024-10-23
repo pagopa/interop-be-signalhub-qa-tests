@@ -118,6 +118,29 @@ Given(
   }
 );
 
+Given(
+  "l'utente crea una nuova finalità in stato {string} per quell' e-service",
+  async function (purposeState: string) {
+    const { eservice, name, version, id } = getPurposeBy(
+      this.consumerId,
+      this.eserviceName
+    );
+
+    const newPurposeId = `${id}-V2`;
+
+    return await createOrUpdatePurpose(
+      {
+        id: newPurposeId,
+        state: purposeState,
+        name,
+        eservice,
+        version,
+      },
+      this.consumerId
+    );
+  }
+);
+
 When(
   "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",
   async function (eserviceName: string) {
