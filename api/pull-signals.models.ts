@@ -49,12 +49,12 @@ export interface PullSignalParams {
   eserviceId: string;
 }
 
-export namespace V1 {
+export namespace Status {
   /**
    * @description Should return OK
    * @name GetStatus
    * @summary Health status endpoint
-   * @request GET:/v1/pull/status
+   * @request GET:/status
    */
   export namespace GetStatus {
     export type RequestParams = {};
@@ -63,11 +63,14 @@ export namespace V1 {
     export type RequestHeaders = {};
     export type ResponseBody = "OK";
   }
+}
+
+export namespace Signals {
   /**
    * @description Retrieve a list o signals on a specific eservice starting from signalId
    * @name PullSignal
    * @summary Get a list of signals
-   * @request GET:/v1/pull/signals/{eserviceId}
+   * @request GET:/signals/{eserviceId}
    */
   export namespace PullSignal {
     export type RequestParams = {
@@ -141,7 +144,7 @@ export class HttpClient<SecurityDataType = unknown> {
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it",
+      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it/v1/pull",
     });
     this.secure = secure;
     this.format = format;
@@ -230,40 +233,41 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Pull signal Service API
- * @version 1.1.0
+ * @version 1.0.0
  * @license ISC (https://opensource.org/license/isc-license-txt)
  * @termsOfService https://docs.pagopa.it/interoperabilita-1/normativa-e-approfondimenti
- * @baseUrl https://api.signalhub.interop.pagopa.it
+ * @baseUrl https://api.signalhub.interop.pagopa.it/v1/pull
  *
  * Exposes the API for Signal-hub pull service
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  v1 = {
+  status = {
     /**
      * @description Should return OK
      *
      * @name GetStatus
      * @summary Health status endpoint
-     * @request GET:/v1/pull/status
+     * @request GET:/status
      */
     getStatus: (params: RequestParams = {}) =>
       this.request<"OK", any>({
-        path: `/v1/pull/status`,
+        path: `/status`,
         method: "GET",
         format: "json",
         ...params,
       }),
-
+  };
+  signals = {
     /**
      * @description Retrieve a list o signals on a specific eservice starting from signalId
      *
      * @name PullSignal
      * @summary Get a list of signals
-     * @request GET:/v1/pull/signals/{eserviceId}
+     * @request GET:/signals/{eserviceId}
      */
     pullSignal: ({ eserviceId, ...query }: PullSignalParams, params: RequestParams = {}) =>
       this.request<SignalPullResponse, Problem>({
-        path: `/v1/pull/signals/${eserviceId}`,
+        path: `/signals/${eserviceId}`,
         method: "GET",
         query: query,
         format: "json",

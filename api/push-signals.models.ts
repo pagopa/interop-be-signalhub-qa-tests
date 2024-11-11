@@ -35,12 +35,12 @@ export interface SignalPayload {
   objectType: string;
 }
 
-export namespace V1 {
+export namespace Status {
   /**
    * @description Should return OK
    * @name GetStatus
    * @summary Health status endpoint
-   * @request GET:/v1/push/status
+   * @request GET:/status
    */
   export namespace GetStatus {
     export type RequestParams = {};
@@ -49,11 +49,14 @@ export namespace V1 {
     export type RequestHeaders = {};
     export type ResponseBody = "OK";
   }
+}
+
+export namespace Signals {
   /**
    * @description Insert a signal
    * @name PushSignal
    * @summary Push Signal
-   * @request POST:/v1/push/signals
+   * @request POST:/signals
    */
   export namespace PushSignal {
     export type RequestParams = {};
@@ -113,7 +116,7 @@ export class HttpClient<SecurityDataType = unknown> {
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it",
+      baseURL: axiosConfig.baseURL || "https://api.signalhub.interop.pagopa.it/v1/push",
     });
     this.secure = secure;
     this.format = format;
@@ -202,40 +205,41 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title Push signal Service API
- * @version 1.1.0
+ * @version 1.0.0
  * @license ISC (https://opensource.org/license/isc-license-txt)
  * @termsOfService https://docs.pagopa.it/interoperabilita-1/normativa-e-approfondimenti
- * @baseUrl https://api.signalhub.interop.pagopa.it
+ * @baseUrl https://api.signalhub.interop.pagopa.it/v1/push
  *
  * Exposes the API for Signal-hub push service
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  v1 = {
+  status = {
     /**
      * @description Should return OK
      *
      * @name GetStatus
      * @summary Health status endpoint
-     * @request GET:/v1/push/status
+     * @request GET:/status
      */
     getStatus: (params: RequestParams = {}) =>
       this.request<"OK", any>({
-        path: `/v1/push/status`,
+        path: `/status`,
         method: "GET",
         format: "json",
         ...params,
       }),
-
+  };
+  signals = {
     /**
      * @description Insert a signal
      *
      * @name PushSignal
      * @summary Push Signal
-     * @request POST:/v1/push/signals
+     * @request POST:/signals
      */
     pushSignal: (data: SignalPayload, params: RequestParams = {}) =>
       this.request<SignalPushResponse, Problem>({
-        path: `/v1/push/signals`,
+        path: `/signals`,
         method: "POST",
         body: data,
         type: ContentType.Json,
