@@ -268,6 +268,19 @@ When(
 );
 
 When(
+  "l'utente deposita un segnale per quell'e-service con un body non formattato correttamente",
+  async function () {
+    const body =
+      '{\n  "signalId":signal-malformatted,\n  "objectType": "1",\n  "objectId": "1",\n  "eserviceId": "{{eserviceId_attivo_31b4}}",\n  "signalType": "UPDATE"\n}';
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      body as any,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
+
+When(
   "l'utente deposita un segnale per quell'e-service con tipologia {string}",
   async function (signalType: SignalType) {
     const signalRequest = createSignal({

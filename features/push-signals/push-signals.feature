@@ -120,7 +120,7 @@ Feature: Deposito segnali
     When l'utente deposita un segnale per quell'e-service
     Then la richiesta va a buon fine con status code 200
 
-  @push_signals15
+  @push_signals16
   Scenario Outline: L'utente come produttore di segnali crea una nuovo descrittore per un e-service già abilitato a Signal Hub (la prima versione di e-service passa in stato DEPRECATED, dato che esistono dei fruitori attivi). Successivamente la seconda versione dell'e-service passa in stato SUSPENDED. La richiesta va a buon fine.
     Given l'utente produttore di segnali ha ottenuto un voucher api
     Given l'utente pubblica una nuova versione dell e-service
@@ -128,3 +128,9 @@ Feature: Deposito segnali
     Given la seconda versione dell' e-service è già in stato "SUSPENDED"
     When l'utente deposita un segnale per quell'e-service
     Then la richiesta va a buon fine con status code 200
+
+  @push_signals15
+  Scenario Outline: Un utente, come produttore di segnali, deposita un segnale inviando un body non formattato correttamente. La richiesta va in errore
+    Given l'utente produttore di segnali ha ottenuto un voucher api
+    When l'utente deposita un segnale per quell'e-service con un body non formattato correttamente
+    Then la richiesta va in errore con status code 400
