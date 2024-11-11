@@ -268,10 +268,23 @@ When(
 );
 
 When(
-  "l'utente deposita un segnale per quell'e-service con un body non formattato correttamente",
+  "l'utente deposita un segnale per quell'e-service con un body non ben formato",
   async function () {
     const body =
       '{\n  "signalId":signal-malformatted,\n  "objectType": "1",\n  "objectId": "1",\n  "eserviceId": "{{eserviceId_attivo_31b4}}",\n  "signalType": "UPDATE"\n}';
+    this.response = await pushSignalApiClient.v1.pushSignal(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      body as any,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
+
+When(
+  "l'utente deposita un segnale per quell'e-service con un body non valido",
+  async function () {
+    const body =
+      '{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}';
     this.response = await pushSignalApiClient.v1.pushSignal(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body as any,
