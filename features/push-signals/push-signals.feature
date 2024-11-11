@@ -128,3 +128,15 @@ Feature: Deposito segnali
     Given la seconda versione dell' e-service è già in stato "SUSPENDED"
     When l'utente deposita un segnale per quell'e-service
     Then la richiesta va a buon fine con status code 200
+
+  @push_signals16
+  Scenario Outline: L'utente, come produttore di segnali, deposita un segnale inviando un body non ben formato. La richiesta va in errore
+    Given l'utente produttore di segnali ha ottenuto un voucher api
+    When l'utente deposita un segnale per quell'e-service con un body non ben formato
+    Then la richiesta va in errore con status code 400
+
+  @push_signals17
+  Scenario Outline: L'utente, come produttore di segnali, deposita un segnale inviando un body non valido. La richiesta va in errore
+    Given l'utente produttore di segnali ha ottenuto un voucher api
+    When l'utente deposita un segnale per quell'e-service con un body non valido
+    Then la richiesta va in errore con status code 400
