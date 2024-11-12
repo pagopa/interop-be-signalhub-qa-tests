@@ -167,7 +167,7 @@ When(
       eserviceId: this.anotherEserviceId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -184,7 +184,7 @@ When(
       eserviceId: this.anotherEserviceId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -202,7 +202,7 @@ When(
       signalId: this.requestSignalId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -216,7 +216,7 @@ When(
       eserviceId: this.eserviceId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -231,7 +231,7 @@ When(
     const eserviceId = "this-eservice-does-not-exist";
     const signalRequest = createSignal({ eserviceId });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -245,7 +245,7 @@ When(
       eserviceId: this.notPublishedEserviceId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -260,7 +260,7 @@ When(
       signalType: "THIS-SIGNALTYPE-DOES-NOT-EXIST" as SignalType,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -272,7 +272,7 @@ When(
   async function () {
     const body =
       '{\n  "signalId":signal-malformatted,\n  "objectType": "1",\n  "objectId": "1",\n  "eserviceId": "{{eserviceId_attivo_31b4}}",\n  "signalType": "UPDATE"\n}';
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body as any,
       getAuthorizationHeader(this.voucher)
@@ -285,7 +285,7 @@ When(
   async function () {
     const body =
       '{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}';
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body as any,
       getAuthorizationHeader(this.voucher)
@@ -301,7 +301,7 @@ When(
       signalType,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -313,7 +313,7 @@ When(
 When(
   "l'utente deposita un segnale vuoto per quell'e-service",
   async function () {
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       { eserviceId: this.eserviceId } as SignalPayload,
       getAuthorizationHeader(this.voucher)
     );
@@ -327,7 +327,7 @@ When(
       eserviceId: this.anotherOrganizationEserviceId,
     });
 
-    this.response = await pushSignalApiClient.v1.pushSignal(
+    this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -359,7 +359,7 @@ Then(
 When(
   "l'utente verifica lo stato del servizio di deposito segnali",
   async function () {
-    this.response = await pushSignalApiClient.v1.getStatus(
+    this.response = await pushSignalApiClient.status.getStatus(
       getAuthorizationHeader(this.voucher)
     );
   }

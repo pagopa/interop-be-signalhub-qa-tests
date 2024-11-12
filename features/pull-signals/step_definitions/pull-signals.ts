@@ -59,7 +59,7 @@ Given(
       .fill(0)
       .map((_, index) => index + startSignalId);
     const pushASignal = async (signalId: number) => {
-      const response = await pushSignalApiClient.v1.pushSignal(
+      const response = await pushSignalApiClient.signals.pushSignal(
         {
           ...signalRequest,
           signalId,
@@ -154,7 +154,7 @@ When(
       size: 10,
     });
 
-    this.response = await pullSignalApiClient.v1.pullSignal(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -172,7 +172,7 @@ When(
       size: 10,
     });
 
-    this.response = await pullSignalApiClient.v1.pullSignal(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -187,7 +187,7 @@ When(
       eserviceId: this.eserviceId,
     });
 
-    this.response = await pullSignalApiClient.v1.pullSignal(
+    this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
@@ -197,7 +197,7 @@ When(
 When(
   "l'utente verifica lo stato del servizio di recupero segnali",
   async function () {
-    this.response = await pullSignalApiClient.v1.getStatus(
+    this.response = await pullSignalApiClient.status.getStatus(
       getAuthorizationHeader(this.voucher)
     );
   }
