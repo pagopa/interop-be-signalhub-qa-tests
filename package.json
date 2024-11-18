@@ -9,7 +9,6 @@
   "scripts": {
     "generate-model:pull": "ts-node ./scripts/generate-pull-api-models.ts",
     "generate-model:push": "ts-node ./scripts/generate-push-api-models.ts",
-    "data-preparation": "ts-node ./scripts/data-preparation.ts",
     "cucumber:node": "cucumber-js -p base -p node",
     "test": "pnpm cucumber:node -p all",
     "test:tags": "pnpm test -- --tags",

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { z } from "zod";
+import { nodeEnv } from "../configs/env";
 
-export const nodeEnv = process.env.NODE_ENV || "personal";
 dotenv.config({ path: `.env.${nodeEnv}.local` });
 
 const databaseEnvConfig = z

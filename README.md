@@ -19,18 +19,11 @@ To execute test suite you have to do some steps.
 
 Choose an [enviroment](#enviroment): writing coherent environment files (`.env.some_environment`, ...) and set env variable:
 
-`export NODE_ENV=some_environment` (ex: `development`, `qa`, ...).
+`export NODE_ENV=some_environment` (ex: `dev`, `qa`, ...).
 
 Eventually check environment whith: `pnpm run show:env`.
 
 If you are in a local environment, run all services needed to simulate all the collaborators (queque system, database, caching, ...).
-
-### Data preparation
-
-Execute data preparation if your environment need this:
-
-`pnpm run data-preparation`
-
 
 ### AWS credentials and authenticated session
 
@@ -70,16 +63,14 @@ If you don't set NODE_ENV , it will be `development` by default.
 For each enviroment you have to set:
 
 - .env[YOUR_ENVIRONMENT]
-- .env[YOUR_ENVIRONMENT].voucher.consumer
-- .env[YOUR_ENVIRONMENT].voucher.producer
+- .env[YOUR_ENVIRONMENT].voucher
 
-For examples if you have only `development` your files will be
+For examples if you have only `dev` your files will be
 
-- .env.development
-- .env.development.voucher.consumer
-- .env.development.voucher.producer
+- .env.dev
+- .env.dev.voucher
 
-To configure take a leaf from `.env.example` , `.env.example.voucher.consumer` , `.env.example.voucher.consumer` available on the repo.
+To configure take a leaf from `.env.example` , `.env.example.voucher` available on the repo.
 
 `export NODE_ENV=uat` will load env variables from `file .env.uat`
 
