@@ -31,6 +31,4 @@ export const all = {
   require: ["./features/**/step_definitions/**/*.ts", "./features/*.ts"],
 };
 
-// TODO: Add different profile based on Push-service and pull-service
-
 export default {};
