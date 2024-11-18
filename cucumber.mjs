@@ -4,7 +4,7 @@ dotenv.config({ path: `.env.${nodeEnv}` });
 
 /* Run tests in parallel with the given number of worker processes */
 export const parallel = {
-  parallel: Number(process.env.CUCUMBER_OPTS_PARALLEL),
+  parallel: Number(process.env.CUCUMBER_OPTS_PARALLEL) || 1,
 };
 
 export const format = {
