@@ -4,7 +4,7 @@ dotenv.config({ path: `.env.${nodeEnv}` });
 
 /* Run tests in parallel with the given number of worker processes */
 export const parallel = {
-  parallel: Number(process.env.CUCUMBER_OPTS_PARALLEL),
+  parallel: Number(process.env.CUCUMBER_OPTS_PARALLEL) || 1,
 };
 
 export const format = {
@@ -30,7 +30,5 @@ export const all = {
   paths: ["features/**/*.feature"],
   require: ["./features/**/step_definitions/**/*.ts", "./features/*.ts"],
 };
-
-// TODO: Add different profile based on Push-service and pull-service
 
 export default {};
