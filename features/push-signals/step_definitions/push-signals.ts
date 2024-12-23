@@ -46,11 +46,30 @@ Given(
 );
 
 Given(
+  "l'ente erogatore ha delegato l'ente {string} alla gestione amministrativa",
+  async function (organizationName: string) {
+    const organization = getOrganizationByName(organizationName);
+    this.delegateId = organization.id;
+  }
+);
+
+Given(
   "l'utente produttore di segnali ha ottenuto un voucher api",
   async function () {
     const voucher = await getVoucher({
       ORGANIZATION_ID: this.producerId,
     });
+    this.voucher = voucher;
+  }
+);
+
+Given(
+  "l'utente come ente delegato ha ottenuto un voucher api",
+  async function () {
+    const voucher = await getVoucher({
+      ORGANIZATION_ID: this.delegateId,
+    });
+
     this.voucher = voucher;
   }
 );

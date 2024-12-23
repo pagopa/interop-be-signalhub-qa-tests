@@ -34,6 +34,15 @@ export type Organization = {
   purposes: Purpose[];
 };
 
+export type Delegation = {
+  delegationId: string;
+  delegateId: string;
+  delegatorId: string;
+  eServiceId: string;
+  state: string;
+  kind: string;
+};
+
 function getInteropData(): Organization[] {
   return JSON.parse(
     Buffer.from(
