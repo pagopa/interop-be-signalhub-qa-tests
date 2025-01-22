@@ -24,6 +24,7 @@ export type Purpose = {
   state: string;
   eservice: string;
   name: string;
+  delegationId?: string;
 };
 
 export type Organization = {
@@ -32,6 +33,7 @@ export type Organization = {
   eservices: Eservice[];
   agreements: Agreement[];
   purposes: Purpose[];
+  delegation: Delegation[];
 };
 
 export type Delegation = {
@@ -40,7 +42,7 @@ export type Delegation = {
   delegatorId: string;
   eServiceId: string;
   state: string;
-  kind: string;
+  kind: "DELEGATED_PRODUCER" | "DELEGATED_CONSUMER";
 };
 
 function getInteropData(): Organization[] {
@@ -125,6 +127,22 @@ export function getPurposeBy(
     throw Error(`purpose for e-service ${eserviceName} not found`);
   }
   return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
+export function getDelegationBy(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string
+): Delegation {
+  const delegation = getOrganizationById(organizationId)
+    .delegation.filter(isEqual("eservice", eserviceName))
+    .shift();
+
+  if (delegation === undefined) {
+    throw Error(`delegation for e-service ${eserviceName} not found`);
+  }
+
+  return { ...delegation, ...{ id: idSeeded(delegation.delegationId, seed) } };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
