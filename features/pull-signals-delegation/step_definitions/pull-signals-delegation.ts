@@ -140,6 +140,25 @@ Given(
 );
 
 Given(
+  "l'erogatore abilita la possibilità di accesso operativo per quell'e-service",
+  async function () {
+    const { name, id, descriptor, state, enable_signal_hub } =
+      getEserviceByName(this.producerId, this.eserviceName, this.TEST_SEED);
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub,
+        name,
+        client_access_delegable: true,
+      },
+      this.producerId
+    );
+  }
+);
+
+Given(
   "l'erogatore disabilita la possibilità di accesso operativo per quell'e-service",
   async function () {
     const { name, id, descriptor, state, enable_signal_hub } =
@@ -158,9 +177,8 @@ Given(
   }
 );
 When(
-  "l'utente dell'ente delegato recupera (un)(i) segnal(e)(i) di quell'e-service",
+  "l'utente dell'ente delegato recupera un segnale di quell'e-service",
   async function () {
-    // If SignalId is not present in previous given start by signalId = 1
     const signalId = (this.startSignalId || 1) - 1;
 
     const pullSignalRequest = createPullSignalRequest({

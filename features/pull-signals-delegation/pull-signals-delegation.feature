@@ -5,6 +5,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
   Background:
     Given l'ente "Agid", aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali
     Given l'ente erogatore ha pubblicato un e-service denominato "domicili digitali" abilitato a Signal Hub
+    Given l'erogatore abilita la possibilità di accesso operativo per quell'e-service
     Given l'ente erogatore ha depositato un segnale per l'e-service
     Given il sistema ha depositato i segnali
 
