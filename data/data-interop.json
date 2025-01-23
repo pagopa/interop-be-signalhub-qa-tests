@@ -152,8 +152,31 @@
     {
       "eservice":"domicili digitali",
       "delegationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "delegateId": "e79a24cd-8edc-441e-ae8d-e87c3aea0059", 
+      "delegateId": "05937ccb-951e-47e4-b48e-e9dcaf053097", 
       "delegatorId": "b277be80-66d6-44e3-b757-3e2919202d2d",
+      "eServiceId": "31b4e4e6-855d-42fa-9705-28bc7f8545ff"
+    }             
+  ]
+},
+{
+  "id": "a031551d-87cb-4864-835a-d496d0fd518a",
+  "name": "Comune di Castelfranco",
+  "eservices": [],
+  "agreements": [ {
+    "id": "c77f776e-cab6-4261-8256-c10e8431ee3b",
+    "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+    "name": "domicili digitali",
+    "descriptor": "34908aa4-1489-4d2f-a240-4dce08842797",
+    "purpose": "-",
+    "state": "ACTIVE"
+  }],
+  "purposes": [], 
+  "delegation": [ 
+    {
+      "eservice":"domicili digitali",
+      "delegationId": "fc274a076-fbe4-4ab3-8a66-61082c41052e",
+      "delegateId": "e79a24cd-8edc-441e-ae8d-e87c3aea0059", 
+      "delegatorId": "a031551d-87cb-4864-835a-d496d0fd518a",
       "eServiceId": "31b4e4e6-855d-42fa-9705-28bc7f8545ff"
     }             
   ]

@@ -7,6 +7,7 @@ export type Eservice = {
   descriptor: string;
   state: string;
   enable_signal_hub: boolean;
+  client_access_delegable?: boolean;
 };
 
 export type Agreement = {
@@ -142,7 +143,13 @@ export function getDelegationBy(
     throw Error(`delegation for e-service ${eserviceName} not found`);
   }
 
-  return { ...delegation, ...{ id: idSeeded(delegation.delegationId, seed) } };
+  return {
+    ...delegation,
+    ...{
+      delegationId: idSeeded(delegation.delegationId, seed),
+      eServiceId: idSeeded(delegation.eServiceId, seed),
+    },
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

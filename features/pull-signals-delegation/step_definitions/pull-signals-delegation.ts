@@ -2,6 +2,7 @@ import { Given, When } from "@cucumber/cucumber";
 import {
   getAgreementBy,
   getDelegationBy,
+  getEserviceByName,
   getOrganizationByName,
   getPurposeBy,
 } from "../../../lib/data.interop";
@@ -9,6 +10,7 @@ import {
   assertValidResponse,
   createOrUpdateAgreement,
   createOrUpdateDelegation,
+  createOrUpdateEservice,
   createOrUpdatePurpose,
   createPullSignalRequest,
   createSignal,
@@ -47,7 +49,7 @@ Given(
     delegator: string, // delegante
     eServiceName: string
   ) {
-    const { id: delegationId } = getOrganizationByName(delegate);
+    const { id: delegateId } = getOrganizationByName(delegate);
     const { id: delegatorId } = getOrganizationByName(delegator);
 
     const delegation = getDelegationBy(
@@ -64,7 +66,7 @@ Given(
 
     this.delegationId = delegation.delegationId;
     this.delegatorId = delegatorId;
-    this.delegateId = delegationId;
+    this.delegateId = delegateId;
     this.eserviceName = eServiceName;
   }
 );
@@ -93,7 +95,7 @@ Given(
         ...agreement,
         ...{ state: agreementStatus, eservice: this.eserviceId },
       },
-      this.delegateId
+      this.delegatorId
     );
   }
 );
@@ -107,6 +109,7 @@ Given(
         this.eserviceName,
         this.TEST_SEED
       );
+
       return await createOrUpdatePurpose(
         {
           ...purpose,
@@ -133,6 +136,25 @@ Given(
       state: "REVOKED",
       kind: "DELEGATED_PRODUCER",
     });
+  }
+);
+
+Given(
+  "l'erogatore disabilita la possibilità di accesso operativo per quell'e-service",
+  async function () {
+    const { name, id, descriptor, state, enable_signal_hub } =
+      getEserviceByName(this.producerId, this.eserviceName, this.TEST_SEED);
+    await createOrUpdateEservice(
+      {
+        id,
+        descriptor,
+        state,
+        enable_signal_hub,
+        name,
+        client_access_delegable: false,
+      },
+      this.producerId
+    );
   }
 );
 When(

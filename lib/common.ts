@@ -13,10 +13,21 @@ export async function createOrUpdateEservice(
   eservice: Eservice,
   organizationId: string
 ) {
-  const { id, descriptor, state, enable_signal_hub } = eservice;
+  const { id, descriptor, state, enable_signal_hub, client_access_delegable } =
+    eservice;
+
   const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET state = EXCLUDED.state, enabled_signal_hub = EXCLUDED.enabled_signal_hub",
-    values: [id, organizationId, descriptor, state, enable_signal_hub],
+    text: `INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub,client_access_delegable) values ($1, $2, $3, $4,$5,$6)
+     ON CONFLICT(eservice_id, producer_id, descriptor_id) 
+     DO UPDATE SET state = EXCLUDED.state, enabled_signal_hub = EXCLUDED.enabled_signal_hub, client_access_delegable = EXCLUDED.client_access_delegable`,
+    values: [
+      id,
+      organizationId,
+      descriptor,
+      state,
+      enable_signal_hub,
+      client_access_delegable,
+    ],
   };
 
   await clientSchemaInteropEservice.query(query);
