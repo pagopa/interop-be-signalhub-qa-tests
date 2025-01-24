@@ -7,6 +7,7 @@ export type Eservice = {
   descriptor: string;
   state: string;
   enable_signal_hub: boolean;
+  client_access_delegable?: boolean;
 };
 
 export type Agreement = {
@@ -24,6 +25,7 @@ export type Purpose = {
   state: string;
   eservice: string;
   name: string;
+  delegationId?: string;
 };
 
 export type Organization = {
@@ -32,6 +34,7 @@ export type Organization = {
   eservices: Eservice[];
   agreements: Agreement[];
   purposes: Purpose[];
+  delegation: Delegation[];
 };
 
 export type Delegation = {
@@ -40,7 +43,7 @@ export type Delegation = {
   delegatorId: string;
   eServiceId: string;
   state: string;
-  kind: string;
+  kind: "DELEGATED_PRODUCER" | "DELEGATED_CONSUMER";
 };
 
 function getInteropData(): Organization[] {
@@ -125,6 +128,46 @@ export function getPurposeBy(
     throw Error(`purpose for e-service ${eserviceName} not found`);
   }
   return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
+export function getPurposeByDelegationId(
+  organizationId: string,
+  delegationId: string,
+  seed?: string
+) {
+  const delegationIdWithoutTestSeed = delegationId.split("|")[1];
+  const purpose = getOrganizationById(organizationId).purposes.find(
+    (purpose) => purpose.delegationId === delegationIdWithoutTestSeed
+  );
+
+  if (purpose === undefined) {
+    throw Error(
+      `purpose for delegationId ${delegationIdWithoutTestSeed} not found`
+    );
+  }
+  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
+export function getDelegationBy(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string
+): Delegation {
+  const delegation = getOrganizationById(organizationId)
+    .delegation.filter(isEqual("eservice", eserviceName))
+    .shift();
+
+  if (delegation === undefined) {
+    throw Error(`delegation for e-service ${eserviceName} not found`);
+  }
+
+  return {
+    ...delegation,
+    ...{
+      delegationId: idSeeded(delegation.delegationId, seed),
+      eServiceId: idSeeded(delegation.eServiceId, seed),
+    },
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -13,10 +13,21 @@ export async function createOrUpdateEservice(
   eservice: Eservice,
   organizationId: string
 ) {
-  const { id, descriptor, state, enable_signal_hub } = eservice;
+  const { id, descriptor, state, enable_signal_hub, client_access_delegable } =
+    eservice;
+
   const query = {
-    text: "INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub) values ($1, $2, $3, $4,$5) ON CONFLICT(eservice_id, producer_id, descriptor_id) DO UPDATE SET state = EXCLUDED.state, enabled_signal_hub = EXCLUDED.enabled_signal_hub",
-    values: [id, organizationId, descriptor, state, enable_signal_hub],
+    text: `INSERT INTO dev_interop.eservice (eservice_id, producer_id, descriptor_id, state, enabled_signal_hub,client_access_delegable) values ($1, $2, $3, $4,$5,$6)
+     ON CONFLICT(eservice_id, producer_id, descriptor_id) 
+     DO UPDATE SET state = EXCLUDED.state, enabled_signal_hub = EXCLUDED.enabled_signal_hub, client_access_delegable = EXCLUDED.client_access_delegable`,
+    values: [
+      id,
+      organizationId,
+      descriptor,
+      state,
+      enable_signal_hub,
+      client_access_delegable,
+    ],
   };
 
   await clientSchemaInteropEservice.query(query);
@@ -25,6 +36,7 @@ export async function createOrUpdateEservice(
 export async function createOrUpdateDelegation(delegation: Delegation) {
   const { delegationId, delegateId, delegatorId, eServiceId, state, kind } =
     delegation;
+
   const query = {
     text: "INSERT INTO dev_interop.delegation (delegation_id,delegate_id,delegator_id,eservice_id,state,kind) values ($1, $2, $3, $4, $5, $6) ON CONFLICT(delegation_id) DO UPDATE SET state = EXCLUDED.state",
     values: [delegationId, delegateId, delegatorId, eServiceId, state, kind],
@@ -61,10 +73,10 @@ export async function createOrUpdatePurpose(
   purpose: Purpose,
   organizationId: string
 ): Promise<void> {
-  const { state, version, eservice, id } = purpose;
+  const { state, version, eservice, id, delegationId } = purpose;
   const query = {
-    text: "INSERT INTO DEV_INTEROP.purpose(purpose_id, purpose_version_id, purpose_state, eservice_id, consumer_id) values ($1, $2, $3, $4, $5) ON CONFLICT(purpose_id) DO UPDATE SET purpose_state = EXCLUDED.purpose_state",
-    values: [id, version, state, eservice, organizationId],
+    text: "INSERT INTO DEV_INTEROP.purpose(purpose_id, purpose_version_id, purpose_state, eservice_id, consumer_id,delegation_id) values ($1, $2, $3, $4, $5, $6) ON CONFLICT(purpose_id) DO UPDATE SET purpose_state = EXCLUDED.purpose_state",
+    values: [id, version, state, eservice, organizationId, delegationId],
   };
   await clientSchemaInteropPurpose.query(query);
 }

@@ -96,6 +96,98 @@
       "version": -1
     }
   ]
+},
+{
+  "id": "05937ccb-951e-47e4-b48e-e9dcaf053097",
+  "name": "Provincia di Ferrara",
+  "eservices": [],
+  "agreements": [],
+  "purposes": [
+    {
+      "id": "042746fa-4f4e-4045-bb00-bc72df57d71f",
+      "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+      "name": "domicili digitali",
+      "state": "ACTIVE",
+      "version": -1,
+      "delegationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+    },
+    {
+      "id": "ed1a25a6-be0f-4ff1-b29b-073928dd4cc4",
+      "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+      "name": "domicili digitali",
+      "state": "ACTIVE",
+      "version": -1,
+      "delegationId": "fc274a076-fbe4-4ab3-8a66-61082c41052e"
+    }         
+  ]
+},
+{
+  "id": "b277be80-66d6-44e3-b757-3e2919202d2d",
+  "name": "Comune di Copparo",
+  "eservices": [],
+  "agreements": [ {
+    "id": "2f4efd68-8a5b-4955-8ef6-3a0246b96bdd",
+    "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+    "name": "domicili digitali",
+    "descriptor": "4d24ad97-4b0e-446a-8161-4f66fa6b6cf1",
+    "purpose": "-",
+    "state": "ACTIVE"
+  }],
+  "purposes": [
+    {
+      "id": "e78d1ea9-e9ac-4a35-a4d1-ba7e3b564dd6",
+      "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+      "name": "domicili digitali",
+      "state": "ACTIVE",
+      "version": -1
+    },          
+    {
+      "id": "71788998-b925-443b-bc1d-ba55f41246a2",
+      "eservice": "a023c23b-7662-4971-994e-0eb9adabc728",
+      "name": "domicili fiscali",
+      "state": "ACTIVE",
+      "version": -1
+    },
+    {
+      "id": "78d1ea9-e9ac-4a35-a4d1-ba7e3b564dd61",
+      "eservice": "1dc2108b-2c5e-4057-a2ae-6ce7aeb96551",
+      "name": "domicili legali",
+      "state": "DRAFT",
+      "version": -1
+    }
+  ], 
+  "delegation": [ 
+    {
+      "eservice":"domicili digitali",
+      "delegationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "delegateId": "05937ccb-951e-47e4-b48e-e9dcaf053097", 
+      "delegatorId": "b277be80-66d6-44e3-b757-3e2919202d2d",
+      "eServiceId": "31b4e4e6-855d-42fa-9705-28bc7f8545ff"
+    }             
+  ]
+},
+{
+  "id": "a031551d-87cb-4864-835a-d496d0fd518a",
+  "name": "Comune di Castelfranco",
+  "eservices": [],
+  "agreements": [ {
+    "id": "c77f776e-cab6-4261-8256-c10e8431ee3b",
+    "eservice": "31b4e4e6-855d-42fa-9705-28bc7f8545ff",
+    "name": "domicili digitali",
+    "descriptor": "34908aa4-1489-4d2f-a240-4dce08842797",
+    "purpose": "-",
+    "state": "ACTIVE"
+  }],
+  "purposes": [], 
+  "delegation": [ 
+    {
+      "eservice":"domicili digitali",
+      "delegationId": "fc274a076-fbe4-4ab3-8a66-61082c41052e",
+      "delegateId": "05937ccb-951e-47e4-b48e-e9dcaf053097", 
+      "delegatorId": "a031551d-87cb-4864-835a-d496d0fd518a",
+      "eServiceId": "31b4e4e6-855d-42fa-9705-28bc7f8545ff"
+    }             
+  ]
 }
 ]
   
