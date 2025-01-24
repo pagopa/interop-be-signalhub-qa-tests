@@ -10,7 +10,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
     Given il sistema ha depositato i segnali
 
   @pull_signals_delegations1
-  Scenario Outline: L'utente come ente delegato, recupera un segnale per conto dell'ente delegante. La richiesta va a buon fine.
+  Scenario: L'utente come ente delegato, recupera un segnale per conto dell'ente delegante. La richiesta va a buon fine.
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "ACTIVE" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
     Given l'utente dell'ente delegato ha ottenuto un voucher api
     Given l'utente dell'ente delegato ha già una richiesta di fruizione in stato "ACTIVE" per conto dell'ente delegante per quell'e-service
@@ -35,7 +35,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
       | ARCHIVED       |
 
   @pull_signals_delegations3
-  Scenario Outline: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. E' presente un agreement in stato ACTIVE ma non è stata presentata nessuna finalità in delega. La richiesta va in errore.
+  Scenario: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. E' presente un agreement in stato ACTIVE ma non è stata presentata nessuna finalità in delega. La richiesta va in errore.
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "ACTIVE" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
     Given l'utente dell'ente delegato ha ottenuto un voucher api
     Given l'utente dell'ente delegato ha già una richiesta di fruizione in stato "ACTIVE" per conto dell'ente delegante per quell'e-service
@@ -57,7 +57,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
       | REJECTED    |
 
   @pull_signals_delegations5
-  Scenario Outline: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. La delega passa da ACTIVE a REVOKED. La richiesta va in errore.
+  Scenario: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. La delega passa da ACTIVE a REVOKED. La richiesta va in errore.
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "<statoDelega>" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
     Given l'utente dell'ente delegato ha ottenuto un voucher api
     Given l'utente dell'ente delegato ha già una richiesta di fruizione in stato "ACTIVE" per conto dell'ente delegante per quell'e-service
@@ -67,7 +67,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
     Then la richiesta va in errore con status code 403
 
   @pull_signals_delegations6a
-  Scenario Outline: L'utente possiede più di una delega in stato ACTIVE. Le deleghe sono state concesse da enti diversi. Per ciascuna di esse,l'utente, possiede una richiesta di fruizione in stato ACTIVE e rispettivamente una finalità in delega in stato ACTIVE. L'utente recupera un segnale. La richiesta va a buon fine.
+  Scenario: L'utente possiede più di una delega in stato ACTIVE. Le deleghe sono state concesse da enti diversi. Per ciascuna di esse,l'utente, possiede una richiesta di fruizione in stato ACTIVE e rispettivamente una finalità in delega in stato ACTIVE. L'utente recupera un segnale. La richiesta va a buon fine.
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "ACTIVE" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
     Given l'utente dell'ente delegato ha ottenuto un voucher api
     Given l'utente dell'ente delegato ha già una richiesta di fruizione in stato "ACTIVE" per conto dell'ente delegante per quell'e-service
@@ -79,7 +79,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
   @pull_signals_delegations6b
-  Scenario Outline: L'utente possiede due deleghe: una in stato REJECTED, una in stato ACTIVE. Le deleghe sono state concesse da enti diversi. Per ciascuna di esse,l'utente, possiede una richiesta di fruizione in stato ACTIVE e rispettivamente una finalità in delega in stato ACTIVE. L'utente recupera un segnale. La richiesta va a buon fine.
+  Scenario: L'utente possiede due deleghe: una in stato REJECTED, una in stato ACTIVE. Le deleghe sono state concesse da enti diversi. Per ciascuna di esse,l'utente, possiede una richiesta di fruizione in stato ACTIVE e rispettivamente una finalità in delega in stato ACTIVE. L'utente recupera un segnale. La richiesta va a buon fine.
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "REJECTED" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
     Given l'utente dell'ente delegato ha ottenuto un voucher api
     Given l'utente dell'ente delegato ha già una richiesta di fruizione in stato "ACTIVE" per conto dell'ente delegante per quell'e-service
@@ -91,7 +91,7 @@ Un utente che ha un ruolo <ruolo> di un ente aderente <ente delegante> delega un
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
   @pull_signals_delegations7
-  Scenario Outline: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. L'erogatore disabilita la possibilità di accesso in delega (recupero dei segnali) per l'e-service
+  Scenario: L'utente come ente delegato recupera un segnale per conto dell'ente delegante. L'erogatore disabilita la possibilità di accesso in delega (recupero dei segnali) per l'e-service
   La richiesta va in errore.
 
     Given l'ente delegato "Provincia di Ferrara" ha già una delega in stato "ACTIVE" concessa dal "Comune di Copparo" per l'e-service "domicili digitali"
