@@ -130,6 +130,24 @@ export function getPurposeBy(
   return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
 }
 
+export function getPurposeByDelegationId(
+  organizationId: string,
+  delegationId: string,
+  seed?: string
+) {
+  const delegationIdWithoutTestSeed = delegationId.split("|")[1];
+  const purpose = getOrganizationById(organizationId).purposes.find(
+    (purpose) => purpose.delegationId === delegationIdWithoutTestSeed
+  );
+
+  if (purpose === undefined) {
+    throw Error(
+      `purpose for delegationId ${delegationIdWithoutTestSeed} not found`
+    );
+  }
+  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
 export function getDelegationBy(
   organizationId: string,
   eserviceName: string,

@@ -4,7 +4,7 @@ import {
   getDelegationBy,
   getEserviceByName,
   getOrganizationByName,
-  getPurposeBy,
+  getPurposeByDelegationId,
 } from "../../../lib/data.interop";
 import {
   assertValidResponse,
@@ -104,12 +104,11 @@ Given(
   "l'utente dell'ente delegato ha già una finalità in delega in stato {string} per quell'e-service",
   async function (purposeStatus: string) {
     {
-      const purpose = getPurposeBy(
+      const purpose = getPurposeByDelegationId(
         this.delegateId,
-        this.eserviceName,
+        this.delegationId,
         this.TEST_SEED
       );
-
       return await createOrUpdatePurpose(
         {
           ...purpose,
@@ -140,7 +139,7 @@ Given(
 );
 
 Given(
-  "l'erogatore abilita la possibilità di accesso operativo per quell'e-service",
+  "l'ente erogatore abilita la possibilità di accesso operativo per quell'e-service",
   async function () {
     const { name, id, descriptor, state, enable_signal_hub } =
       getEserviceByName(this.producerId, this.eserviceName, this.TEST_SEED);
