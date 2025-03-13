@@ -150,7 +150,7 @@ jobs:
             pnpm run test
           fi
 
-    delete_runner:
+  delete_runner:
     name: Delete Self-Hosted Runner
     needs: [create_runner, qa_tests]
     if: ${{ always() && needs.create_runner.result != 'skipped' }}
