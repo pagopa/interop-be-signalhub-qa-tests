@@ -14,7 +14,7 @@ on:
 
 jobs:
   inputs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.environment }}
 
     steps:
@@ -24,43 +24,22 @@ jobs:
           echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- test_tag: \`${{ inputs.test_tag }}\`" >> $GITHUB_STEP_SUMMARY
 
-  create_runner:
-    name: Create Self-Hosted Runner
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        index: [1]
-      fail-fast: true
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Start GitHub Runner
-        id: start_runner
-        uses: pagopa/interop-github-runner-aws-create-action@main
-        with:
-            environment: ${{ inputs.environment }}
-            aws_region: ${{ secrets.AWS_REGION }}
-            iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
-            ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
-            ecs_task_definition: ${{ secrets.ECS_TASK_DEFINITION }}
-            ecs_container_name: ${{ vars.ECS_TASK_CONTAINER_NAME }}
-            ecs_task_cpu: ${{ vars.ECS_TASK_CPU }}
-            ecs_task_memory: ${{ vars.ECS_TASK_MEMORY }}
-            ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
-            ecs_task_subnet_id: ${{ secrets.SUBNET_ID }}
-            ecs_task_sec_group: ${{ secrets.SEC_GROUP_ID }}
-            pat_token: ${{ secrets.BOT_TOKEN }}
-
   qa_tests:
     name: Run QA tests
-    needs: [create_runner]
-    runs-on: [self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}"]
+    runs-on: [ubuntu-24.04]
     environment: ${{ inputs.environment }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          role-session-name: qa-tests-${{ github.run_number }} 
+
       - name: Get Signal Store DB Credentials
         id: signal_store_creds
         env:
@@ -149,5 +128,3 @@ jobs:
             echo "'test_tag' not set, running all tests"
             pnpm run test
           fi
-
-
