@@ -37,6 +37,15 @@ export const clientSchemaInteropPurpose = createDbInstance({
   useSSL: databaseConfig.dbUseSSL,
 });
 
+export const clientSchemaInteropDelegation = createDbInstance({
+  database: databaseConfig.dbName,
+  host: databaseConfig.dbHost,
+  port: databaseConfig.dbPort,
+  username: databaseConfig.dbUserDelegation,
+  password: databaseConfig.dbPasswordDelegation,
+  useSSL: databaseConfig.dbUseSSL,
+});
+
 async function truncateEserviceTable(pattern: string) {
   await clientSchemaInteropEservice.query(
     "delete from dev_interop.eservice where eservice_id like $1;",
@@ -58,6 +67,13 @@ async function truncatePurposeTable(pattern: string) {
   );
 }
 
+async function truncateDelegationTable(pattern: string) {
+  await clientSchemaInteropDelegation.query(
+    "delete from dev_interop.delegation where delegation_id like $1;",
+    pattern
+  );
+}
+
 async function truncateSignalTable(pattern: string) {
   await clientSchemaSignalhub.query(
     "delete from dev_signalhub.signal where eservice_id like $1;",
@@ -70,6 +86,7 @@ export async function cleanupQAData(pattern: string) {
     await truncateEserviceTable(pattern);
     await truncateAgreementTable(pattern);
     await truncatePurposeTable(pattern);
+    await truncateDelegationTable(pattern);
     await truncateSignalTable(pattern);
   } catch (error) {
     console.error(error);

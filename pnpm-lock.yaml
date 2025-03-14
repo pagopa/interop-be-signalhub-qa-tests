@@ -12,7 +12,7 @@ importers:
         specifier: ^3.600.0
         version: 3.600.0
       axios:
-        specifier: ^1.6.8
+        specifier: ^1.7.4
         version: 1.7.4
       connection-string:
         specifier: ^4.4.0
@@ -1211,6 +1211,7 @@ packages:
   follow-redirects@1.15.8:
     resolution: {integrity: sha512-xgrmBhBToVKay1q2Tao5LI26B83UhrB/vM1avwVSDzt8rx3rO6AizBAaF46EgksTVr+rFTQaqZZ9MVBfUe4nig==}
     engines: {node: '>=4.0'}
+    deprecated: Browser detection issues fixed in v1.15.9
     peerDependencies:
       debug: '*'
     peerDependenciesMeta:

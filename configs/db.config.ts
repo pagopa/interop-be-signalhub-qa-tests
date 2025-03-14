@@ -15,6 +15,8 @@ const databaseEnvConfig = z
     DB_ESERVICE_PASSWORD: z.string(),
     DB_PURPOSE_USER: z.string(),
     DB_PURPOSE_PASSWORD: z.string(),
+    DB_DELEGATION_USER: z.string(),
+    DB_DELEGATION_PASSWORD: z.string(),
     DB_USER_BATCH_CLEANUP: z.string(),
     DB_PASSWORD_BATCH_CLEANUP: z.string(),
     DB_USE_SSL: z
@@ -31,6 +33,8 @@ const databaseEnvConfig = z
     dbPasswordEservice: encodeURIComponent(c.DB_ESERVICE_PASSWORD),
     dbUserPurpose: c.DB_PURPOSE_USER,
     dbPasswordPurpose: encodeURIComponent(c.DB_PURPOSE_PASSWORD),
+    dbUserDelegation: c.DB_DELEGATION_USER,
+    dbPasswordDelegation: encodeURIComponent(c.DB_DELEGATION_PASSWORD),
     dbUserBatchCleanup: c.DB_USER_BATCH_CLEANUP,
     dbPasswordBatchCleanup: encodeURIComponent(c.DB_PASSWORD_BATCH_CLEANUP),
     dbUseSSL: c.DB_USE_SSL,
