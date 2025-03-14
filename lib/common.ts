@@ -4,6 +4,7 @@ import { SignalPayload, SignalType } from "../api/push-signals.models";
 import { PullSignalParams } from "../api/pull-signals.models";
 import {
   clientSchemaInteropAgreement,
+  clientSchemaInteropDelegation,
   clientSchemaInteropEservice,
   clientSchemaInteropPurpose,
 } from "../data/db";
@@ -42,7 +43,7 @@ export async function createOrUpdateDelegation(delegation: Delegation) {
     values: [delegationId, delegateId, delegatorId, eServiceId, state, kind],
   };
 
-  await clientSchemaInteropEservice.query(query);
+  await clientSchemaInteropDelegation.query(query);
 }
 
 export async function updateEserviceSHOptions(
