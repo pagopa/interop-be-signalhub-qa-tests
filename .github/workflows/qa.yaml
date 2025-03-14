@@ -65,6 +65,7 @@ jobs:
         id: signal_store_creds
         env:
           AGREEMENT_USER_SECRET_ARN: ${{ secrets.AGREEMENT_USER_SECRET_ARN }}
+          DELEGATION_USER_SECRET_ARN: ${{ secrets.DELEGATION_USER_SECRET_ARN }}
           ESERVICE_USER_SECRET_ARN: ${{ secrets.ESERVICE_USER_SECRET_ARN }}
           PURPOSE_USER_SECRET_ARN: ${{ secrets.PURPOSE_USER_SECRET_ARN }}
           BATCH_USER_SECRET_ARN: ${{ secrets.BATCH_USER_SECRET_ARN }}
@@ -79,6 +80,15 @@ jobs:
             
             AGREEMENT_USER_PASSWORD="$(echo "$AGREEMENT_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
             echo "::add-mask::$AGREEMENT_USER_PASSWORD"
+
+            echo "Retrieving delegation user credentials..."
+            DELEGATION_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$DELEGATION_USER_SECRET_ARN")"
+
+            DELEGATION_USERNAME="$(echo "$DELEGATION_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .username')"
+            echo "::add-mask::$DELEGATION_USERNAME"
+
+            DELEGATION_USER_PASSWORD="$(echo "$DELEGATION_USER_CREDENTIALS" | jq -r '.SecretString | fromjson | .password')"
+            echo "::add-mask::$DELEGATION_USER_PASSWORD"
 
             echo "Retrieving eservice user credentials..."
             ESERVICE_USER_CREDENTIALS="$(aws secretsmanager get-secret-value --secret-id "$ESERVICE_USER_SECRET_ARN")"
@@ -111,6 +121,9 @@ jobs:
 
             echo "DB_AGREEMENT_USER=$AGREEMENT_USERNAME" >> "$GITHUB_ENV"
             echo "DB_AGREEMENT_PASSWORD=$AGREEMENT_USER_PASSWORD" >> "$GITHUB_ENV"
+
+            echo "DB_DELEGATION_USER=$DELEGATION_USERNAME" >> "$GITHUB_ENV"
+            echo "DB_DELEGATION_PASSWORD=$DELEGATION_USER_PASSWORD" >> "$GITHUB_ENV"
 
             echo "DB_ESERVICE_USER=$ESERVICE_USERNAME" >> "$GITHUB_ENV"
             echo "DB_ESERVICE_PASSWORD=$ESERVICE_USER_PASSWORD" >> "$GITHUB_ENV"
