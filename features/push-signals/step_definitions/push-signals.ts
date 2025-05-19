@@ -177,6 +177,10 @@ Given(
   }
 );
 
+Given("l'utente aspetta prima di depositare il segnale", async function () {
+  await sleep(process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
+});
+
 When(
   "l'utente deposita un segnale per il secondo e-service",
   async function () {
@@ -219,6 +223,22 @@ When(
     const signalRequest = createSignal({
       eserviceId: this.eserviceId,
       signalId: this.requestSignalId,
+    });
+
+    this.response = await pushSignalApiClient.signals.pushSignal(
+      signalRequest,
+      getAuthorizationHeader(this.voucher)
+    );
+  }
+);
+
+When(
+  "l'utente deposita un segnale per quell'e-service con un signalId minore del primo",
+  async function () {
+    const previousSignalId = (this.requestSignalId as number) - 1;
+    const signalRequest = createSignal({
+      eserviceId: this.eserviceId,
+      signalId: previousSignalId,
     });
 
     this.response = await pushSignalApiClient.signals.pushSignal(
