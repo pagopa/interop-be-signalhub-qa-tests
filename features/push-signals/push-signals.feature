@@ -140,3 +140,18 @@ Feature: Deposito segnali
     Given l'utente produttore di segnali ha ottenuto un voucher api
     When l'utente deposita un segnale per quell'e-service con un body non valido
     Then la richiesta va in errore con status code 400
+
+  @push_signals18a
+  Scenario Outline: L'utente, come produttore di segnali, deposita due segnali: Il secondo segnale con un signaId minore rispetto al primo ma con il primo segnale che non è ancora stato "consolidato" (cioè è passato un determinato lasso di tempo dalla scrittura del primo segnale sulla base dati). La richiesta va a buon fine.
+    Given l'utente produttore di segnali ha ottenuto un voucher api
+    Given l'utente deposita un segnale per quell'e-service
+    When l'utente deposita un segnale per quell'e-service con un signalId minore del primo
+    Then la richiesta va a buon fine con status code 200
+
+  @push_signals18b
+  Scenario Outline: L'utente, come produttore di segnali, deposita due segnali: Il secondo segnale con un signaId minore rispetto al primo ma con il primo segnale che è stato "consolidato" (cioè è passato un determinato lasso di tempo dalla scrittura del primo segnale sulla base dati). La richiesta va in errore
+    Given l'utente produttore di segnali ha ottenuto un voucher api
+    Given l'utente deposita un segnale per quell'e-service
+    Given l'utente aspetta prima di depositare il segnale
+    When l'utente deposita un segnale per quell'e-service con un signalId minore del primo
+    Then la richiesta va in errore con status code 500
