@@ -40,7 +40,7 @@ Given(
 
 Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
   // This sleep function simulate the time SQS will take to process the signal and put on DB
-  await sleep(10000);
+  await sleep(process.env.TIME_SIMULATE_SQS_QUEUE_TO_DEPOSIT_SIGNAL_IN_MS);
 });
 
 Given(
@@ -176,6 +176,13 @@ When(
       pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
+  }
+);
+
+When(
+  "è passato il tempo di attesa della finestra temporale",
+  async function () {
+    await sleep(process.env.TIME_WINDOW_DURATION_IN_SECONDS);
   }
 );
 

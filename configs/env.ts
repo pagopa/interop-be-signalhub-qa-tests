@@ -12,6 +12,8 @@ export const Env = z.object({
   API_BASE_URL_PULL: z.string(),
   CATALOG_INTEROP_DATA_PREPARATION_FILE: z.string(),
   WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS: z.coerce.number(),
+  TIME_WINDOW_DURATION_IN_SECONDS: z.coerce.number().default(0),
+  TIME_SIMULATE_SQS_QUEUE_TO_DEPOSIT_SIGNAL_IN_MS: z.coerce.number(),
 });
 
 const parsedEnv = Env.safeParse(process.env);
