@@ -52,6 +52,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
@@ -62,6 +63,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera i segnali di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 10 segnali
 
@@ -71,6 +73,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali
 
@@ -81,6 +84,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera i segnali di quell'e-service
     Then la richiesta va a buon fine con status code 206 e restituisce una lista di 10 segnali
 
@@ -91,6 +95,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service con un signalId uguale a 4
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 0 segnali e nessun lastSignalId
 
@@ -101,6 +106,7 @@ Feature: Recupero segnali
     Given l'utente consumatore di segnali ha ottenuto un voucher api
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service con un signalId uguale a 3
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 2 segnali e lastSignalId = 5
 
@@ -118,6 +124,7 @@ Feature: Recupero segnali
     Given l'utente ha già una richiesta di fruizione in stato "ACTIVE" per quell'e-service
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
     Given l'utente crea una nuova finalità in stato "SUSPENDED" per quell' e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
@@ -151,6 +158,7 @@ Feature: Recupero segnali
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
     Given l'utente produttore di segnali pubblica una nuova versione dell e-service
     Given la prima versione dell' e-service è già in stato "DEPRECATED"
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
@@ -163,6 +171,7 @@ Feature: Recupero segnali
     Given l'utente ha già una finalità in stato "ACTIVE" per quell'e-service
     Given la prima versione dell' e-service è già in stato "ARCHIVED"
     Given l'utente produttore di segnali pubblica una nuova versione dell e-service
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale
 
@@ -189,5 +198,6 @@ Feature: Recupero segnali
     Given l'utente produttore di segnali pubblica una nuova versione dell e-service
     Given la prima versione dell' e-service è già in stato "DEPRECATED"
     Given la seconda versione dell' e-service è già in stato "SUSPENDED"
+    Given il sistema ha reso disponibile il segnale
     When l'utente recupera un segnale di quell'e-service
     Then la richiesta va a buon fine con status code 200 e restituisce una lista di 1 segnale

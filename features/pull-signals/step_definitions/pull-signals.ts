@@ -40,7 +40,7 @@ Given(
 
 Given("il sistema ha depositato (il)(i) segnal(e)(i)", async function () {
   // This sleep function simulate the time SQS will take to process the signal and put on DB
-  await sleep(10000);
+  await sleep(process.env.TIME_SIMULATE_SQS_QUEUE_TO_DEPOSIT_SIGNAL_IN_MS);
 });
 
 Given(
@@ -141,6 +141,10 @@ Given(
     );
   }
 );
+
+Given("il sistema ha reso disponibile il segnale", async function () {
+  await sleep(process.env.TIME_WINDOW_DURATION_IN_SECONDS);
+});
 
 When(
   "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",

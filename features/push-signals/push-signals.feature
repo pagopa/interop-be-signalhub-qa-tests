@@ -154,4 +154,4 @@ Feature: Deposito segnali
     Given l'utente deposita un segnale per quell'e-service
     Given l'utente aspetta prima di depositare il segnale
     When l'utente deposita un segnale per quell'e-service con un signalId minore del primo
-    Then la richiesta va in errore con status code 500
+    Then la richiesta va in errore con status code 400
