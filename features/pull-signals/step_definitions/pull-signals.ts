@@ -142,6 +142,10 @@ Given(
   }
 );
 
+Given("il sistema ha reso disponibile il segnale", async function () {
+  await sleep(process.env.TIME_WINDOW_DURATION_IN_SECONDS);
+});
+
 When(
   "l'utente recupera (un)(i) segnal(e)(i) dell'e-service {string}",
   async function (eserviceName: string) {
@@ -176,13 +180,6 @@ When(
       pullSignalRequest,
       getAuthorizationHeader(this.voucher)
     );
-  }
-);
-
-When(
-  "è passato il tempo di attesa della finestra temporale",
-  async function () {
-    await sleep(process.env.TIME_WINDOW_DURATION_IN_SECONDS);
   }
 );
 
