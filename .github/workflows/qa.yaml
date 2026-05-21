@@ -21,11 +21,11 @@ jobs:
       - name: Print Inputs
         id: print_inputs
         env:
-          PRINT_INPUT_ENVIRONMENT: ${{ inputs.environment }}
-          PRINT_INPUT_TEST_TAG: ${{ inputs.test_tag }}
+          INPUT_ENVIRONMENT: ${{ inputs.environment }}
+          INPUT_TEST_TAG: ${{ inputs.test_tag }}
         run: |
-          echo "- environment: \`$PRINT_INPUT_ENVIRONMENT\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- test_tag: \`$PRINT_INPUT_TEST_TAG\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- environment: \`$INPUT_ENVIRONMENT\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- test_tag: \`$INPUT_TEST_TAG\`" >> "$GITHUB_STEP_SUMMARY"
 
   create_runner:
     name: Create Self-Hosted Runner
