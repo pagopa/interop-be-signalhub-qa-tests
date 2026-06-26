@@ -151,10 +151,11 @@ jobs:
         id: pnpm_test
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
+          INPUT_TEST_TAG: ${{ inputs.test_tag }}
         run: |
           set -eo pipefail
 
-          TEST_TAG="${{ inputs.test_tag }}"
+          TEST_TAG="$INPUT_TEST_TAG"
           
           echo "Starting QA testing..."
 
