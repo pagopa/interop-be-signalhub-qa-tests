@@ -7,13 +7,13 @@ const openApiSpecificationFileUrl =
 const apiFolderPath = path.resolve("./api/");
 
 generateApi({
-  name: "push-signals.models.ts",
-  url: openApiSpecificationFileUrl,
-  output: apiFolderPath,
-  generateClient: true,
-  httpClientType: "axios",
-  generateUnionEnums: true,
-  extractRequestParams: true,
   extractRequestBody: true,
+  extractRequestParams: true,
+  fileName: "push-signals.models.ts",
+  generateClient: true,
   generateRouteTypes: true,
+  generateUnionEnums: true,
+  httpClientType: "axios",
+  output: apiFolderPath,
+  url: openApiSpecificationFileUrl,
 }).catch((e) => console.error(e));

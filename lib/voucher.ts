@@ -1,11 +1,11 @@
-import { VoucherEnv, getVocherEnv } from "./voucher.env";
+import { getVocherEnv, VoucherEnv } from "./voucher.env";
 import { voucherGenerator } from "./voucherGenerator";
 
 let cachedVouchers: string | undefined;
 
 export const getVoucherApi = async (
   partialVoucherEnv: Partial<VoucherEnv> = {},
-  generateExpiredToken: boolean = false
+  generateExpiredToken = false,
 ): Promise<string> => {
   const voucherEnv = {
     ...getVocherEnv(),
@@ -15,7 +15,7 @@ export const getVoucherApi = async (
 };
 
 export const getVoucher = async (
-  partialVoucherEnv: Partial<VoucherEnv> = {}
+  partialVoucherEnv: Partial<VoucherEnv> = {},
 ): Promise<string> => {
   if (isVoucherOverWritten(partialVoucherEnv)) {
     return await buildVoucher(partialVoucherEnv);
@@ -43,7 +43,7 @@ const isVoucherOverWritten = (overrideVoucher: Partial<VoucherEnv>): boolean =>
 
 const buildVoucher = async (
   partialVoucherEnv: Partial<VoucherEnv>,
-  generateExpiredToken: boolean = false
+  generateExpiredToken = false,
 ) => {
   const voucherEnv = {
     ...getVocherEnv(),
@@ -54,11 +54,11 @@ const buildVoucher = async (
 
 const getVoucherSelfSigned = async (
   voucherEnv: VoucherEnv,
-  generateExpiredToken: boolean = false
+  generateExpiredToken = false,
 ): Promise<string> => {
   try {
     return await voucherGenerator(voucherEnv).buildSelfSignedVoucher(
-      generateExpiredToken
+      generateExpiredToken,
     );
   } catch (err) {
     console.log(err);

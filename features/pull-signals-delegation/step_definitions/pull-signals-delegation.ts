@@ -1,11 +1,7 @@
 import { Given, When } from "@cucumber/cucumber";
-import {
-  getAgreementBy,
-  getDelegationBy,
-  getEserviceByName,
-  getOrganizationByName,
-  getPurposeByDelegationId,
-} from "../../../lib/data.interop";
+
+import { pullSignalApiClient } from "../../../api/pull-signal.client";
+import { pushSignalApiClient } from "../../../api/push-signals.client";
 import {
   assertValidResponse,
   createOrUpdateAgreement,
@@ -16,9 +12,14 @@ import {
   createSignal,
   getAuthorizationHeader,
 } from "../../../lib/common";
+import {
+  getAgreementBy,
+  getDelegationBy,
+  getEserviceByName,
+  getOrganizationByName,
+  getPurposeByDelegationId,
+} from "../../../lib/data.interop";
 import { getVoucher } from "../../../lib/voucher";
-import { pullSignalApiClient } from "../../../api/pull-signal.client";
-import { pushSignalApiClient } from "../../../api/push-signals.client";
 
 Given(
   "l'ente erogatore ha depositato un segnale per l'e-service",
@@ -28,26 +29,26 @@ Given(
     });
     const startSignalId = 1;
     const signalRequest = createSignal({
-      signalId: startSignalId,
       eserviceId: this.eserviceId,
+      signalId: startSignalId,
     });
 
     const response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(voucher)
+      getAuthorizationHeader(voucher),
     );
 
     assertValidResponse(response);
-  }
+  },
 );
 
 Given(
   "l'ente delegato {string} ha già una delega in stato {string} concessa dal {string} per l'e-service {string}",
   async function (
     delegate: string,
-    delegationStatus: "REJECTED" | "REVOKED" | "ACTIVE",
+    delegationStatus: "ACTIVE" | "REJECTED" | "REVOKED",
     delegator: string, // delegante
-    eServiceName: string
+    eServiceName: string,
   ) {
     const { id: delegateId } = getOrganizationByName(delegate);
     const { id: delegatorId } = getOrganizationByName(delegator);
@@ -55,20 +56,20 @@ Given(
     const delegation = getDelegationBy(
       delegatorId,
       eServiceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
 
     await createOrUpdateDelegation({
       ...delegation,
-      state: delegationStatus,
       kind: "DELEGATED_PRODUCER",
+      state: delegationStatus,
     });
 
     this.delegationId = delegation.delegationId;
     this.delegatorId = delegatorId;
     this.delegateId = delegateId;
     this.eserviceName = eServiceName;
-  }
+  },
 );
 
 Given(
@@ -78,7 +79,7 @@ Given(
       ORGANIZATION_ID: this.delegateId,
     });
     this.voucher = voucher;
-  }
+  },
 );
 
 Given(
@@ -87,17 +88,17 @@ Given(
     const agreement = getAgreementBy(
       this.delegatorId,
       this.eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
 
     return await createOrUpdateAgreement(
       {
         ...agreement,
-        ...{ state: agreementStatus, eservice: this.eserviceId },
+        ...{ eservice: this.eserviceId, state: agreementStatus },
       },
-      this.delegatorId
+      this.delegatorId,
     );
-  }
+  },
 );
 
 Given(
@@ -107,18 +108,18 @@ Given(
       const purpose = getPurposeByDelegationId(
         this.delegateId,
         this.delegationId,
-        this.TEST_SEED
+        this.TEST_SEED,
       );
       return await createOrUpdatePurpose(
         {
           ...purpose,
-          ...{ state: purposeStatus, eservice: this.eserviceId },
+          ...{ eservice: this.eserviceId, state: purposeStatus },
           delegationId: this.delegationId,
         },
-        this.delegatorId // consumerId
+        this.delegatorId, // consumerId
       );
     }
-  }
+  },
 );
 
 Given(
@@ -127,53 +128,53 @@ Given(
     const delegation = getDelegationBy(
       this.delegatorId,
       this.eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
 
     await createOrUpdateDelegation({
       ...delegation,
-      state: "REVOKED",
       kind: "DELEGATED_PRODUCER",
+      state: "REVOKED",
     });
-  }
+  },
 );
 
 Given(
   "l'ente erogatore abilita la possibilità di accesso operativo per quell'e-service",
   async function () {
-    const { name, id, descriptor, state, enable_signal_hub } =
+    const { descriptor, enable_signal_hub, id, name, state } =
       getEserviceByName(this.producerId, this.eserviceName, this.TEST_SEED);
     await createOrUpdateEservice(
       {
-        id,
-        descriptor,
-        state,
-        enable_signal_hub,
-        name,
         client_access_delegable: true,
+        descriptor,
+        enable_signal_hub,
+        id,
+        name,
+        state,
       },
-      this.producerId
+      this.producerId,
     );
-  }
+  },
 );
 
 Given(
   "l'erogatore disabilita la possibilità di accesso operativo per quell'e-service",
   async function () {
-    const { name, id, descriptor, state, enable_signal_hub } =
+    const { descriptor, enable_signal_hub, id, name, state } =
       getEserviceByName(this.producerId, this.eserviceName, this.TEST_SEED);
     await createOrUpdateEservice(
       {
-        id,
-        descriptor,
-        state,
-        enable_signal_hub,
-        name,
         client_access_delegable: false,
+        descriptor,
+        enable_signal_hub,
+        id,
+        name,
+        state,
       },
-      this.producerId
+      this.producerId,
     );
-  }
+  },
 );
 When(
   "l'utente dell'ente delegato recupera un segnale di quell'e-service",
@@ -188,7 +189,7 @@ When(
 
     this.response = await pullSignalApiClient.signals.pullSignal(
       pullSignalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );

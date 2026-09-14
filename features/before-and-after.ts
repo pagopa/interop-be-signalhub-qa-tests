@@ -5,8 +5,9 @@ import {
   BeforeAll,
   setDefaultTimeout,
 } from "@cucumber/cucumber";
-import { cleanupQAData } from "../data/db";
+
 import { nodeEnv } from "../configs/env";
+import { cleanupQAData } from "../data/db";
 import { getRandomInt } from "../lib/common";
 
 const PATTERN_FOR_DELETE_ALL_QA_DATA = `QA-%|%`;

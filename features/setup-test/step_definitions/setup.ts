@@ -1,5 +1,5 @@
+import { Given, Then, When } from "@cucumber/cucumber";
 import assert from "assert";
-import { Given, When, Then } from "@cucumber/cucumber";
 
 Given("today is Sunday", function () {
   this.today = "Sunday";

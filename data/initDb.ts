@@ -8,34 +8,34 @@ import {
 export type DB = IDatabase<unknown>;
 
 export function createDbInstance({
-  username,
-  password,
-  host,
-  port,
   database,
+  host,
+  password,
+  port,
+  username,
   useSSL,
 }: {
-  username: string;
-  password: string;
-  host: string;
-  port: number;
   database: string;
+  host: string;
+  password: string;
+  port: number;
+  username: string;
   useSSL: boolean;
 }): DB {
   const pgp = pgPromise();
 
   const conData = new ConnectionString(
-    `postgresql://${username}:${password}@${host}:${port}/${database}`
+    `postgresql://${username}:${password}@${host}:${port}/${database}`,
   );
 
   const dbConfig: IConnectionParameters<IClient> = {
+    allowExitOnIdle: true,
     database: conData.path !== undefined ? conData.path[0] : "",
     host: conData.hostname,
     password: conData.password,
     port: conData.port,
-    user: conData.user,
     ssl: useSSL ? { rejectUnauthorized: false } : undefined,
-    allowExitOnIdle: true,
+    user: conData.user,
   };
 
   // creating a Database instance

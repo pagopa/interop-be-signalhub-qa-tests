@@ -1,111 +1,55 @@
 import "../configs/env";
 import fs from "fs";
 
-export type Eservice = {
-  name: string;
-  id: string;
-  descriptor: string;
-  state: string;
-  enable_signal_hub: boolean;
-  client_access_delegable?: boolean;
-};
-
 export type Agreement = {
-  id: string;
-  state: string;
-  eservice: string;
-  name: string;
   descriptor: string;
-  purpose: string;
-};
-
-export type Purpose = {
-  id: string;
-  version: string;
-  state: string;
   eservice: string;
-  name: string;
-  delegationId?: string;
-};
-
-export type Organization = {
   id: string;
   name: string;
-  eservices: Eservice[];
-  agreements: Agreement[];
-  purposes: Purpose[];
-  delegation: Delegation[];
+  purpose: string;
+  state: string;
 };
 
 export type Delegation = {
-  delegationId: string;
   delegateId: string;
+  delegationId: string;
   delegatorId: string;
   eServiceId: string;
+  kind: "DELEGATED_CONSUMER" | "DELEGATED_PRODUCER";
   state: string;
-  kind: "DELEGATED_PRODUCER" | "DELEGATED_CONSUMER";
 };
 
-function getInteropData(): Organization[] {
-  return JSON.parse(
-    Buffer.from(
-      fs.readFileSync(process.env.CATALOG_INTEROP_DATA_PREPARATION_FILE)
-    ).toString()
-  );
-}
+export type Eservice = {
+  client_access_delegable?: boolean;
+  descriptor: string;
+  enable_signal_hub: boolean;
+  id: string;
+  name: string;
+  state: string;
+};
 
-export function getOrganizationByName(organizationName: string): Organization {
-  const organization = getInteropData().find(
-    (organization) => organization.name === organizationName
-  );
-  if (organization === undefined) {
-    throw Error(`Organization ${organizationName} not found`);
-  }
-  return organization;
-}
+export type Organization = {
+  agreements: Agreement[];
+  delegation: Delegation[];
+  eservices: Eservice[];
+  id: string;
+  name: string;
+  purposes: Purpose[];
+};
 
-export function getOrganizationById(organizationId: string): Organization {
-  const organization = getInteropData().find(
-    (organization) => organization.id === organizationId
-  );
-  if (organization === undefined) {
-    throw Error(`Organization ${organizationId} not found`);
-  }
-  return organization;
-}
-
-export function getEserviceByName(
-  organizationId: string,
-  eserviceName: string,
-  seed?: string
-): Eservice {
-  const eservice = getOrganizationById(organizationId)
-    .eservices.filter(isEqual("name", eserviceName))
-    .shift();
-  if (eservice === undefined) {
-    throw Error(`e-service ${eserviceName} not found`);
-  }
-  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
-}
-
-export function getEserviceBy(
-  organizationId: string,
-  eserviceName: string,
-  seed?: string
-): Eservice {
-  const eservice = getOrganizationById(organizationId)
-    .eservices.filter(isEqual("name", eserviceName))
-    .shift();
-  if (eservice === undefined) {
-    throw Error(`e-service ${eserviceName} not found`);
-  }
-  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
-}
+export type Purpose = {
+  delegationId?: string;
+  eservice: string;
+  id: string;
+  name: string;
+  state: string;
+  version: string;
+};
 
 export function getAgreementBy(
   organizationId: string,
   eserviceName: string,
-  seed?: string
+  seed?: string,
 ): Agreement {
   const agreement = getOrganizationById(organizationId)
     .agreements.filter(isEqual("name", eserviceName))
@@ -116,42 +60,10 @@ export function getAgreementBy(
   return { ...agreement, ...{ id: idSeeded(agreement.id, seed) } };
 }
 
-export function getPurposeBy(
-  organizationId: string,
-  eserviceName: string,
-  seed?: string
-): Purpose {
-  const purpose = getOrganizationById(organizationId)
-    .purposes.filter(isEqual("name", eserviceName))
-    .shift();
-  if (purpose === undefined) {
-    throw Error(`purpose for e-service ${eserviceName} not found`);
-  }
-  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
-}
-
-export function getPurposeByDelegationId(
-  organizationId: string,
-  delegationId: string,
-  seed?: string
-) {
-  const delegationIdWithoutTestSeed = delegationId.split("|")[1];
-  const purpose = getOrganizationById(organizationId).purposes.find(
-    (purpose) => purpose.delegationId === delegationIdWithoutTestSeed
-  );
-
-  if (purpose === undefined) {
-    throw Error(
-      `purpose for delegationId ${delegationIdWithoutTestSeed} not found`
-    );
-  }
-  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
-}
-
 export function getDelegationBy(
   organizationId: string,
   eserviceName: string,
-  seed?: string
+  seed?: string,
 ): Delegation {
   const delegation = getOrganizationById(organizationId)
     .delegation.filter(isEqual("eservice", eserviceName))
@@ -170,11 +82,98 @@ export function getDelegationBy(
   };
 }
 
+export function getEserviceBy(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string,
+): Eservice {
+  const eservice = getOrganizationById(organizationId)
+    .eservices.filter(isEqual("name", eserviceName))
+    .shift();
+  if (eservice === undefined) {
+    throw Error(`e-service ${eserviceName} not found`);
+  }
+  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
+}
+
+export function getEserviceByName(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string,
+): Eservice {
+  const eservice = getOrganizationById(organizationId)
+    .eservices.filter(isEqual("name", eserviceName))
+    .shift();
+  if (eservice === undefined) {
+    throw Error(`e-service ${eserviceName} not found`);
+  }
+  return { ...eservice, ...{ id: idSeeded(eservice.id, seed) } };
+}
+
+export function getOrganizationById(organizationId: string): Organization {
+  const organization = getInteropData().find(
+    (organization) => organization.id === organizationId,
+  );
+  if (organization === undefined) {
+    throw Error(`Organization ${organizationId} not found`);
+  }
+  return organization;
+}
+
+export function getOrganizationByName(organizationName: string): Organization {
+  const organization = getInteropData().find(
+    (organization) => organization.name === organizationName,
+  );
+  if (organization === undefined) {
+    throw Error(`Organization ${organizationName} not found`);
+  }
+  return organization;
+}
+
+export function getPurposeBy(
+  organizationId: string,
+  eserviceName: string,
+  seed?: string,
+): Purpose {
+  const purpose = getOrganizationById(organizationId)
+    .purposes.filter(isEqual("name", eserviceName))
+    .shift();
+  if (purpose === undefined) {
+    throw Error(`purpose for e-service ${eserviceName} not found`);
+  }
+  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
+export function getPurposeByDelegationId(
+  organizationId: string,
+  delegationId: string,
+  seed?: string,
+) {
+  const delegationIdWithoutTestSeed = delegationId.split("|")[1];
+  const purpose = getOrganizationById(organizationId).purposes.find(
+    (purpose) => purpose.delegationId === delegationIdWithoutTestSeed,
+  );
+
+  if (purpose === undefined) {
+    throw Error(
+      `purpose for delegationId ${delegationIdWithoutTestSeed} not found`,
+    );
+  }
+  return { ...purpose, ...{ id: idSeeded(purpose.id, seed) } };
+}
+
+function getInteropData(): Organization[] {
+  return JSON.parse(
+    Buffer.from(
+      fs.readFileSync(process.env.CATALOG_INTEROP_DATA_PREPARATION_FILE),
+    ).toString(),
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isEqual = (key: string, value: string) => (item: any) =>
   item[key] === value;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 // const isIncluded = (key: string, value: string) => (item: any) =>
 //   value.includes(item[key]);
 

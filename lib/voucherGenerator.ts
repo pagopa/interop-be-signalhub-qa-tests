@@ -2,10 +2,11 @@ import {
   KMSClient,
   SignCommand,
   SignCommandOutput,
-  SignRequest,
   SigningAlgorithmSpec,
+  SignRequest,
 } from "@aws-sdk/client-kms";
 import { v4 as uuidv4 } from "uuid";
+
 import { VoucherEnv } from "./voucher.env";
 
 const JWT_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
@@ -15,22 +16,22 @@ const JWT_HEADER_USE = "sig";
 
 type JWTHeader = {
   alg: string;
-  typ: string;
   kid: string;
+  typ: string;
   use: string;
 };
 
 type JWTPayload = {
   aud: string;
-  sub: string;
-  nbf: number;
-  iss: string;
+  client_id: string;
   exp: number;
   iat: number;
+  iss: string;
   jti: string;
-  client_id: string;
-  role: string;
+  nbf: number;
   organizationId: string;
+  role: string;
+  sub: string;
 };
 
 export const voucherGenerator = (voucherEnv: VoucherEnv) => {
@@ -38,7 +39,7 @@ export const voucherGenerator = (voucherEnv: VoucherEnv) => {
 
   return {
     async buildSelfSignedVoucher(
-      generateExpiredToken: boolean = false
+      generateExpiredToken = false,
     ): Promise<string> {
       try {
         const token = generateExpiredToken
@@ -56,30 +57,12 @@ export const voucherGenerator = (voucherEnv: VoucherEnv) => {
 
 export type VoucherGenerator = ReturnType<typeof voucherGenerator>;
 
-async function signToken(
-  kmsKeyId: string,
-  token: string,
-  kms: KMSClient
-): Promise<Uint8Array> {
-  const signReq: SignRequest = {
-    KeyId: kmsKeyId,
-    Message: Buffer.from(token),
-    SigningAlgorithm: JWT_SIGNING_ALGORITHM as SigningAlgorithmSpec,
-  };
-
-  const signCommand = new SignCommand(signReq);
-  const signResult: SignCommandOutput = await kms.send(signCommand);
-  const signedTokenBuffer = signResult.Signature;
-  if (!signedTokenBuffer) {
-    throw new Error("Failed to generate signature.");
-  }
-  return signedTokenBuffer;
+function base64EncodeBuffer(content: Uint8Array): string {
+  return removePadding(Buffer.from(content).toString("base64"));
 }
 
-function createToken(voucherEnv: VoucherEnv): string {
-  const header: JWTHeader = createHeader(voucherEnv);
-  const payload: JWTPayload = createPayload(voucherEnv);
-  return `${base64EncodeObject(header)}.${base64EncodeObject(payload)}`;
+function base64EncodeObject(obj: unknown): string {
+  return removePadding(Buffer.from(JSON.stringify(obj)).toString("base64"));
 }
 
 function createExpiredToken(voucherEnv: VoucherEnv): string {
@@ -94,10 +77,10 @@ function createExpiredToken(voucherEnv: VoucherEnv): string {
 
 function createHeader(voucherEnv: VoucherEnv): JWTHeader {
   return {
-    typ: JWT_HEADER_TYP,
-    use: JWT_HEADER_USE,
     alg: JWT_HEADER_ALGORITHM,
     kid: voucherEnv.KEY_ID,
+    typ: JWT_HEADER_TYP,
+    use: JWT_HEADER_USE,
   };
 }
 
@@ -113,26 +96,44 @@ function createPayload(voucherEnv: VoucherEnv): JWTPayload {
 
   const jwtPayload: JWTPayload = {
     aud: audience,
-    sub: subject,
-    nbf: currentTimeInSeconds,
-    iss: issuer,
+    client_id: clientId,
     exp: currentTimeInSeconds + expireIn,
     iat: currentTimeInSeconds,
+    iss: issuer,
     jti: uuidv4(),
-    client_id: clientId,
+    nbf: currentTimeInSeconds,
     organizationId,
     role: "m2m",
+    sub: subject,
   };
   return jwtPayload;
+}
+
+function createToken(voucherEnv: VoucherEnv): string {
+  const header: JWTHeader = createHeader(voucherEnv);
+  const payload: JWTPayload = createPayload(voucherEnv);
+  return `${base64EncodeObject(header)}.${base64EncodeObject(payload)}`;
 }
 
 function removePadding(base64Text: string): string {
   return base64Text.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
+async function signToken(
+  kmsKeyId: string,
+  token: string,
+  kms: KMSClient,
+): Promise<Uint8Array> {
+  const signReq: SignRequest = {
+    KeyId: kmsKeyId,
+    Message: Buffer.from(token),
+    SigningAlgorithm: JWT_SIGNING_ALGORITHM as SigningAlgorithmSpec,
+  };
 
-function base64EncodeObject(obj: unknown): string {
-  return removePadding(Buffer.from(JSON.stringify(obj)).toString("base64"));
-}
-function base64EncodeBuffer(content: Uint8Array): string {
-  return removePadding(Buffer.from(content).toString("base64"));
+  const signCommand = new SignCommand(signReq);
+  const signResult: SignCommandOutput = await kms.send(signCommand);
+  const signedTokenBuffer = signResult.Signature;
+  if (!signedTokenBuffer) {
+    throw new Error("Failed to generate signature.");
+  }
+  return signedTokenBuffer;
 }
