@@ -1,5 +1,8 @@
-import assert from "assert";
 import { Given, Then, When } from "@cucumber/cucumber";
+import assert from "assert";
+
+import { pushSignalApiClient } from "../../../api/push-signals.client";
+import { SignalPayload, SignalType } from "../../../api/push-signals.models";
 import {
   createOrUpdateEservice,
   createSignal,
@@ -7,42 +10,40 @@ import {
   sleep,
   updateEserviceSHOptions,
 } from "../../../lib/common";
-import { pushSignalApiClient } from "../../../api/push-signals.client";
-import { SignalPayload, SignalType } from "../../../api/push-signals.models";
-import { getVoucher } from "../../../lib/voucher";
 import {
-  getOrganizationByName,
   getEserviceBy,
   getEserviceByName,
+  getOrganizationByName,
 } from "../../../lib/data.interop";
+import { getVoucher } from "../../../lib/voucher";
 
 Given(
   "l'ente {string}, aderente a PDND Interop, è erogatore dell'e-service e produttore dei segnali",
   function (organizationName: string) {
     const organization = getOrganizationByName(organizationName);
     this.producerId = organization.id;
-  }
+  },
 );
 
 Given(
   "l'ente erogatore ha pubblicato un e-service denominato {string} abilitato a Signal Hub",
   async function (eserviceName: string) {
-    const { name, id, descriptor, state, enable_signal_hub } =
+    const { descriptor, enable_signal_hub, id, name, state } =
       getEserviceByName(this.producerId, eserviceName, this.TEST_SEED);
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        state,
         enable_signal_hub,
+        id,
         name,
+        state,
       },
-      this.producerId
+      this.producerId,
     );
 
     this.eserviceId = id;
     this.eserviceName = name;
-  }
+  },
 );
 
 Given(
@@ -50,7 +51,7 @@ Given(
   async function (organizationName: string) {
     const organization = getOrganizationByName(organizationName);
     this.delegateId = organization.id;
-  }
+  },
 );
 
 Given(
@@ -60,7 +61,7 @@ Given(
       ORGANIZATION_ID: this.producerId,
     });
     this.voucher = voucher;
-  }
+  },
 );
 
 Given(
@@ -71,7 +72,7 @@ Given(
     });
 
     this.voucher = voucher;
-  }
+  },
 );
 
 Given(
@@ -80,22 +81,22 @@ Given(
     const eservice = getEserviceByName(
       this.producerId,
       eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
-    const { id, descriptor, state, name } = eservice;
+    const { descriptor, id, name, state } = eservice;
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        state,
         enable_signal_hub: true,
+        id,
         name,
+        state,
       },
-      this.producerId
+      this.producerId,
     );
 
     this.anotherEserviceId = id;
-  }
+  },
 );
 
 Given(
@@ -105,45 +106,45 @@ Given(
     const eservice = getEserviceByName(
       organization.id,
       eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
-    const { id, descriptor, state, name } = eservice;
+    const { descriptor, id, name, state } = eservice;
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        state,
         enable_signal_hub: true,
+        id,
         name,
+        state,
       },
-      organization.id
+      organization.id,
     );
 
     this.anotherOrganizationEserviceId = id;
-  }
+  },
 );
 
 Given(
   "l'utente ha creato un e-service denominato {string} in stato {string} con l'opzione utilizzo SH",
   async function (eserviceName: string, eserviceState: string) {
-    const { id, descriptor, name } = getEserviceBy(
+    const { descriptor, id, name } = getEserviceBy(
       this.producerId,
       eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        state: eserviceState,
         enable_signal_hub: true,
+        id,
         name,
+        state: eserviceState,
       },
-      this.producerId
+      this.producerId,
     );
 
     this.notPublishedEserviceId = id;
-  }
+  },
 );
 
 Given(
@@ -152,35 +153,35 @@ Given(
     const eservice = getEserviceByName(
       this.producerId,
       eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
-    const { id, descriptor, state, name } = eservice;
+    const { descriptor, id, name, state } = eservice;
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        state,
         enable_signal_hub: false,
+        id,
         name,
+        state,
       },
-      this.producerId
+      this.producerId,
     );
 
     this.eserviceId = id;
-  }
+  },
 );
 
 Given(
   "l'utente, come erogatore, aggiorna l'e-service disabilitando l'opzione utilizzo SH",
   async function () {
     await updateEserviceSHOptions(this.eserviceId, false);
-  }
+  },
 );
 
 Given("l'utente aspetta prima di depositare il segnale", async function () {
   console.log(
     "Waiting before pushing duplicated signalId",
-    process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS
+    process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS,
   );
   await sleep(process.env.WAIT_BEFORE_PUSHING_DUPLICATED_SIGNALID_IN_MS);
 });
@@ -191,33 +192,33 @@ When(
     const nextSignalId = (this.requestSignalId as number) + 1;
 
     const signalRequest = createSignal({
-      signalId: nextSignalId,
       eserviceId: this.anotherEserviceId,
+      signalId: nextSignalId,
     });
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
 
     this.requestSignalId = signalRequest.signalId;
-  }
+  },
 );
 
 When(
   "l'utente deposita un segnale per il secondo e-service con lo stesso signalId del primo",
   async function () {
     const signalRequest = createSignal({
-      signalId: this.requestSignalId,
       eserviceId: this.anotherEserviceId,
+      signalId: this.requestSignalId,
     });
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
     this.requestSignalId = signalRequest.signalId;
-  }
+  },
 );
 
 When(
@@ -232,9 +233,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -248,9 +249,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -262,11 +263,11 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
 
     this.requestSignalId = signalRequest.signalId;
-  }
+  },
 );
 
 When(
@@ -277,9 +278,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -291,9 +292,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -306,9 +307,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -319,9 +320,9 @@ When(
     this.response = await pushSignalApiClient.signals.pushSignal(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body as any,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -332,9 +333,9 @@ When(
     this.response = await pushSignalApiClient.signals.pushSignal(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body as any,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -347,11 +348,11 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
 
     this.requestSignalId = signalRequest.signalId;
-  }
+  },
 );
 
 When(
@@ -359,9 +360,9 @@ When(
   async function () {
     this.response = await pushSignalApiClient.signals.pushSignal(
       { eserviceId: this.eserviceId } as SignalPayload,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 When(
@@ -373,9 +374,9 @@ When(
 
     this.response = await pushSignalApiClient.signals.pushSignal(
       signalRequest,
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 Then("la richiesta va a buon fine con status code 200", function () {
@@ -388,7 +389,7 @@ Then(
     const { errors } = this.response.data;
     assert.strictEqual(this.response.status, statusCode);
     assert.ok(errors.length > 0);
-  }
+  },
 );
 
 Then(
@@ -397,83 +398,83 @@ Then(
     const { signalId } = this.response.data;
     assert.strictEqual(signalId, this.requestSignalId);
     assert.strictEqual(this.response.status, 200);
-  }
+  },
 );
 
 When(
   "l'utente verifica lo stato del servizio di deposito segnali",
   async function () {
     this.response = await pushSignalApiClient.status.getStatus(
-      getAuthorizationHeader(this.voucher)
+      getAuthorizationHeader(this.voucher),
     );
-  }
+  },
 );
 
 Given(
   "l'(utente)(utente produttore di segnali) pubblica una nuova versione dell e-service",
   async function () {
-    const { name, descriptor, enable_signal_hub, state } = getEserviceBy(
+    const { descriptor, enable_signal_hub, name, state } = getEserviceBy(
       this.producerId,
       this.eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
     const publishedEserviceId = this.eserviceId;
     const newDescriptorId = `${descriptor}-V2`;
 
     await createOrUpdateEservice(
       {
-        id: publishedEserviceId,
         descriptor: newDescriptorId,
-        name,
         enable_signal_hub,
+        id: publishedEserviceId,
+        name,
         state,
       },
-      this.producerId
+      this.producerId,
     );
-  }
+  },
 );
 
 Given(
   "la prima versione dell' e-service è già in stato {string}",
   async function (state: string) {
-    const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
+    const { descriptor, enable_signal_hub, id, name } = getEserviceBy(
       this.producerId,
       this.eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
 
     await createOrUpdateEservice(
       {
-        id,
         descriptor,
-        name,
         enable_signal_hub,
+        id,
+        name,
         state,
       },
-      this.producerId
+      this.producerId,
     );
-  }
+  },
 );
 
 Given(
   "la seconda versione dell' e-service è già in stato {string}",
   async function (state: string) {
-    const { id, name, descriptor, enable_signal_hub } = getEserviceBy(
+    const { descriptor, enable_signal_hub, id, name } = getEserviceBy(
       this.producerId,
       this.eserviceName,
-      this.TEST_SEED
+      this.TEST_SEED,
     );
     const newDescriptorId = `${descriptor}-V2`;
 
     await createOrUpdateEservice(
       {
-        id,
         descriptor: newDescriptorId,
-        name,
         enable_signal_hub,
+        id,
+        name,
         state,
       },
-      this.producerId
+      this.producerId,
     );
-  }
+  },
 );

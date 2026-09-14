@@ -1,8 +1,8 @@
 export type AgreementState =
-  | "DRAFT"
   | "ACTIVE"
   | "ARCHIVED"
-  | "PENDING"
-  | "SUSPENDED"
+  | "DRAFT"
   | "MISSING_CERTIFIED_ATTRIBUTES"
-  | "REJECTED";
+  | "PENDING"
+  | "REJECTED"
+  | "SUSPENDED";

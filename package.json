@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@8.15.8",
+  "packageManager": "pnpm@10.29.3",
   "scripts": {
     "generate-model:pull": "ts-node ./scripts/generate-pull-api-models.ts",
     "generate-model:push": "ts-node ./scripts/generate-push-api-models.ts",
@@ -25,31 +25,34 @@
     "url": "git+https://github.com/pagopa/interop-be-signalhub-qa-tests.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "EUPL-1.2",
   "bugs": {
     "url": "https://github.com/pagopa/interop-be-signalhub-qa-tests/issues"
   },
   "homepage": "https://github.com/pagopa/interop-be-signalhub-qa-tests#readme",
   "devDependencies": {
-    "@cucumber/cucumber": "^10.6.0",
-    "@pagopa/eslint-config": "^3.0.0",
-    "@types/node": "^20.12.7",
-    "@types/pg": "^8.11.6",
+    "@cucumber/cucumber": "^10.9.0",
+    "@pagopa/eslint-config": "5.1.2",
+    "@types/node": "20.19.9",
+    "@types/pg": "8.11.11",
     "@types/uuid": "^9.0.8",
+    "eslint": "^9.39.5",
     "gherkin-lint": "^4.2.4",
-    "husky": "^9.0.11",
+    "globals": "^17.12.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "5.4.5"
   },
   "dependencies": {
-    "@aws-sdk/client-kms": "^3.600.0",
-    "axios": "^1.7.4",
-    "dotenv": "^16.4.5",
-    "jose": "^5.2.4",
-    "pg-promise": "^11.6.0",
-    "connection-string": "^4.4.0",
-    "swagger-typescript-api": "^13.0.3",
-    "uuid": "^14.0.0",
-    "zod": "^3.23.4"
+    "@aws-sdk/client-kms": "3.840.0",
+    "axios": "1.18.0",
+    "connection-string": "4.4.0",
+    "dotenv": "16.4.7",
+    "jose": "5.9.4",
+    "pg-promise": "11.8.0",
+    "swagger-typescript-api": "^13.12.6",
+    "uuid": "14.0.0",
+    "zod": "3.23.8"
   }
 }
