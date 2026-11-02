@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-kms": "3.840.0",
-    "axios": "1.18.0",
+    "axios": "1.20.0",
     "connection-string": "4.4.0",
     "dotenv": "16.4.7",
     "jose": "5.9.4",
