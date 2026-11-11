@@ -53,6 +53,6 @@
     "pg-promise": "11.8.0",
     "swagger-typescript-api": "^13.12.6",
     "uuid": "14.0.0",
-    "zod": "3.23.8"
+    "zod": "4.6.6"
   }
 }
