@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
   "engines": {
-    "node": ">=20"
+    "node": "24.x"
   },
   "packageManager": "pnpm@10.29.3",
   "scripts": {
@@ -31,18 +31,17 @@
   },
   "homepage": "https://github.com/pagopa/interop-be-signalhub-qa-tests#readme",
   "devDependencies": {
-    "@cucumber/cucumber": "^10.9.0",
+    "@cucumber/cucumber": "^13.3.0",
     "@pagopa/eslint-config": "5.1.2",
-    "@types/node": "20.19.9",
+    "@types/node": "24.19.2",
     "@types/pg": "8.11.11",
-    "@types/uuid": "^9.0.8",
     "eslint": "^9.39.5",
     "gherkin-lint": "^4.2.4",
     "globals": "^17.12.0",
     "husky": "^9.1.7",
     "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
-    "typescript": "5.4.5"
+    "typescript": "5.8.3"
   },
   "dependencies": {
     "@aws-sdk/client-kms": "3.840.0",
