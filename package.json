@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This project contains all QA testing for signal-hub environment",
   "engines": {
-    "node": ">=20"
+    "node": "24.x"
   },
   "packageManager": "pnpm@10.29.3",
   "scripts": {
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@cucumber/cucumber": "^10.9.0",
     "@pagopa/eslint-config": "5.1.2",
-    "@types/node": "20.19.9",
+    "@types/node": "24.19.2",
     "@types/pg": "8.11.11",
     "@types/uuid": "^9.0.8",
     "eslint": "^9.39.5",
